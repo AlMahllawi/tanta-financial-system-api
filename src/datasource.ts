@@ -6,6 +6,8 @@ export default new DataSource({
 	type: "postgres",
 	url: DB_CONNECTION_URL,
 	entities,
+	migrationsTableName: "Migrations",
+	migrations: ["src/migrations/*.ts"],
 	synchronize: NODE_ENV === "development",
 	logging: NODE_ENV === "development",
 });
