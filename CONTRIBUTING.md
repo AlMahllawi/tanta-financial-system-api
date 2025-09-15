@@ -1,16 +1,19 @@
-# Development Setup
+# Contributing
+A guide for contributing to the project, including setup and guidelines.
+
+## Development Setup
 Configure tools, environments and dependencies to build code locally.
 
-## Prerequisites
+### Prerequisites
 - [Node.js v20+](https://nodejs.org/en)
 - [PNPM](https://pnpm.io/)
 
-## Install dependencies
+### Install dependencies
 ```bash
 pnpm install
 ```
 
-## Set up the environment
+### Set up the environment
 ```bash
 cp example.env .env
 ```
@@ -21,12 +24,20 @@ NODE_ENV=development
 DB_CONNECTION_URL="postgres://almahllawi:n0nS3cure@localhost:5432/TantaFinancial"
 ```
 
-## Run the migrations
+### Run the migrations
 ```bash
 pnpm migrations
 ```
 
-## Launch the API
+### Launch the API
 ```bash
 pnpm dev
+```
+
+## Guidelines
+Best practices for coding, testing, and submitting contributions to ensure consistency and quality.
+
+### Generate migrations after modifying any [entity](./src/entities/)
+```bash
+pnpm run migration:generate unique-user-name
 ```

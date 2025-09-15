@@ -12,7 +12,8 @@
 		"build": "tsc",
 		"start": "node ./dist/main.js",
 		"typeorm": "tsx ./node_modules/typeorm/cli.js -d ./src/datasource.ts",
-		"migrations": "pnpm typeorm migration:run"
+		"migrations": "pnpm typeorm migration:run",
+		"migration:generate": "node ./run.js migration:generate"
 	},
 	"author": "AlMahllawi",
 	"packageManager": "pnpm@10.16.1",
