@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: Errors type could by any */
 import type { NextFunction, Request, Response } from "express";
 import { NODE_ENV } from "../utils/env.js";
 import { logger } from "../utils/logger.js";
