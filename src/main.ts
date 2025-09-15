@@ -2,6 +2,7 @@ import "reflect-metadata";
 import chalk from "chalk";
 import type { Express } from "express";
 import express from "express";
+import "express-async-errors";
 import datasource from "./datasource.js";
 import errorHandler from "./middlewares/error.middleware.js";
 import { PORT } from "./utils/env.js";
