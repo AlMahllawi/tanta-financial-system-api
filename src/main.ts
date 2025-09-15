@@ -19,6 +19,10 @@ app.get("/", (req, res) => {
 		.json({ status: ResponseStatus.OK, timestamp: new Date().toISOString() });
 });
 
+app.use((req, res) => {
+	res.status(404).json({ status: ResponseStatus.NOT_FOUND });
+});
+
 app.use(errorHandler);
 
 datasource
