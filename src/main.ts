@@ -5,6 +5,7 @@ import express from "express";
 import "express-async-errors";
 import datasource from "./datasource.js";
 import errorHandler from "./middlewares/error.middleware.js";
+import { userRouter } from "./routes/index.js";
 import { PORT } from "./utils/env.js";
 import { logger } from "./utils/logger.js";
 
@@ -16,6 +17,8 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
 	res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
+
+app.use(userRouter);
 
 app.use((req, res) => {
 	res.status(404).json({ status: "not-found" });

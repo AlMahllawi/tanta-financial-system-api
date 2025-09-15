@@ -4,11 +4,13 @@ import {
 	Entity,
 	OneToMany,
 	PrimaryGeneratedColumn,
+	Unique,
 	UpdateDateColumn,
 } from "typeorm";
 import { TransactionForward } from "./transaction.forward.entity.js";
 
 @Entity("Users")
+@Unique("UniqueUserName", ["name"])
 export class User {
 	@PrimaryGeneratedColumn()
 	id!: number;
@@ -36,4 +38,6 @@ export class User {
 		(transactionForward) => transactionForward.receiver,
 	)
 	receivedTransactionForwards!: TransactionForward[];
+
+	static VisibleColumns = ["id", "name"];
 }

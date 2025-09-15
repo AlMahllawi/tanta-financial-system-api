@@ -27,3 +27,8 @@ export const PORT = (() => {
 		throw new RangeError(`Invalid PORT: ${parsed}.`);
 	return parsed;
 })();
+
+import { genSaltSync } from "bcrypt";
+export const BCRYPT_SALT = variable("BCRYPT_SALT", genSaltSync());
+
+export const JWT_SECRET = variable("JWT_SECRET", "not-secure");
