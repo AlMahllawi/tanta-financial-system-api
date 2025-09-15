@@ -1,6 +1,6 @@
 # Tanta Financial System API
 Track financial and administrative transactions progress, submission and review.  
-Checkout [Development Setup](./CONTRIBUTING.md#development-setup).
+Checkout [contributing](./CONTRIBUTING.md#development-setup).
 
 ## Prerequisites
 - [Node.js v20+](https://nodejs.org/en)
