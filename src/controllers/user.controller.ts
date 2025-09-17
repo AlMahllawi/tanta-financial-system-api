@@ -25,7 +25,8 @@ export async function authorizeUser(req: Request, res: Response) {
 }
 
 export async function viewAllUsers(req: Request, res: Response) {
-	res.status(200).json(await service.viewAllUsers());
+	const users = await service.viewAllUsers();
+	res.status(200).json({ status: "success", users });
 }
 
 const userCreationBodySchema = z.object({
@@ -41,7 +42,8 @@ const userCreationBodySchema = z.object({
 export async function createUser(req: Request, res: Response) {
 	const { name, password } = userCreationBodySchema.parse(req.body);
 	try {
-		res.status(201).json(await service.createUser(name, password));
+		const user = await service.createUser(name, password);
+		res.status(201).json({ status: "success", user });
 	} catch (error: any) {
 		if (error instanceof ExpectedError && error.code === "user-exists")
 			res.status(409).json({ status: "conflict", message: error.message });
@@ -56,7 +58,7 @@ const viewUserParamsSchema = z.object({
 export async function viewUser(req: Request, res: Response) {
 	const { id } = viewUserParamsSchema.parse(req.params);
 	const user = await service.viewUser(id);
-	if (user) res.status(200).json(user);
+	if (user) res.status(200).json({ status: "success", user });
 	else
 		res.status(404).json({
 			status: "not-found",
