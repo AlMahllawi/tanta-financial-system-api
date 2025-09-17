@@ -1,34 +1,56 @@
+import { randomUUID } from "node:crypto";
 import type { NextFunction, Request, Response } from "express";
 import { NODE_ENV } from "../utils/env.js";
 import { logger } from "../utils/logger.js";
 
-function logError(err: any) {
-	// TODO: provide request context
-	// TODO: ignore user error (e.g. entity.parse.failed)
-	logger.error(err);
+export function exposed(
+	err: any,
+	req: Request,
+	res: Response,
+	next: NextFunction,
+	uuid: string,
+) {
+	res.status(err.status ?? err.statusCode ?? 500).json({ ...err, uuid });
 }
 
-export function sourceErrorHandler(
+export function internal(
+	err: any,
+	req: Request,
+	res: Response,
+	next: NextFunction,
+	uuid: string,
+) {
+	if (err.expose) exposed(err, req, res, next, uuid);
+	else res.status(500).json({ status: "internal-server-error", uuid });
+}
+
+const handle = NODE_ENV === "development" ? exposed : internal;
+
+export default function (
 	err: any,
 	req: Request,
 	res: Response,
 	next: NextFunction,
 ) {
-	logError(err);
-	res.status(err.status ?? err.statusCode ?? 500).json(err);
-}
+	if (err.type === "entity.parse.failed")
+		return res
+			.status(400)
+			.json({ status: "bad-request", message: "Parsing failed." });
 
-export function minimalErrorHandler(
-	err: any,
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) {
-	logError(err);
-	if (err.expose) res.status(err.status ?? err.statusCode ?? 500).json(err);
-	else res.status(500).json({ status: "internal-server-error" });
-}
+	const uuid = randomUUID();
 
-export default NODE_ENV === "development"
-	? sourceErrorHandler
-	: minimalErrorHandler;
+	logger.error({
+		message: err.message,
+		stack: err.stack,
+		uuid,
+		request: {
+			method: req.method,
+			url: req.originalUrl,
+			headers: req.headers,
+			body: req.body,
+			ip: req.ip,
+		},
+	});
+
+	handle(err, req, res, next, uuid);
+}
