@@ -18,6 +18,6 @@ export async function authorizeUser(name: string, password: string) {
 	return jwt.sign(content, JWT_SECRET, { expiresIn: "1d" });
 }
 
-export const viewAllUsers = userRepository.viewAll;
-export const createUser = userRepository.create;
-export const viewUser = userRepository.view;
+export const viewAllUsers = userRepository.viewAll.bind(userRepository);
+export const createUser = userRepository.create.bind(userRepository);
+export const viewUser = userRepository.view.bind(userRepository);
