@@ -1,0 +1,13 @@
+{
+    "catppuccin-noctis-icons.files.associations": {
+        "*.service.ts": "typescript"
+    },
+    "catppuccin-noctis-icons.folders.associations": {
+        "controllers": "folder-app",
+        "entities": "folder-models",
+        "migrations": "folder-database",
+        "repositories": "folder-context",
+        "services": "folder-app",
+        "subscribers": "folder-helpers",
+    }
+}
