@@ -10,7 +10,10 @@ export function exposed(
 	next: NextFunction,
 	uuid: string,
 ) {
-	res.status(err.status ?? err.statusCode ?? 500).json({ ...err, uuid });
+	const { status, statusCode, expose: _, ...error } = err;
+	res
+		.status(status ?? statusCode ?? 500)
+		.json({ status: "error", ...error, uuid });
 }
 
 export function internal(
