@@ -11,8 +11,8 @@
 		"dev": "tsx watch ./src/main.ts",
 		"build": "tsc",
 		"start": "node ./dist/main.js",
-		"typeorm": "tsx ./node_modules/typeorm/cli.js -d ./src/datasource.ts",
-		"migrations": "pnpm typeorm migration:run",
+		"typeorm": "tsx ./node_modules/typeorm/cli.js --dataSource ./src/datasource.ts",
+		"migrations": "pnpm typeorm migration:run --transaction",
 		"migration:generate": "node ./run.js migration:generate"
 	},
 	"author": "AlMahllawi",

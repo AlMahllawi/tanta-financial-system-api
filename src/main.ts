@@ -40,3 +40,18 @@ datasource
 		logger.error(err);
 		process.exit(1);
 	});
+
+async function cleanup() {
+	try {
+		if (!datasource.isInitialized) return;
+		await datasource.destroy();
+		logger.info(chalk.green("Closed the database connection"));
+	} catch (err) {
+		logger.info(chalk.red("Failed to closed the database connection"));
+		logger.error(err);
+	}
+}
+
+process.on("SIGINT", cleanup);
+process.on("SIGTERM", cleanup);
+process.on("beforeExit", cleanup);
