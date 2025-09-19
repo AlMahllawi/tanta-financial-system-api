@@ -1,7 +1,7 @@
 import type { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1757974518363 implements MigrationInterface {
-	name = "Init1757974518363";
+export class Init1758236613051 implements MigrationInterface {
+	name = "Init1758236613051";
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(
@@ -11,7 +11,7 @@ export class Init1757974518363 implements MigrationInterface {
 			`CREATE TABLE "TransactionForwards" ("id" SERIAL NOT NULL, "status" integer NOT NULL, "forwardedAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "transactionId" integer NOT NULL, "senderId" integer NOT NULL, "receiverId" integer NOT NULL, CONSTRAINT "PK_1e952316cf059a6daf37c21e6c2" PRIMARY KEY ("id"))`,
 		);
 		await queryRunner.query(
-			`CREATE TABLE "TransactionTypes" ("name" character varying(255) NOT NULL, CONSTRAINT "PK_fb2d96b90646fe5dcdcd53bf6ed" PRIMARY KEY ("name"))`,
+			`CREATE TABLE "TransactionTypes" ("name" character varying(255) NOT NULL, CONSTRAINT "PK_TransactionType" PRIMARY KEY ("name"))`,
 		);
 		await queryRunner.query(
 			`CREATE TABLE "Transactions" ("id" SERIAL NOT NULL, "title" character varying(255) NOT NULL, "priority" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "type" character varying(255), CONSTRAINT "PK_7761bf9766670b894ff2fdb3700" PRIMARY KEY ("id"))`,
