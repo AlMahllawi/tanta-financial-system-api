@@ -5,6 +5,7 @@ Checkout [contributing](./CONTRIBUTING.md#development-setup).
 ## Prerequisites
 - [Node.js v20+](https://nodejs.org/en)
 - [PNPM](https://pnpm.io/)
+- [PostgreSQL](https://www.postgresql.org/)
 
 ## Quick Start
 
