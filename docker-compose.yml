@@ -1,0 +1,38 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - CI=true
+      - NODE_ENV=production
+      - DB_CONNECTION_URL=postgres://tanta:n0nS3cure@db:5432/TantaFinancial
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["sh", "-c", "pnpm install && pnpm build && pnpm migrations && pnpm start"]
+
+  db:
+    image: postgres:17.6-alpine3.22
+    environment:
+      - POSTGRES_USER=tanta
+      - POSTGRES_PASSWORD=n0nS3cure
+      - POSTGRES_DB=TantaFinancial
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tanta"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    expose:
+      - "5432"
+
+volumes:
+  pgdata:

@@ -2,39 +2,14 @@
 Track financial and administrative transactions progress, submission and review.  
 Checkout [contributing](./CONTRIBUTING.md#development-setup).
 
-## Prerequisites
-- [Node.js v20+](https://nodejs.org/en)
-- [PNPM](https://pnpm.io/)
-- [PostgreSQL](https://www.postgresql.org/)
+## [Docker](https://www.docker.com/) deployment using [compose](https://docs.docker.com/compose/)
 
-## Quick Start
-
-### Install dependencies
+### Build and start
 ```bash
-pnpm install --prod
+docker-compose up --build
 ```
 
-### Set up the environment
+### Stop
 ```bash
-cp example.env .env
-```
-
-Edit the [database connection URL](https://stackoverflow.com/questions/3582552/what-is-the-format-for-the-postgresql-connection-string-url) in `.env` e.g.:
-```env
-DB_CONNECTION_URL="postgres://almahllawi:n0nS3cure@localhost:5432/TantaFinancial"
-```
-
-### Run the migrations
-```bash
-pnpm migrations
-```
-
-### Build the API
-```bash
-pnpm build
-```
-
-### Launch the API
-```bash
-pnpm start
+docker-compose down
 ```
