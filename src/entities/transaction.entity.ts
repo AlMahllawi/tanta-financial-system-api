@@ -7,6 +7,7 @@ import {
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from "typeorm";
+import { TransactionPriority } from "../enums.js";
 import { TransactionDocument } from "./transaction.document.entity.js";
 import { TransactionForward } from "./transaction.forward.entity.js";
 import { TransactionType } from "./transaction.type.entity.js";
@@ -26,8 +27,12 @@ export class Transaction {
 	@JoinColumn({ name: "type" })
 	type!: TransactionType;
 
-	@Column({ type: "int" })
-	priority!: number;
+	@Column({
+		type: "enum",
+		enum: TransactionPriority,
+		default: TransactionPriority.LOW,
+	})
+	priority!: TransactionPriority;
 
 	@CreateDateColumn()
 	createdAt!: Date;

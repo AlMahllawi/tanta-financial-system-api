@@ -8,6 +8,7 @@ import {
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from "typeorm";
+import { TransactionForwardStatus } from "../enums.js";
 import { Transaction } from "./transaction.entity.js";
 import { User } from "./user.entity.js";
 
@@ -27,8 +28,12 @@ export class TransactionForward {
 	@JoinColumn({ name: "transactionId" })
 	transaction!: Relation<Transaction>;
 
-	@Column({ type: "int" })
-	status!: number;
+	@Column({
+		type: "enum",
+		enum: TransactionForwardStatus,
+		default: TransactionForwardStatus.WAITING,
+	})
+	status!: TransactionForwardStatus;
 
 	@ManyToOne(
 		() => User,
