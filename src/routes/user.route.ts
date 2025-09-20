@@ -15,6 +15,6 @@ router.post("/auth", authorizeUser);
 
 router.get("/users", authMiddleware, viewAllUsers);
 
-router.get("/users/:id", authMiddleware, viewUser);
+router.get("/users/:name", authMiddleware, viewUser);
 
 export default router;

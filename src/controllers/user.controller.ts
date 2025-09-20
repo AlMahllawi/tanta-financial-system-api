@@ -52,16 +52,16 @@ export async function createUser(req: Request, res: Response) {
 }
 
 const viewUserParamsSchema = z.object({
-	id: z.coerce.number().int().min(1),
+	name: userNameSchema,
 });
 
 export async function viewUser(req: Request, res: Response) {
-	const { id } = viewUserParamsSchema.parse(req.params);
-	const user = await service.viewUser(id);
+	const { name } = viewUserParamsSchema.parse(req.params);
+	const user = await service.viewUser(name);
 	if (user) res.status(200).json({ status: "success", user });
 	else
 		res.status(404).json({
 			status: "not-found",
-			message: `No user was found with id ${id}.`,
+			message: `No user was found with name: ${name}.`,
 		});
 }

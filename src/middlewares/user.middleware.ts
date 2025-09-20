@@ -17,7 +17,7 @@ export function authMiddleware(
 	}
 
 	try {
-		// TODO: types
+		// TODO: types & validations
 		(req as any).user = jwt.verify(
 			authHeader.slice("Bearer ".length),
 			JWT_SECRET,

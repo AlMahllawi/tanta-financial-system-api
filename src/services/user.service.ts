@@ -13,7 +13,7 @@ export async function authorizeUser(name: string, password: string) {
 			"Invalid authentication credentials.",
 		);
 
-	const content: RequestUser = { id: user.id };
+	const content: RequestUser = { name: user.name };
 
 	return jwt.sign(content, JWT_SECRET, { expiresIn: "1d" });
 }

@@ -17,8 +17,7 @@ export const userRepository = datasource.getRepository(User).extend({
 			})
 			.execute()
 			.catch((err: any) => {
-				// TODO: check pk increase even though operation failed?
-				throw err.driverError?.constraint === "UniqueUserName"
+				throw err.driverError?.constraint === "PK_User"
 					? new ExpectedError(
 							"user-exists",
 							`There exist a user with the name: ${name}. Can't proceed with the creation.`,
@@ -26,7 +25,7 @@ export const userRepository = datasource.getRepository(User).extend({
 					: err;
 			});
 		return await this.findOne({
-			where: { id: insertResult.identifiers[0]?.id },
+			where: { name: insertResult.identifiers[0]?.name },
 			select: User.VisibleColumns as FindOptionsSelect<User>,
 		});
 	},
@@ -36,9 +35,9 @@ export const userRepository = datasource.getRepository(User).extend({
 		if (user && (await compare(password, user.hashedPassword))) return user;
 	},
 
-	async view(id: number) {
+	async view(name: string) {
 		return await this.findOne({
-			where: { id },
+			where: { name },
 			select: User.VisibleColumns as FindOptionsSelect<User>,
 		});
 	},

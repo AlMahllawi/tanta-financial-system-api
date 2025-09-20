@@ -3,19 +3,18 @@ import {
 	CreateDateColumn,
 	Entity,
 	OneToMany,
-	PrimaryGeneratedColumn,
-	Unique,
+	PrimaryColumn,
 	UpdateDateColumn,
 } from "typeorm";
 import { TransactionForward } from "./transaction.forward.entity.js";
 
 @Entity("Users")
-@Unique("UniqueUserName", ["name"])
 export class User {
-	@PrimaryGeneratedColumn()
-	id!: number;
-
-	@Column({ type: "varchar", length: 255 })
+	@PrimaryColumn({
+		type: "varchar",
+		length: 255,
+		primaryKeyConstraintName: "PK_User",
+	})
 	name!: string;
 
 	@Column({ type: "text" })
@@ -39,5 +38,5 @@ export class User {
 	)
 	receivedTransactionForwards!: TransactionForward[];
 
-	static VisibleColumns = ["id", "name"];
+	static VisibleColumns = ["name"];
 }
