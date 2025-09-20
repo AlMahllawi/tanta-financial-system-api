@@ -1,9 +1,26 @@
-import type { Relation } from "typeorm";
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import {
+	Column,
+	Entity,
+	Index,
+	JoinColumn,
+	ManyToOne,
+	PrimaryGeneratedColumn,
+	type Relation,
+} from "typeorm";
 import { Transaction } from "./transaction.entity.js";
 
 @Entity("TransactionDocuments")
+@Index(["transactionId", "documentURI"], { unique: true })
 export class TransactionDocument {
+	@PrimaryGeneratedColumn({ type: "int" })
+	id!: number;
+
+	@Column({ type: "int" })
+	transactionId!: number;
+
+	@Column({ type: "text" })
+	documentURI!: string;
+
 	@ManyToOne(
 		() => Transaction,
 		(transaction) => transaction.transactionDocuments,
@@ -11,9 +28,6 @@ export class TransactionDocument {
 			onDelete: "CASCADE",
 		},
 	)
-	@JoinColumn({ name: "transactionId" })
+	@JoinColumn()
 	transaction!: Relation<Transaction>;
-
-	@Column({ type: "text" })
-	documentURI!: string;
 }

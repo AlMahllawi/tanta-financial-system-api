@@ -14,7 +14,7 @@ import { User } from "./user.entity.js";
 
 @Entity("TransactionForwards")
 export class TransactionForward {
-	@PrimaryGeneratedColumn()
+	@PrimaryGeneratedColumn({ type: "int" })
 	id!: number;
 
 	@ManyToOne(
