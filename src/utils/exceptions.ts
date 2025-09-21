@@ -18,4 +18,6 @@ export namespace Exceptions {
 	export class Conflict extends BaseCustomException {}
 
 	export class Unauthorized extends BaseCustomException {}
+
+	export class Forbidden extends BaseCustomException {}
 }

@@ -1,7 +1,8 @@
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import type { Request, Response } from "express";
 import multer from "multer";
+import { DocumentDTO } from "../dto/document.dto.js";
 import {
 	assertAuthenticatedRequest,
 	assertUploadRequest,
@@ -9,14 +10,15 @@ import {
 import { DOCUMENTS_PATH } from "../utils/env.js";
 import { Exceptions } from "../utils/exceptions.js";
 
+function sensitizeUserName(name: string) {
+	return name.replace(/[^a-zA-Z0-9_-]/g, "").toLowerCase();
+}
+
 const storage = multer.diskStorage({
 	destination: (req: Request, file: Express.Multer.File, cb) => {
 		assertAuthenticatedRequest(req);
 
-		const uploadPath = join(
-			DOCUMENTS_PATH,
-			req.user.name.replace(/[^a-zA-Z0-9_-]/g, "").toLowerCase(),
-		);
+		const uploadPath = join(DOCUMENTS_PATH, sensitizeUserName(req.user.name));
 
 		mkdirSync(uploadPath, { recursive: true });
 
@@ -26,14 +28,13 @@ const storage = multer.diskStorage({
 	},
 	filename: (req, file, cb) => {
 		assertUploadRequest(req);
-		if (existsSync(join(req.uploadPath, file.originalname)))
+		const filename = file.originalname.toLowerCase();
+		if (existsSync(join(req.uploadPath, filename)))
 			cb(
-				new Exceptions.Conflict(
-					`There exist a file with the name ${file.originalname}`,
-				),
-				file.originalname,
+				new Exceptions.Conflict(`There exist a file with the name ${filename}`),
+				filename,
 			);
-		cb(null, file.originalname);
+		cb(null, filename);
 	},
 });
 
@@ -52,5 +53,31 @@ export async function uploadDocument(req: Request, res: Response) {
 	res.status(200).json({
 		status: "success",
 		documentURI: join(basename(dirname(file.path)), file.filename),
+	});
+}
+
+export async function deleteDocument(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
+	const { userName, document } = DocumentDTO.DeleteScheme.parse(req.params);
+
+	if (req.user.name !== userName)
+		// TODO: check if admin, then allow
+		throw new Exceptions.Forbidden(
+			`The document ${document} belongs to the user ${userName}. Can't proceed with the deletion.`,
+		);
+
+	const documentURI = join(sensitizeUserName(userName), document);
+
+	const documentPath = join(DOCUMENTS_PATH, documentURI);
+
+	if (!existsSync(documentPath))
+		return res.status(410).json({ status: "gone" });
+
+	rmSync(documentPath);
+
+	res.status(200).json({
+		status: "success",
+		deleted: documentURI,
 	});
 }
