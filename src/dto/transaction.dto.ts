@@ -13,7 +13,7 @@ export namespace TransactionDTO {
 
 	export const TypeCreationSchema = z.object({ name: TypeNameSchema });
 
-	const TransactionIdSchema = z.int().nonnegative();
+	const IdSchema = z.int().nonnegative();
 
 	const PrioritySchema = z.enum(TransactionPriority, "Invalid priority");
 
@@ -37,12 +37,12 @@ export namespace TransactionDTO {
 	export type Updates = z.infer<typeof UpdatesSchema>;
 
 	export const UpdatingSchema = z.object({
-		transactionId: TransactionIdSchema,
+		transactionId: IdSchema,
 		updates: UpdatesSchema,
 	});
 
 	export const ForwardSchema = z.object({
-		transactionId: TransactionIdSchema,
+		transactionId: IdSchema,
 		status: z
 			.enum(TransactionForwardStatus)
 			.default(TransactionForwardStatus.WAITING),
@@ -53,5 +53,10 @@ export namespace TransactionDTO {
 	const InvalidMessage = "Invalid transaction identifier";
 	export const ViewSchema = z.object({
 		id: z.int(InvalidMessage).nonnegative(InvalidMessage),
+	});
+
+	export const DeleteForwardSchema = z.object({
+		transactionId: IdSchema,
+		forwardId: IdSchema,
 	});
 }

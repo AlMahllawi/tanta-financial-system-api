@@ -98,3 +98,21 @@ export async function createTransactionForward(req: Request, res: Response) {
 	);
 	res.status(200).json({ status: "success", transactionForward });
 }
+
+export async function deleteTransactionForward(req: Request, res: Response) {
+	const { transactionId, forwardId } = TransactionDTO.DeleteForwardSchema.parse(
+		req.body,
+	);
+
+	const deleted = await TransactionAdaptor.deleteForward(
+		transactionId,
+		forwardId,
+	);
+
+	if (deleted) res.status(200).json({ status: "success", deleted: forwardId });
+	else
+		res.status(404).json({
+			status: "not-found",
+			message: `No transaction forward was found with id: ${forwardId}.`,
+		});
+}

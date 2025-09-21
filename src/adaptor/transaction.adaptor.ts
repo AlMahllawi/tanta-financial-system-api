@@ -172,4 +172,18 @@ export namespace TransactionAdaptor {
 			.getRepository(TransactionForward)
 			.save(transactionForward);
 	}
+
+	export async function deleteForward(
+		transactionId: number,
+		forwardId: number,
+	) {
+		return (
+			((
+				await datasource.getRepository(TransactionForward).delete({
+					id: forwardId,
+					transaction: { id: transactionId },
+				})
+			).affected ?? 1) > 0
+		);
+	}
 }

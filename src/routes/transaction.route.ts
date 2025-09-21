@@ -4,6 +4,7 @@ import {
 	createTransactionForward,
 	createTransactionType,
 	deleteTransaction,
+	deleteTransactionForward,
 	updateTransaction,
 	viewTransaction,
 	viewTransactions,
@@ -37,6 +38,12 @@ router.get(
 	"/transactions/:id/forwards",
 	authMiddleware,
 	createTransactionForward,
+);
+
+router.delete(
+	"/transactions/:id/forwards/:forwardId",
+	authMiddleware,
+	deleteTransactionForward,
 );
 
 export default router;
