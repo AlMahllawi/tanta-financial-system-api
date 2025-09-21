@@ -2,8 +2,8 @@ import { compare, hash } from "bcrypt";
 import type { FindOptionsSelect } from "typeorm";
 import datasource from "../datasource.js";
 import { User } from "../entities/user.entity.js";
-import { ExpectedError } from "../utils/custom.errors.js";
 import { BCRYPT_SALT } from "../utils/env.js";
+import { Exceptions } from "../utils/exceptions.js";
 
 export const userRepository = datasource.getRepository(User).extend({
 	async create(name: string, password: string) {
@@ -18,8 +18,7 @@ export const userRepository = datasource.getRepository(User).extend({
 			.execute()
 			.catch((err: any) => {
 				throw err.driverError?.constraint === "PK_User"
-					? new ExpectedError(
-							"user-exists",
+					? new Exceptions.Conflict(
 							`There exist a user with the name: ${name}. Can't proceed with the creation.`,
 						)
 					: err;

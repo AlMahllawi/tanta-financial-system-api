@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import z from "zod";
 import * as service from "../services/transaction.service.js";
 import { assertAuthenticatedRequest } from "../types/guard.js";
-import { ExpectedError } from "../utils/custom.errors.js";
+import { Exceptions } from "../utils/exceptions.js";
 
 export async function viewTransactionTypes(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
@@ -21,11 +21,9 @@ export async function createTransactionType(req: Request, res: Response) {
 		res
 			.status(201)
 			.json({ status: "success", "transaction-type": transactionType });
-	} catch (error: any) {
-		if (
-			error instanceof ExpectedError &&
-			error.code === "transaction-type-exists"
-		)
-			res.status(409).json({ status: "conflict", message: error.message });
+	} catch (error: unknown) {
+		if (!(error instanceof Exceptions.Conflict)) throw error;
+
+		res.status(409).json({ status: "conflict", message: error.message });
 	}
 }

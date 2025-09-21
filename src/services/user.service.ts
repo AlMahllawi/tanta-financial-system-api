@@ -1,15 +1,14 @@
 import jwt from "jsonwebtoken";
 import type { UserDTO } from "../dto/user.dto.js";
 import { userRepository } from "../repositories/user.repository.js";
-import { ExpectedError } from "../utils/custom.errors.js";
 import { JWT_SECRET } from "../utils/env.js";
+import { Exceptions } from "../utils/exceptions.js";
 
 export async function authorizeUser(name: string, password: string) {
 	const user = await userRepository.authorize(name, password);
 
 	if (!user)
-		throw new ExpectedError(
-			"invalid-credentials",
+		throw new Exceptions.InvalidCredentials(
 			"Invalid authentication credentials.",
 		);
 

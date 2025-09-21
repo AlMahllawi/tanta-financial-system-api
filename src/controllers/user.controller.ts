@@ -3,7 +3,7 @@ import { z } from "zod";
 import { UserDTO } from "../dto/user.dto.js";
 import * as service from "../services/user.service.js";
 import { assertAuthenticatedRequest } from "../types/guard.js";
-import { ExpectedError } from "../utils/custom.errors.js";
+import { Exceptions } from "../utils/exceptions.js";
 
 const authorizeBodySchema = z.object({
 	name: UserDTO.NameSchema,
@@ -19,9 +19,9 @@ export async function authorizeUser(req: Request, res: Response) {
 			.status(200)
 			.json({ status: "success", message: "Logged in successfully.", token });
 	} catch (error: any) {
-		if (error instanceof ExpectedError && error.code === "invalid-credentials")
-			res.status(401).json({ status: "unauthorized", message: error.message });
-		else throw error;
+		if (!(error instanceof Exceptions.InvalidCredentials)) throw error;
+
+		res.status(401).json({ status: "unauthorized", message: error.message });
 	}
 }
 
@@ -48,9 +48,9 @@ export async function createUser(req: Request, res: Response) {
 		const user = await service.createUser(name, password);
 		res.status(201).json({ status: "success", user });
 	} catch (error: any) {
-		if (error instanceof ExpectedError && error.code === "user-exists")
-			res.status(409).json({ status: "conflict", message: error.message });
-		else throw error;
+		if (!(error instanceof Exceptions.Conflict)) throw error;
+
+		res.status(409).json({ status: "conflict", message: error.message });
 	}
 }
 
