@@ -42,9 +42,8 @@ export namespace TransactionAdaptor {
 		typeName: string,
 		creatorName: string,
 		priority: TransactionPriority = TransactionPriority.LOW,
-		documents?: string[],
 	) {
-		let transaction = new Transaction();
+		const transaction = new Transaction();
 
 		transaction.title = title;
 		transaction.description = description;
@@ -71,25 +70,7 @@ export namespace TransactionAdaptor {
 
 		transaction.priority = priority;
 
-		transaction = await datasource.getRepository(Transaction).save(transaction);
-
-		if (documents) {
-			const transactionDocuments = [];
-			for await (const documentURI of documents) {
-				try {
-					let transactionDocument = new TransactionDocument();
-					transactionDocument.transactionId = transaction.id;
-					transactionDocument.documentURI = documentURI;
-					transactionDocument = await datasource
-						.getRepository(TransactionDocument)
-						.save(transactionDocument);
-					transactionDocuments.push(transactionDocument);
-				} catch {} // TODO: review
-			}
-			transaction.transactionDocuments = transactionDocuments;
-		}
-
-		return transaction;
+		return await datasource.getRepository(Transaction).save(transaction);
 	}
 
 	export async function view(): Promise<Transaction[]>;
@@ -145,6 +126,31 @@ export namespace TransactionAdaptor {
 		return (
 			((await datasource.getRepository(Transaction).delete({ id })).affected ??
 				1) > 0
+		);
+	}
+
+	export async function attachDocument(
+		transactionId: number,
+		documentURI: string,
+	) {
+		const transactionDocument = new TransactionDocument();
+		transactionDocument.transactionId = transactionId;
+		transactionDocument.documentURI = documentURI;
+		return await datasource
+			.getRepository(TransactionDocument)
+			.save(transactionDocument);
+	}
+
+	export async function detachDocument(
+		transactionId: number,
+		documentURI: string,
+	) {
+		return (
+			((
+				await datasource
+					.getRepository(TransactionDocument)
+					.delete({ transactionId, documentURI })
+			).affected ?? 1) > 0
 		);
 	}
 

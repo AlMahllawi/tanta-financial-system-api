@@ -1,10 +1,12 @@
 import { Router } from "express";
 import {
+	attachTransactionDocument,
 	createTransaction,
 	createTransactionForward,
 	createTransactionType,
 	deleteTransaction,
 	deleteTransactionForward,
+	detachTransactionDocument,
 	updateTransaction,
 	updateTransactionForwardStatus,
 	viewTransaction,
@@ -28,6 +30,18 @@ router.get("/transactions/:id", authMiddleware, viewTransaction);
 router.patch("/transactions/:id", authMiddleware, updateTransaction);
 
 router.delete("/transactions/:id", authMiddleware, deleteTransaction);
+
+router.post(
+	"/transactions/:id/document/:userName/:document",
+	authMiddleware,
+	attachTransactionDocument,
+);
+
+router.delete(
+	"/transactions/:id/document/:userName/:document",
+	authMiddleware,
+	detachTransactionDocument,
+);
 
 router.post(
 	"/transactions/:id/forwards",

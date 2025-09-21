@@ -28,7 +28,7 @@ export async function createTransactionType(req: Request, res: Response) {
 export async function createTransaction(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const { title, description, typeName, priority, documents } =
+	const { title, description, typeName, priority } =
 		TransactionDTO.CreationSchema.parse(req.body);
 
 	const transaction = await TransactionAdaptor.create(
@@ -37,7 +37,6 @@ export async function createTransaction(req: Request, res: Response) {
 		typeName,
 		req.user.name,
 		priority,
-		documents,
 	);
 
 	res.status(201).json({ status: "success", transaction: transaction });
@@ -54,7 +53,7 @@ export async function viewTransactions(req: Request, res: Response) {
 }
 
 export async function viewTransaction(req: Request, res: Response) {
-	const { id } = TransactionDTO.ViewSchema.parse(req.params);
+	const { id } = TransactionDTO.TargetSchema.parse(req.params);
 	const transaction = await TransactionAdaptor.view(id);
 	if (transaction) res.status(200).json({ status: "success", transaction });
 	else
@@ -78,13 +77,48 @@ export async function updateTransaction(req: Request, res: Response) {
 }
 
 export async function deleteTransaction(req: Request, res: Response) {
-	const { id } = TransactionDTO.ViewSchema.parse(req.params);
+	const { id } = TransactionDTO.TargetSchema.parse(req.params);
 	const deleted = await TransactionAdaptor.remove(id);
 	if (deleted) res.status(200).json({ status: "success", deleted: id });
 	else
 		res.status(404).json({
 			status: "not-found",
 			message: `No transaction was found with id: ${id}.`,
+		});
+}
+
+export async function attachTransactionDocument(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
+	const { id, userName, document } = TransactionDTO.TargetDocumentSchema.parse(
+		req.params,
+	);
+
+	const transactionDocument = await TransactionAdaptor.attachDocument(
+		id,
+		`${userName}/${document}`,
+	);
+
+	res.status(200).json({ status: "success", transactionDocument });
+}
+
+export async function detachTransactionDocument(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
+	const { id, userName, document } = TransactionDTO.TargetDocumentSchema.parse(
+		req.params,
+	);
+
+	const documentURI = `${userName}/${document}`;
+
+	const deleted = await TransactionAdaptor.detachDocument(id, documentURI);
+
+	if (deleted)
+		res.status(200).json({ status: "success", deleted: documentURI });
+	else
+		res.status(410).json({
+			status: "gone",
+			message: `No document ${documentURI} for the transaction id: ${id}.`,
 		});
 }
 

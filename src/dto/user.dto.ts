@@ -4,7 +4,10 @@ export namespace UserDTO {
 	export const NameSchema = z
 		.string()
 		.min(5, "Too short user name")
-		.max(255, "Too long user name");
+		.max(255, "Too long user name")
+		.regex(
+			/^[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*/g,
+		);
 
 	export const Token = z.object(
 		{

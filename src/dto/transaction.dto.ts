@@ -13,7 +13,7 @@ export namespace TransactionDTO {
 
 	export const TypeCreationSchema = z.object({ name: TypeNameSchema });
 
-	const IdSchema = z.int().nonnegative();
+	const IdSchema = z.coerce.number().int().nonnegative();
 
 	const PrioritySchema = z.enum(TransactionPriority, "Invalid priority");
 
@@ -25,16 +25,6 @@ export namespace TransactionDTO {
 		description: z.string().min(5, "Too short transaction description"),
 		typeName: TypeNameSchema,
 		priority: PrioritySchema.default(TransactionPriority.LOW),
-		documents: z
-			.array(
-				z
-					.string()
-					.regex(
-						/^[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*\/[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*\.[a-zA-Z0-9]+$/g,
-					),
-			)
-			.min(1)
-			.optional(),
 	});
 
 	export const UpdatesSchema = z
@@ -61,7 +51,7 @@ export namespace TransactionDTO {
 	});
 
 	const InvalidMessage = "Invalid transaction identifier";
-	export const ViewSchema = z.object({
+	export const TargetSchema = z.object({
 		id: z.int(InvalidMessage).nonnegative(InvalidMessage),
 	});
 
@@ -74,5 +64,16 @@ export namespace TransactionDTO {
 	export const DeleteForwardSchema = z.object({
 		transactionId: IdSchema,
 		forwardId: IdSchema,
+	});
+
+	export const TargetDocumentSchema = z.object({
+		id: IdSchema,
+		userName: UserDTO.NameSchema,
+		document: z
+			.string()
+			.regex(
+				/^[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*\.[a-zA-Z0-9]+$/g,
+			)
+			.toLowerCase(),
 	});
 }
