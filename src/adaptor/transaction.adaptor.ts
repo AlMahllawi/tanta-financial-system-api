@@ -1,6 +1,7 @@
 import { In } from "typeorm";
 import datasource from "../datasource.js";
 import type { TransactionDTO } from "../dto/transaction.dto.js";
+import { TransactionDocument } from "../entities/transaction.document.entity.js";
 import { Transaction } from "../entities/transaction.entity.js";
 import { TransactionForward } from "../entities/transaction.forward.entity.js";
 import { TransactionType } from "../entities/transaction.type.entity.js";
@@ -10,6 +11,8 @@ import {
 	TransactionPriority,
 } from "../types/enums.js";
 import { Exceptions } from "../utils/exceptions.js";
+
+// TODO: use DTO to omit object to suit view
 
 export namespace TransactionAdaptor {
 	export async function types() {
@@ -39,8 +42,9 @@ export namespace TransactionAdaptor {
 		typeName: string,
 		creatorName: string,
 		priority: TransactionPriority = TransactionPriority.LOW,
+		documents?: string[],
 	) {
-		const transaction = new Transaction();
+		let transaction = new Transaction();
 
 		transaction.title = title;
 		transaction.description = description;
@@ -67,7 +71,25 @@ export namespace TransactionAdaptor {
 
 		transaction.priority = priority;
 
-		return await datasource.getRepository(Transaction).save(transaction);
+		transaction = await datasource.getRepository(Transaction).save(transaction);
+
+		if (documents) {
+			const transactionDocuments = [];
+			for await (const documentURI of documents) {
+				try {
+					let transactionDocument = new TransactionDocument();
+					transactionDocument.transactionId = transaction.id;
+					transactionDocument.documentURI = documentURI;
+					transactionDocument = await datasource
+						.getRepository(TransactionDocument)
+						.save(transactionDocument);
+					transactionDocuments.push(transactionDocument);
+				} catch {} // TODO: review
+			}
+			transaction.transactionDocuments = transactionDocuments;
+		}
+
+		return transaction;
 	}
 
 	export async function view(): Promise<Transaction[]>;

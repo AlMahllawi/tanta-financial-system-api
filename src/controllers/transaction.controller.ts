@@ -28,7 +28,7 @@ export async function createTransactionType(req: Request, res: Response) {
 export async function createTransaction(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const { title, description, typeName, priority } =
+	const { title, description, typeName, priority, documents } =
 		TransactionDTO.CreationSchema.parse(req.body);
 
 	const transaction = await TransactionAdaptor.create(
@@ -37,6 +37,7 @@ export async function createTransaction(req: Request, res: Response) {
 		typeName,
 		req.user.name,
 		priority,
+		documents,
 	);
 
 	res.status(201).json({ status: "success", transaction: transaction });

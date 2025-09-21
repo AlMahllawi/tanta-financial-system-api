@@ -25,6 +25,16 @@ export namespace TransactionDTO {
 		description: z.string().min(5, "Too short transaction description"),
 		typeName: TypeNameSchema,
 		priority: PrioritySchema.default(TransactionPriority.LOW),
+		documents: z
+			.array(
+				z
+					.string()
+					.regex(
+						/^[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*\/[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*\.[a-zA-Z0-9]+$/g,
+					),
+			)
+			.min(1)
+			.optional(),
 	});
 
 	export const UpdatesSchema = z
