@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import type { RequestUser } from "../interfaces.js";
+import type { UserDTO } from "../dto/user.dto.js";
 import { userRepository } from "../repositories/user.repository.js";
 import { ExpectedError } from "../utils/custom.errors.js";
 import { JWT_SECRET } from "../utils/env.js";
@@ -13,7 +13,7 @@ export async function authorizeUser(name: string, password: string) {
 			"Invalid authentication credentials.",
 		);
 
-	const content: RequestUser = { name: user.name };
+	const content: UserDTO.Token = { name: user.name };
 
 	return jwt.sign(content, JWT_SECRET, { expiresIn: "1d" });
 }

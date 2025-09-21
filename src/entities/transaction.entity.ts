@@ -8,7 +8,7 @@ import {
 	PrimaryGeneratedColumn,
 	type Relation,
 } from "typeorm";
-import { TransactionPriority } from "../enums.js";
+import { TransactionPriority } from "../types/enums.js";
 import { TransactionDocument } from "./transaction.document.entity.js";
 import { TransactionForward } from "./transaction.forward.entity.js";
 import { TransactionType } from "./transaction.type.entity.js";

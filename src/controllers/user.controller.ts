@@ -1,11 +1,12 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
+import { UserDTO } from "../dto/user.dto.js";
 import * as service from "../services/user.service.js";
+import { assertAuthenticatedRequest } from "../types/guard.js";
 import { ExpectedError } from "../utils/custom.errors.js";
-import { userNameSchema } from "../utils/validation.schema.js";
 
 const authorizeBodySchema = z.object({
-	name: userNameSchema,
+	name: UserDTO.NameSchema,
 	password: z.string().min(8, "Invalid password"),
 });
 
@@ -25,12 +26,13 @@ export async function authorizeUser(req: Request, res: Response) {
 }
 
 export async function viewAllUsers(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
 	const users = await service.viewAllUsers();
 	res.status(200).json({ status: "success", users });
 }
 
 const userCreationBodySchema = z.object({
-	name: userNameSchema,
+	name: UserDTO.NameSchema,
 	password: z
 		.string()
 		.refine((value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value), {
@@ -40,6 +42,7 @@ const userCreationBodySchema = z.object({
 });
 
 export async function createUser(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
 	const { name, password } = userCreationBodySchema.parse(req.body);
 	try {
 		const user = await service.createUser(name, password);
@@ -52,10 +55,11 @@ export async function createUser(req: Request, res: Response) {
 }
 
 const viewUserParamsSchema = z.object({
-	name: userNameSchema,
+	name: UserDTO.NameSchema,
 });
 
 export async function viewUser(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
 	const { name } = viewUserParamsSchema.parse(req.params);
 	const user = await service.viewUser(name);
 	if (user) res.status(200).json({ status: "success", user });

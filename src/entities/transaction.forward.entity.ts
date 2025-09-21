@@ -8,7 +8,7 @@ import {
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from "typeorm";
-import { TransactionForwardStatus } from "../enums.js";
+import { TransactionForwardStatus } from "../types/enums.js";
 import { Transaction } from "./transaction.entity.js";
 import { User } from "./user.entity.js";
 
