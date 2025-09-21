@@ -45,12 +45,23 @@ export namespace TransactionAdaptor {
 		transaction.title = title;
 		transaction.description = description;
 
-		const type = new TransactionType();
-		type.name = typeName;
+		const type = await datasource
+			.getRepository(TransactionType)
+			.findOneBy({ name: typeName });
+
+		if (!type)
+			throw new Exceptions.Invalid(
+				`Invalid transaction type name: ${typeName}.`,
+			);
+
 		transaction.type = type;
 
-		const creator = new User();
-		creator.name = creatorName;
+		const creator = await datasource
+			.getRepository(User)
+			.findOneBy({ name: creatorName });
+
+		if (!creator)
+			throw new Exceptions.Invalid(`No user with name: ${creatorName}.`);
 
 		transaction.creator = creator;
 
