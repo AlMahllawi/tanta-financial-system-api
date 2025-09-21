@@ -6,9 +6,7 @@
 		"controllers": "folder-app",
 		"entities": "folder-models",
 		"migrations": "folder-database",
-		"repositories": "folder-context",
-		"services": "folder-app",
-		"subscribers": "folder-helpers",
+		"adaptor": "folder-helpers",
 		"dto": "folder-yellow-outline"
 	}
 }

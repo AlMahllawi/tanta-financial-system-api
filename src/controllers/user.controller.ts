@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
+import { UserAdaptor } from "../adaptor/user.adaptor.js";
 import { UserDTO } from "../dto/user.dto.js";
-import * as service from "../services/user.service.js";
 import { assertAuthenticatedRequest } from "../types/guard.js";
 import { Exceptions } from "../utils/exceptions.js";
 
@@ -14,7 +14,7 @@ export async function authorizeUser(req: Request, res: Response) {
 	const { name, password } = authorizeBodySchema.parse(req.body);
 
 	try {
-		const token = await service.authorizeUser(name, password);
+		const token = await UserAdaptor.authorize(name, password);
 		res
 			.status(200)
 			.json({ status: "success", message: "Logged in successfully.", token });
@@ -27,7 +27,7 @@ export async function authorizeUser(req: Request, res: Response) {
 
 export async function viewAllUsers(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
-	const users = await service.viewAllUsers();
+	const users = await UserAdaptor.viewAll();
 	res.status(200).json({ status: "success", users });
 }
 
@@ -45,7 +45,7 @@ export async function createUser(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 	const { name, password } = userCreationBodySchema.parse(req.body);
 	try {
-		const user = await service.createUser(name, password);
+		const user = await UserAdaptor.create(name, password);
 		res.status(201).json({ status: "success", user });
 	} catch (error: any) {
 		if (!(error instanceof Exceptions.Conflict)) throw error;
@@ -61,7 +61,7 @@ const viewUserParamsSchema = z.object({
 export async function viewUser(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 	const { name } = viewUserParamsSchema.parse(req.params);
-	const user = await service.viewUser(name);
+	const user = await UserAdaptor.view(name);
 	if (user) res.status(200).json({ status: "success", user });
 	else
 		res.status(404).json({

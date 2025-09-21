@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { UserAdaptor } from "../adaptor/user.adaptor.js";
 import { UserDTO } from "../dto/user.dto.js";
-import * as service from "../services/user.service.js";
 import type { AuthenticatedRequest } from "../types/interfaces.js";
 import { JWT_SECRET } from "../utils/env.js";
 
@@ -29,7 +29,7 @@ export async function authMiddleware(
 
 	const { name } = UserDTO.Token.parse(payload);
 
-	const user = await service.viewUser(name);
+	const user = await UserAdaptor.view(name);
 
 	if (!user) return unauthorized("Invalid token.");
 

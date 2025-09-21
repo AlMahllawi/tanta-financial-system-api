@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import * as service from "../services/user.service.js";
+import { UserAdaptor } from "../adaptor/user.adaptor.js";
 import { assertAuthenticatedRequest } from "../types/guard.js";
 
 export function permissionsMiddleware(permissions: string | string[]) {
@@ -7,7 +7,7 @@ export function permissionsMiddleware(permissions: string | string[]) {
 	return async (req: Request, res: Response, next: NextFunction) => {
 		assertAuthenticatedRequest(req);
 
-		const missingPermissions = await service.missingPermissions(
+		const missingPermissions = await UserAdaptor.missingPermissions(
 			req.user.name,
 			permissions,
 		);
