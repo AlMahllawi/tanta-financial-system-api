@@ -9,9 +9,7 @@ export async function viewTransactionTypes(req: Request, res: Response) {
 
 	const transactionTypes = await TransactionAdaptor.types();
 
-	res
-		.status(200)
-		.json({ status: "success", "transaction-types": transactionTypes });
+	res.status(200).json({ status: "success", transactionTypes });
 }
 
 export async function createTransactionType(req: Request, res: Response) {
@@ -19,9 +17,7 @@ export async function createTransactionType(req: Request, res: Response) {
 	const { name } = TransactionDTO.TypeCreationSchema.parse(req.body);
 	try {
 		const transactionType = await TransactionAdaptor.createType(name);
-		res
-			.status(201)
-			.json({ status: "success", "transaction-type": transactionType });
+		res.status(201).json({ status: "success", transactionType });
 	} catch (error: unknown) {
 		if (!(error instanceof Exceptions.Conflict)) throw error;
 
@@ -100,7 +96,5 @@ export async function createTransactionForward(req: Request, res: Response) {
 		receiverName,
 		status,
 	);
-	res
-		.status(200)
-		.json({ status: "success", "transaction-forward": transactionForward });
+	res.status(200).json({ status: "success", transactionForward });
 }
