@@ -14,4 +14,23 @@ export namespace UserDTO {
 	);
 
 	export type Token = z.infer<typeof Token>;
+
+	export const ViewSchema = z.object({
+		name: NameSchema,
+	});
+
+	export const AuthorizeSchema = z.object({
+		name: NameSchema,
+		password: z.string().min(8, "Invalid password"),
+	});
+
+	export const CreationSchema = z.object({
+		name: UserDTO.NameSchema,
+		password: z
+			.string()
+			.refine((value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value), {
+				message:
+					"Password must be at least 8 characters, contain at least one uppercase letter, one lowercase letter, and one number.",
+			}),
+	});
 }
