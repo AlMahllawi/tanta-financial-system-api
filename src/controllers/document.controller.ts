@@ -56,10 +56,27 @@ export async function uploadDocument(req: Request, res: Response) {
 	});
 }
 
+export async function viewDocument(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
+	const { userName, document } = DocumentDTO.URIScheme.parse(req.params);
+
+	// TODO: check access
+
+	const documentURI = join(sensitizeUserName(userName), document);
+
+	const documentPath = join(DOCUMENTS_PATH, documentURI);
+
+	if (!existsSync(documentPath))
+		return res.status(410).json({ status: "gone" });
+
+	res.status(200).sendFile(documentPath);
+}
+
 export async function deleteDocument(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const { userName, document } = DocumentDTO.DeleteScheme.parse(req.params);
+	const { userName, document } = DocumentDTO.URIScheme.parse(req.params);
 
 	if (req.user.name !== userName)
 		// TODO: check if admin, then allow

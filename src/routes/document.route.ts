@@ -4,6 +4,7 @@ import {
 	deleteDocument,
 	upload,
 	uploadDocument,
+	viewDocument,
 } from "../controllers/document.controller.js";
 import { authMiddleware } from "../middlewares/user.middleware.js";
 
@@ -17,6 +18,8 @@ router.post(
 	upload.single("file"),
 	uploadDocument,
 );
+
+router.get("/documents/:userName/:document", authMiddleware, viewDocument);
 
 router.delete("/documents/:userName/:document", authMiddleware, deleteDocument);
 
