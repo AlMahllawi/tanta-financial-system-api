@@ -32,3 +32,9 @@ import { genSaltSync } from "bcrypt";
 export const BCRYPT_SALT = variable("BCRYPT_SALT", genSaltSync());
 
 export const JWT_SECRET = variable("JWT_SECRET", "not-secure");
+
+import { join } from "node:path";
+export const DOCUMENTS_PATH = variable(
+	"DOCUMENTS_PATH",
+	join(process.cwd(), "documents"),
+);

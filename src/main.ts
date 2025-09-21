@@ -5,7 +5,11 @@ import express from "express";
 import "express-async-errors";
 import datasource from "./datasource.js";
 import errorHandler from "./middlewares/error.middleware.js";
-import { transactionRouter, userRouter } from "./routes/index.js";
+import {
+	documentRouter,
+	transactionRouter,
+	userRouter,
+} from "./routes/index.js";
 import { PORT } from "./utils/env.js";
 import { logger } from "./utils/logger.js";
 
@@ -20,6 +24,8 @@ app.get("/", (req, res) => {
 });
 
 app.use(userRouter);
+
+app.use(documentRouter);
 
 app.use(transactionRouter);
 
