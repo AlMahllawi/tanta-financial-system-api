@@ -12,9 +12,7 @@ export namespace UserAdaptor {
 		const user = await datasource.getRepository(User).findOneBy({ name });
 
 		if (!user || !(await compare(password, user.hashedPassword)))
-			throw new Exceptions.InvalidCredentials(
-				"Invalid authentication credentials.",
-			);
+			throw new Exceptions.Invalid("Invalid authentication credentials.");
 
 		const content: UserDTO.Token = { name: user.name };
 

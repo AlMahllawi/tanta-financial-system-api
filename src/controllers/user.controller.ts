@@ -13,7 +13,7 @@ export async function authorizeUser(req: Request, res: Response) {
 			.status(200)
 			.json({ status: "success", message: "Logged in successfully.", token });
 	} catch (error: any) {
-		if (!(error instanceof Exceptions.InvalidCredentials)) throw error;
+		if (!(error instanceof Exceptions.Invalid)) throw error;
 
 		res.status(401).json({ status: "unauthorized", message: error.message });
 	}

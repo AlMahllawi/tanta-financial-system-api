@@ -13,9 +13,9 @@ abstract class BaseCustomException extends Error {
 }
 
 export namespace Exceptions {
-	export class Conflict extends BaseCustomException {}
+	export class Invalid extends BaseCustomException {}
 
-	export class InvalidCredentials extends BaseCustomException {}
+	export class Conflict extends BaseCustomException {}
 
 	export class Unauthorized extends BaseCustomException {}
 }

@@ -1,9 +1,17 @@
+import { In } from "typeorm";
 import datasource from "../datasource.js";
+import { Transaction } from "../entities/transaction.entity.js";
+import { TransactionForward } from "../entities/transaction.forward.entity.js";
 import { TransactionType } from "../entities/transaction.type.entity.js";
+import { User } from "../entities/user.entity.js";
+import {
+	TransactionForwardStatus,
+	TransactionPriority,
+} from "../types/enums.js";
 import { Exceptions } from "../utils/exceptions.js";
 
 export namespace TransactionAdaptor {
-	export async function viewTypes() {
+	export async function types() {
 		return await datasource.getRepository(TransactionType).find();
 	}
 
@@ -22,5 +30,96 @@ export namespace TransactionAdaptor {
 		}
 
 		return type;
+	}
+
+	export async function create(
+		title: string,
+		description: string,
+		typeName: string,
+		creatorName: string,
+		priority: TransactionPriority = TransactionPriority.LOW,
+	) {
+		const transaction = new Transaction();
+
+		transaction.title = title;
+		transaction.description = description;
+
+		const type = new TransactionType();
+		type.name = typeName;
+		transaction.type = type;
+
+		const creator = new User();
+		creator.name = creatorName;
+
+		transaction.creator = creator;
+
+		transaction.priority = priority;
+
+		return await datasource.getRepository(Transaction).save(transaction);
+	}
+
+	export async function view(): Promise<Transaction[]>;
+	export async function view(id: number): Promise<Transaction | null>;
+	export async function view(user: User): Promise<Transaction[]>;
+	export async function view(param?: number | User) {
+		const transactionRepository = datasource.getRepository(Transaction);
+		if (!param) return await transactionRepository.find();
+		if (typeof param === "number")
+			return await transactionRepository.findOneBy({ id: param });
+		return await transactionRepository.findBy({ creator: param });
+	}
+
+	export async function remove(id: number) {
+		return (
+			((await datasource.getRepository(Transaction).delete({ id })).affected ??
+				1) > 0
+		);
+	}
+
+	export async function forward(
+		transactionId: number,
+		senderName: string,
+		receiverName: string,
+		status: TransactionForwardStatus = TransactionForwardStatus.WAITING,
+	) {
+		const transactionForward = new TransactionForward();
+
+		transactionForward.status = status;
+
+		const transaction = await datasource.getRepository(Transaction).findOneBy({
+			id: transactionId,
+		});
+		if (!transaction)
+			throw new Exceptions.Invalid(
+				`There was no transaction with the id ${transactionId}. Can't create a forward.`,
+			);
+
+		transactionForward.transaction = transaction;
+
+		const users = await datasource.getRepository(User).findBy({
+			name: In([senderName, receiverName]),
+		});
+
+		const senderUser = users.find((user) => user.name === senderName);
+
+		if (!senderUser)
+			throw new Exceptions.Invalid(
+				`There was no user with the name: ${senderName}. Can't create a transaction forward.`,
+			);
+
+		transactionForward.sender = senderUser;
+
+		const receiverUser = users.find((user) => user.name === receiverName);
+
+		if (!receiverUser)
+			throw new Exceptions.Invalid(
+				`There was no user with the name: ${receiverUser}. Can't create a transaction forward.`,
+			);
+
+		transactionForward.receiver = receiverUser;
+
+		return await datasource
+			.getRepository(TransactionForward)
+			.save(transactionForward);
 	}
 }
