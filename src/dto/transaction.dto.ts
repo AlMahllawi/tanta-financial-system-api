@@ -55,6 +55,12 @@ export namespace TransactionDTO {
 		id: z.int(InvalidMessage).nonnegative(InvalidMessage),
 	});
 
+	export const UpdateForwardStatusSchema = z.object({
+		transactionId: IdSchema,
+		forwardId: IdSchema,
+		status: z.enum(TransactionForwardStatus),
+	});
+
 	export const DeleteForwardSchema = z.object({
 		transactionId: IdSchema,
 		forwardId: IdSchema,

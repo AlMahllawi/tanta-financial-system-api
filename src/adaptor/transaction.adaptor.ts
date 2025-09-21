@@ -173,6 +173,29 @@ export namespace TransactionAdaptor {
 			.save(transactionForward);
 	}
 
+	export async function updateForwardStatus(
+		transactionId: number,
+		forwardId: number,
+		status: TransactionForwardStatus,
+	) {
+		const transactionForwardRepository =
+			datasource.getRepository(TransactionForward);
+
+		const forward = await transactionForwardRepository.findOneBy({
+			id: forwardId,
+			transaction: { id: transactionId },
+		});
+
+		if (!forward)
+			throw new Exceptions.Invalid(
+				`There was no transaction forward with the id ${forwardId}. Can't update the status.`,
+			);
+
+		forward.status = status;
+
+		return await transactionForwardRepository.save(forward);
+	}
+
 	export async function deleteForward(
 		transactionId: number,
 		forwardId: number,

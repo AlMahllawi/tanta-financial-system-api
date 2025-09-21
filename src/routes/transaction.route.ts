@@ -6,6 +6,7 @@ import {
 	deleteTransaction,
 	deleteTransactionForward,
 	updateTransaction,
+	updateTransactionForwardStatus,
 	viewTransaction,
 	viewTransactions,
 	viewTransactionTypes,
@@ -17,6 +18,10 @@ const router: Router = Router();
 router.post("/transactions/types", authMiddleware, createTransactionType);
 
 router.get("/transactions/types", authMiddleware, viewTransactionTypes);
+
+// router.post("/transactions/documents", authMiddleware, ...);
+
+// router.get("/transactions/documents/:user/:document", authMiddleware, ...);
 
 router.post("/transactions", authMiddleware, createTransaction);
 
@@ -38,6 +43,12 @@ router.get(
 	"/transactions/:id/forwards",
 	authMiddleware,
 	createTransactionForward,
+);
+
+router.patch(
+	"/transactions/:id/forwards/:forwardId",
+	authMiddleware,
+	updateTransactionForwardStatus,
 );
 
 router.delete(

@@ -99,6 +99,22 @@ export async function createTransactionForward(req: Request, res: Response) {
 	res.status(200).json({ status: "success", transactionForward });
 }
 
+export async function updateTransactionForwardStatus(
+	req: Request,
+	res: Response,
+) {
+	const { transactionId, forwardId, status } =
+		TransactionDTO.UpdateForwardStatusSchema.parse(req.body);
+
+	const transactionForward = await TransactionAdaptor.updateForwardStatus(
+		transactionId,
+		forwardId,
+		status,
+	);
+
+	res.status(200).json({ status: "success", transactionForward });
+}
+
 export async function deleteTransactionForward(req: Request, res: Response) {
 	const { transactionId, forwardId } = TransactionDTO.DeleteForwardSchema.parse(
 		req.body,
