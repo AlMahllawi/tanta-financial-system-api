@@ -13,20 +13,36 @@ export namespace TransactionDTO {
 
 	export const TypeCreationSchema = z.object({ name: TypeNameSchema });
 
+	const TransactionIdSchema = z.int().nonnegative();
+
+	const PrioritySchema = z.enum(TransactionPriority, "Invalid priority");
+
 	export const CreationSchema = z.object({
 		title: z
 			.string()
 			.min(5, "Too short transaction title")
 			.max(255, "Too long transaction title"),
 		description: z.string().min(5, "Too short transaction description"),
-		type: TypeNameSchema,
-		priority: z
-			.enum(TransactionPriority, "Invalid priority")
-			.default(TransactionPriority.LOW),
+		typeName: TypeNameSchema,
+		priority: PrioritySchema.default(TransactionPriority.LOW),
+	});
+
+	export const UpdatesSchema = z
+		.object({ ...CreationSchema.shape, priority: PrioritySchema })
+		.partial()
+		.refine((obj) => Object.keys(obj).length > 0, {
+			message: "At least one modification must be provided",
+		});
+
+	export type Updates = z.infer<typeof UpdatesSchema>;
+
+	export const UpdatingSchema = z.object({
+		transactionId: TransactionIdSchema,
+		updates: UpdatesSchema,
 	});
 
 	export const ForwardSchema = z.object({
-		transactionId: z.int(),
+		transactionId: TransactionIdSchema,
 		status: z
 			.enum(TransactionForwardStatus)
 			.default(TransactionForwardStatus.WAITING),

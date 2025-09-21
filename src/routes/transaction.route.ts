@@ -4,6 +4,7 @@ import {
 	createTransactionForward,
 	createTransactionType,
 	deleteTransaction,
+	updateTransaction,
 	viewTransaction,
 	viewTransactions,
 	viewTransactionTypes,
@@ -22,9 +23,17 @@ router.get("/transactions", authMiddleware, viewTransactions);
 
 router.get("/transactions/:id", authMiddleware, viewTransaction);
 
+router.patch("/transactions/:id", authMiddleware, updateTransaction);
+
 router.delete("/transactions/:id", authMiddleware, deleteTransaction);
 
 router.post(
+	"/transactions/:id/forwards",
+	authMiddleware,
+	createTransactionForward,
+);
+
+router.get(
 	"/transactions/:id/forwards",
 	authMiddleware,
 	createTransactionForward,

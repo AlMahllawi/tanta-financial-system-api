@@ -1,5 +1,6 @@
 import { In } from "typeorm";
 import datasource from "../datasource.js";
+import type { TransactionDTO } from "../dto/transaction.dto.js";
 import { Transaction } from "../entities/transaction.entity.js";
 import { TransactionForward } from "../entities/transaction.forward.entity.js";
 import { TransactionType } from "../entities/transaction.type.entity.js";
@@ -67,6 +68,44 @@ export namespace TransactionAdaptor {
 		if (typeof param === "number")
 			return await transactionRepository.findOneBy({ id: param });
 		return await transactionRepository.findBy({ creator: param });
+	}
+
+	export async function update(
+		transactionId: number,
+		updates: TransactionDTO.Updates,
+	) {
+		const transactionRepository = datasource.getRepository(Transaction);
+
+		const transaction = await transactionRepository.findOneBy({
+			id: transactionId,
+		});
+
+		if (!transaction)
+			throw new Exceptions.Invalid(
+				`Invalid transaction identifier: ${transactionId}.`,
+			);
+
+		if (updates.title !== undefined) transaction.title = updates.title;
+
+		if (updates.description !== undefined)
+			transaction.description = updates.description;
+
+		if (updates.priority !== undefined) transaction.priority = updates.priority;
+
+		if (updates.typeName !== undefined) {
+			const type = await datasource
+				.getRepository(TransactionType)
+				.findOne({ where: { name: updates.typeName } });
+
+			if (!type)
+				throw new Exceptions.Invalid(
+					`Invalid transaction type name: ${updates.typeName}.`,
+				);
+
+			transaction.type = type;
+		}
+
+		return await transactionRepository.save(transaction);
 	}
 
 	export async function remove(id: number) {

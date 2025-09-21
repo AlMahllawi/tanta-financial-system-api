@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import { TransactionAdaptor } from "../adaptor/transaction.adaptor.js";
 import { TransactionDTO } from "../dto/transaction.dto.js";
-import { TransactionForwardStatus } from "../types/enums.js";
 import { assertAuthenticatedRequest } from "../types/guard.js";
 import { Exceptions } from "../utils/exceptions.js";
 
@@ -33,13 +32,13 @@ export async function createTransactionType(req: Request, res: Response) {
 export async function createTransaction(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const { title, description, type, priority } =
+	const { title, description, typeName, priority } =
 		TransactionDTO.CreationSchema.parse(req.body);
 
 	const transaction = await TransactionAdaptor.create(
 		title,
 		description,
-		type,
+		typeName,
 		req.user.name,
 		priority,
 	);
@@ -66,6 +65,19 @@ export async function viewTransaction(req: Request, res: Response) {
 			status: "not-found",
 			message: `No transaction was found with id: ${id}.`,
 		});
+}
+
+export async function updateTransaction(req: Request, res: Response) {
+	const { transactionId, updates } = TransactionDTO.UpdatingSchema.parse(
+		req.body,
+	);
+
+	const updatedTransaction = await TransactionAdaptor.update(
+		transactionId,
+		updates,
+	);
+
+	res.status(200).json({ status: "success", updatedTransaction });
 }
 
 export async function deleteTransaction(req: Request, res: Response) {
