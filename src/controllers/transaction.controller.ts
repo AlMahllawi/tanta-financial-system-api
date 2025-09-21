@@ -116,8 +116,8 @@ export async function detachTransactionDocument(req: Request, res: Response) {
 	if (deleted)
 		res.status(200).json({ status: "success", deleted: documentURI });
 	else
-		res.status(410).json({
-			status: "gone",
+		res.status(404).json({
+			status: "not-found",
 			message: `No document ${documentURI} for the transaction id: ${id}.`,
 		});
 }
