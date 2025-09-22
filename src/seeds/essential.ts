@@ -6,7 +6,7 @@ import { User } from "../entities/user.entity.js";
 
 const BCRYPT_SALT = genSaltSync();
 
-export class Essential1758557561524 implements Seeder {
+export class Essential implements Seeder {
 	track = true;
 
 	public async run(

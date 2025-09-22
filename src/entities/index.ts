@@ -5,15 +5,6 @@ import { TransactionForward } from "./transaction.forward.entity.js";
 import { TransactionType } from "./transaction.type.entity.js";
 import { User } from "./user.entity.js";
 
-export {
-	User,
-	Permission,
-	TransactionType,
-	Transaction,
-	TransactionDocument,
-	TransactionForward,
-};
-
 export default [
 	User,
 	Permission,
