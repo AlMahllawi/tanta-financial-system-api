@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+// TODO: view DTO (omit hashedPassword, etc...)
+
 export namespace UserDTO {
 	export const NameSchema = z
 		.string()

@@ -27,8 +27,16 @@ export namespace TransactionDTO {
 		priority: PrioritySchema.default(TransactionPriority.LOW),
 	});
 
+	export const TargetSchema = z.object({
+		id: IdSchema,
+	});
+
 	export const UpdatesSchema = z
-		.object({ ...CreationSchema.shape, priority: PrioritySchema })
+		.object({
+			...CreationSchema.shape,
+			priority: PrioritySchema,
+			fulfilled: z.boolean(),
+		})
 		.partial()
 		.refine((obj) => Object.keys(obj).length > 0, {
 			message: "At least one modification must be provided",
@@ -36,34 +44,17 @@ export namespace TransactionDTO {
 
 	export type Updates = z.infer<typeof UpdatesSchema>;
 
-	export const UpdatingSchema = z.object({
-		transactionId: IdSchema,
-		updates: UpdatesSchema,
-	});
-
 	export const ForwardSchema = z.object({
-		transactionId: IdSchema,
-		status: z
-			.enum(TransactionForwardStatus)
-			.default(TransactionForwardStatus.WAITING),
-		senderName: UserDTO.NameSchema,
 		receiverName: UserDTO.NameSchema,
 	});
 
-	const InvalidMessage = "Invalid transaction identifier";
-	export const TargetSchema = z.object({
-		id: z.int(InvalidMessage).nonnegative(InvalidMessage),
+	export const TargetForwardSchema = z.object({
+		...TargetSchema.shape,
+		forwardId: IdSchema,
 	});
 
 	export const UpdateForwardStatusSchema = z.object({
-		transactionId: IdSchema,
-		forwardId: IdSchema,
 		status: z.enum(TransactionForwardStatus),
-	});
-
-	export const DeleteForwardSchema = z.object({
-		transactionId: IdSchema,
-		forwardId: IdSchema,
 	});
 
 	export const TargetDocumentSchema = z.object({

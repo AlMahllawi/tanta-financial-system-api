@@ -10,6 +10,7 @@ import {
 	updateTransaction,
 	updateTransactionForwardStatus,
 	viewTransaction,
+	viewTransactionForwards,
 	viewTransactions,
 	viewTransactionTypes,
 } from "../controllers/transaction.controller.js";
@@ -52,7 +53,7 @@ router.post(
 router.get(
 	"/transactions/:id/forwards",
 	authMiddleware,
-	createTransactionForward,
+	viewTransactionForwards,
 );
 
 router.patch(

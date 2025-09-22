@@ -35,20 +35,26 @@ export namespace UserAdaptor {
 			where: {
 				name,
 				permissions: {
-					name: In(permissions),
+					name: In([...permissions, "Administrator"]),
 				},
 			},
 			select: ["permissions"],
 			relations: ["permissions"],
 		});
 
-		return permissions.filter(
+		let missingPermissions = permissions.filter(
 			(permission) =>
 				!userPermissions
 					.flatMap((user) => user.permissions)
 					.map((permission) => permission.name)
 					.includes(permission),
 		);
+
+		if (missingPermissions.includes("Administrator"))
+			missingPermissions.splice(missingPermissions.indexOf("Administrator"), 1);
+		else missingPermissions = [];
+
+		return missingPermissions;
 	}
 
 	export async function create(name: string, password: string) {

@@ -1,7 +1,10 @@
+import { genSaltSync, hash } from "bcrypt";
 import type { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1758402099856 implements MigrationInterface {
-	name = "Init1758402099856";
+const BCRYPT_SALT = genSaltSync();
+
+export class Init1758502487020 implements MigrationInterface {
+	name = "Init1758502487020";
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(
@@ -11,7 +14,7 @@ export class Init1758402099856 implements MigrationInterface {
 			`CREATE UNIQUE INDEX "IDX_da02ffeccc7e9456775a52528a" ON "TransactionDocuments" ("transactionId", "documentURI") `,
 		);
 		await queryRunner.query(
-			`CREATE TYPE "public"."TransactionForwards_status_enum" AS ENUM('waiting', 'needs-editing', 'rejected', 'approved')`,
+			`CREATE TYPE "public"."TransactionForwards_status_enum" AS ENUM('waiting', 'needs-editing', 'rejected', 'approved', 'fulfilled')`,
 		);
 		await queryRunner.query(
 			`CREATE TABLE "TransactionForwards" ("id" SERIAL NOT NULL, "status" "public"."TransactionForwards_status_enum" NOT NULL DEFAULT 'waiting', "forwardedAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "transactionId" integer NOT NULL, "senderId" character varying(255) NOT NULL, "receiverId" character varying(255) NOT NULL, CONSTRAINT "PK_1e952316cf059a6daf37c21e6c2" PRIMARY KEY ("id"))`,
@@ -23,7 +26,7 @@ export class Init1758402099856 implements MigrationInterface {
 			`CREATE TYPE "public"."Transactions_priority_enum" AS ENUM('high', 'medium', 'low')`,
 		);
 		await queryRunner.query(
-			`CREATE TABLE "Transactions" ("id" SERIAL NOT NULL, "title" character varying(255) NOT NULL, "description" text NOT NULL, "priority" "public"."Transactions_priority_enum" NOT NULL DEFAULT 'low', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "type" character varying(255), "creatorName" character varying(255) NOT NULL, CONSTRAINT "PK_7761bf9766670b894ff2fdb3700" PRIMARY KEY ("id"))`,
+			`CREATE TABLE "Transactions" ("id" SERIAL NOT NULL, "title" character varying(255) NOT NULL, "description" text NOT NULL, "fulfilled" boolean NOT NULL DEFAULT false, "priority" "public"."Transactions_priority_enum" NOT NULL DEFAULT 'low', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "type" character varying(255), "creatorName" character varying(255) NOT NULL, CONSTRAINT "PK_7761bf9766670b894ff2fdb3700" PRIMARY KEY ("id"))`,
 		);
 		await queryRunner.query(
 			`CREATE TABLE "Users" ("name" character varying(255) NOT NULL, "hashedPassword" text NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_User" PRIMARY KEY ("name"))`,
@@ -64,6 +67,16 @@ export class Init1758402099856 implements MigrationInterface {
 		await queryRunner.query(
 			`ALTER TABLE "UsersPermissions" ADD CONSTRAINT "FK_a56a2164ad71c72f9a98e3426e8" FOREIGN KEY ("permission") REFERENCES "permission"("name") ON DELETE NO ACTION ON UPDATE NO ACTION`,
 		);
+
+		await queryRunner.manager
+			.createQueryBuilder()
+			.insert()
+			.into("Users")
+			.values({
+				name: "admin",
+				hashedPassword: await hash("admin1234", BCRYPT_SALT),
+			})
+			.execute();
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {

@@ -33,6 +33,12 @@ export class Transaction {
 	type!: TransactionType;
 
 	@Column({
+		type: "boolean",
+		default: false,
+	})
+	fulfilled: boolean = false;
+
+	@Column({
 		type: "enum",
 		enum: TransactionPriority,
 		default: TransactionPriority.LOW,

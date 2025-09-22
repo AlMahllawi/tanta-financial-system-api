@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import { TransactionAdaptor } from "../adaptor/transaction.adaptor.js";
+import { UserAdaptor } from "../adaptor/user.adaptor.js";
 import { TransactionDTO } from "../dto/transaction.dto.js";
+import { missingPermissionResponse } from "../middlewares/permissions.middleware.js";
 import { assertAuthenticatedRequest } from "../types/guard.js";
 import { Exceptions } from "../utils/exceptions.js";
 
@@ -45,7 +47,16 @@ export async function createTransaction(req: Request, res: Response) {
 export async function viewTransactions(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const transactions = await ("all" in req.query
+	const viewAll = "all" in req.query;
+	const permissions = ["ViewAllTransactions"];
+	if (
+		viewAll &&
+		(await UserAdaptor.missingPermissions(req.user.name, permissions)).length >
+			0
+	)
+		return missingPermissionResponse(res, permissions);
+
+	const transactions = await (viewAll
 		? TransactionAdaptor.view()
 		: TransactionAdaptor.view(req.user));
 
@@ -54,6 +65,7 @@ export async function viewTransactions(req: Request, res: Response) {
 
 export async function viewTransaction(req: Request, res: Response) {
 	const { id } = TransactionDTO.TargetSchema.parse(req.params);
+	// TODO: check access
 	const transaction = await TransactionAdaptor.view(id);
 	if (transaction) res.status(200).json({ status: "success", transaction });
 	else
@@ -64,20 +76,19 @@ export async function viewTransaction(req: Request, res: Response) {
 }
 
 export async function updateTransaction(req: Request, res: Response) {
-	const { transactionId, updates } = TransactionDTO.UpdatingSchema.parse(
-		req.body,
-	);
+	const { id } = TransactionDTO.TargetSchema.parse(req.params);
+	const updates = TransactionDTO.UpdatesSchema.parse(req.body);
 
-	const updatedTransaction = await TransactionAdaptor.update(
-		transactionId,
-		updates,
-	);
+	// TODO: check access
+
+	const updatedTransaction = await TransactionAdaptor.update(id, updates);
 
 	res.status(200).json({ status: "success", updatedTransaction });
 }
 
 export async function deleteTransaction(req: Request, res: Response) {
 	const { id } = TransactionDTO.TargetSchema.parse(req.params);
+	// TODO: check access
 	const deleted = await TransactionAdaptor.remove(id);
 	if (deleted) res.status(200).json({ status: "success", deleted: id });
 	else
@@ -89,6 +100,8 @@ export async function deleteTransaction(req: Request, res: Response) {
 
 export async function attachTransactionDocument(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
+
+	// TODO: check access
 
 	const { id, userName, document } = TransactionDTO.TargetDocumentSchema.parse(
 		req.params,
@@ -104,6 +117,8 @@ export async function attachTransactionDocument(req: Request, res: Response) {
 
 export async function detachTransactionDocument(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
+
+	// TODO: check access
 
 	const { id, userName, document } = TransactionDTO.TargetDocumentSchema.parse(
 		req.params,
@@ -123,26 +138,44 @@ export async function detachTransactionDocument(req: Request, res: Response) {
 }
 
 export async function createTransactionForward(req: Request, res: Response) {
-	const { transactionId, status, senderName, receiverName } =
-		TransactionDTO.ForwardSchema.parse(req.body);
+	assertAuthenticatedRequest(req);
+
+	const { id } = TransactionDTO.TargetSchema.parse(req.params);
+
+	const { receiverName } = TransactionDTO.ForwardSchema.parse(req.body);
+
 	const transactionForward = await TransactionAdaptor.forward(
-		transactionId,
-		senderName,
+		id,
+		req.user.name,
 		receiverName,
-		status,
 	);
 	res.status(200).json({ status: "success", transactionForward });
+}
+
+export async function viewTransactionForwards(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
+	const { id } = TransactionDTO.TargetSchema.parse(req.params);
+
+	const transactionForwards = await TransactionAdaptor.viewForwards(id);
+
+	res.status(200).json({ status: "success", transactionForwards });
 }
 
 export async function updateTransactionForwardStatus(
 	req: Request,
 	res: Response,
 ) {
-	const { transactionId, forwardId, status } =
-		TransactionDTO.UpdateForwardStatusSchema.parse(req.body);
+	const { id, forwardId } = TransactionDTO.TargetForwardSchema.parse(
+		req.params,
+	);
+
+	const { status } = TransactionDTO.UpdateForwardStatusSchema.parse(req.body);
+
+	// TODO: must be last receiver
 
 	const transactionForward = await TransactionAdaptor.updateForwardStatus(
-		transactionId,
+		id,
 		forwardId,
 		status,
 	);
@@ -151,14 +184,13 @@ export async function updateTransactionForwardStatus(
 }
 
 export async function deleteTransactionForward(req: Request, res: Response) {
-	const { transactionId, forwardId } = TransactionDTO.DeleteForwardSchema.parse(
-		req.body,
+	const { id, forwardId } = TransactionDTO.TargetForwardSchema.parse(
+		req.params,
 	);
 
-	const deleted = await TransactionAdaptor.deleteForward(
-		transactionId,
-		forwardId,
-	);
+	// TODO: must be last sender, creator or admin
+
+	const deleted = await TransactionAdaptor.deleteForward(id, forwardId);
 
 	if (deleted) res.status(200).json({ status: "success", deleted: forwardId });
 	else

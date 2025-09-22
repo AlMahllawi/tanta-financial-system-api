@@ -106,6 +106,9 @@ export namespace TransactionAdaptor {
 
 		if (updates.priority !== undefined) transaction.priority = updates.priority;
 
+		if (updates.fulfilled !== undefined)
+			transaction.fulfilled = updates.fulfilled;
+
 		if (updates.typeName !== undefined) {
 			const type = await datasource
 				.getRepository(TransactionType)
@@ -158,11 +161,8 @@ export namespace TransactionAdaptor {
 		transactionId: number,
 		senderName: string,
 		receiverName: string,
-		status: TransactionForwardStatus = TransactionForwardStatus.WAITING,
 	) {
 		const transactionForward = new TransactionForward();
-
-		transactionForward.status = status;
 
 		const transaction = await datasource.getRepository(Transaction).findOneBy({
 			id: transactionId,
@@ -199,6 +199,14 @@ export namespace TransactionAdaptor {
 		return await datasource
 			.getRepository(TransactionForward)
 			.save(transactionForward);
+	}
+
+	export async function viewForwards(transactionId: number) {
+		return await datasource.getRepository(TransactionForward).find({
+			// select: { sender: { name: true }, receiver: { name: true } },
+			relations: ["sender", "receiver"],
+			where: { transaction: { id: transactionId } },
+		});
 	}
 
 	export async function updateForwardStatus(

@@ -68,12 +68,10 @@ export async function viewDocument(req: Request, res: Response) {
 	const documentPath = join(DOCUMENTS_PATH, documentURI);
 
 	if (!existsSync(documentPath))
-		return res
-			.status(404)
-			.json({
-				status: "not-found",
-				message: `There was no document: ${documentURI}.`,
-			});
+		return res.status(404).json({
+			status: "not-found",
+			message: `There was no document: ${documentURI}.`,
+		});
 
 	res.status(200).sendFile(documentPath);
 }
