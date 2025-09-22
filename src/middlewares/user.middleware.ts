@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { UserAdaptor } from "../adaptor/user.adaptor.js";
 import { UserDTO } from "../dto/user.dto.js";
-import type { AuthenticatedRequest } from "../types/interfaces.js";
+import { castToAuthenticatedRequest } from "../types/cast.js";
 import { JWT_SECRET } from "../utils/env.js";
 
 export async function authMiddleware(
@@ -33,7 +33,7 @@ export async function authMiddleware(
 
 	if (!user) return unauthorized("Invalid token.");
 
-	(req as AuthenticatedRequest).user = user;
+	castToAuthenticatedRequest(req, user);
 
 	next();
 }

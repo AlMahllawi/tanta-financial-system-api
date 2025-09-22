@@ -7,7 +7,7 @@ import { TransactionForward } from "../entities/transaction.forward.entity.js";
 import { TransactionType } from "../entities/transaction.type.entity.js";
 import { User } from "../entities/user.entity.js";
 import {
-	TransactionForwardStatus,
+	type TransactionForwardStatus,
 	TransactionPriority,
 } from "../types/enums.js";
 import { Exceptions } from "../utils/exceptions.js";

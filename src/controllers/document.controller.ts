@@ -3,6 +3,7 @@ import { basename, dirname, join } from "node:path";
 import type { Request, Response } from "express";
 import multer from "multer";
 import { DocumentDTO } from "../dto/document.dto.js";
+import { castToUploadRequest } from "../types/cast.js";
 import {
 	assertAuthenticatedRequest,
 	assertUploadRequest,
@@ -22,7 +23,7 @@ const storage = multer.diskStorage({
 
 		mkdirSync(uploadPath, { recursive: true });
 
-		(req as any).uploadPath = uploadPath; // TODO: types
+		castToUploadRequest(req, uploadPath);
 
 		cb(null, uploadPath);
 	},
