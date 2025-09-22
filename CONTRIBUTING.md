@@ -26,7 +26,7 @@ DB_CONNECTION_URL="postgres://almahllawi:n0nS3cure@localhost:5432/TantaFinancial
 
 ### Run the migrations
 ```bash
-pnpm migrations
+pnpm migration:run
 ```
 
 ### Launch the API

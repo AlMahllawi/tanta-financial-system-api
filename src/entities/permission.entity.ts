@@ -1,7 +1,7 @@
 import { Entity, ManyToMany, PrimaryColumn } from "typeorm";
 import { User } from "./user.entity.js";
 
-@Entity()
+@Entity("Permissions")
 export class Permission {
 	@PrimaryColumn({
 		type: "varchar",

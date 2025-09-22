@@ -1,10 +1,7 @@
-import { genSaltSync, hash } from "bcrypt";
 import type { MigrationInterface, QueryRunner } from "typeorm";
 
-const BCRYPT_SALT = genSaltSync();
-
-export class Init1758502487020 implements MigrationInterface {
-	name = "Init1758502487020";
+export class Init1758558448417 implements MigrationInterface {
+	name = "Init1758558448417";
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(
@@ -32,7 +29,7 @@ export class Init1758502487020 implements MigrationInterface {
 			`CREATE TABLE "Users" ("name" character varying(255) NOT NULL, "hashedPassword" text NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_User" PRIMARY KEY ("name"))`,
 		);
 		await queryRunner.query(
-			`CREATE TABLE "permission" ("name" character varying(255) NOT NULL, CONSTRAINT "PK_Permission" PRIMARY KEY ("name"))`,
+			`CREATE TABLE "Permissions" ("name" character varying(255) NOT NULL, CONSTRAINT "PK_Permission" PRIMARY KEY ("name"))`,
 		);
 		await queryRunner.query(
 			`CREATE TABLE "UsersPermissions" ("user" character varying(255) NOT NULL, "permission" character varying(255) NOT NULL, CONSTRAINT "PK_182476683fc5125bc9ac4542015" PRIMARY KEY ("user", "permission"))`,
@@ -65,18 +62,8 @@ export class Init1758502487020 implements MigrationInterface {
 			`ALTER TABLE "UsersPermissions" ADD CONSTRAINT "FK_402bdcfebaa4b1da3676f4b53a7" FOREIGN KEY ("user") REFERENCES "Users"("name") ON DELETE CASCADE ON UPDATE CASCADE`,
 		);
 		await queryRunner.query(
-			`ALTER TABLE "UsersPermissions" ADD CONSTRAINT "FK_a56a2164ad71c72f9a98e3426e8" FOREIGN KEY ("permission") REFERENCES "permission"("name") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+			`ALTER TABLE "UsersPermissions" ADD CONSTRAINT "FK_a56a2164ad71c72f9a98e3426e8" FOREIGN KEY ("permission") REFERENCES "Permissions"("name") ON DELETE NO ACTION ON UPDATE NO ACTION`,
 		);
-
-		await queryRunner.manager
-			.createQueryBuilder()
-			.insert()
-			.into("Users")
-			.values({
-				name: "admin",
-				hashedPassword: await hash("admin1234", BCRYPT_SALT),
-			})
-			.execute();
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
@@ -111,7 +98,7 @@ export class Init1758502487020 implements MigrationInterface {
 			`DROP INDEX "public"."IDX_402bdcfebaa4b1da3676f4b53a"`,
 		);
 		await queryRunner.query(`DROP TABLE "UsersPermissions"`);
-		await queryRunner.query(`DROP TABLE "permission"`);
+		await queryRunner.query(`DROP TABLE "Permissions"`);
 		await queryRunner.query(`DROP TABLE "Users"`);
 		await queryRunner.query(`DROP TABLE "Transactions"`);
 		await queryRunner.query(`DROP TYPE "public"."Transactions_priority_enum"`);

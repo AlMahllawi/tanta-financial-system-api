@@ -15,7 +15,7 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    command: ["sh", "-c", "pnpm install && pnpm build && pnpm migrations && pnpm start"]
+    command: ["sh", "-c", "pnpm install && pnpm build && pnpm migration:run && pnpm seed:run -n essential && pnpm start"]
 
   db:
     image: postgres:17.6-alpine3.22

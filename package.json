@@ -12,14 +12,16 @@
 		"build": "tsc",
 		"start": "node ./dist/main.js",
 		"typeorm": "tsx ./node_modules/typeorm/cli.js",
-		"migrations": "pnpm typeorm migration:run --dataSource ./src/datasource.ts --transaction",
+		"typeorm-extension": "tsx ./node_modules/typeorm-extension/bin/cli.mjs",
+		"migration:run": "pnpm typeorm migration:run --dataSource ./src/datasource.ts --transaction",
 		"migration:generate": "node ./run.js migration:generate",
-		"entity:create": "node ./run.js entity:create"
+		"entity:create": "node ./run.js entity:create",
+		"seed:create": "typeorm-extension seed:create --root ./src/seeds",
+		"seed:run": "typeorm-extension seed:run --dataSource ./src/datasource.ts"
 	},
 	"author": "AlMahllawi",
 	"packageManager": "pnpm@10.16.1",
 	"dependencies": {
-		"@faker-js/faker": "^10.0.0",
 		"bcrypt": "^5.1.1",
 		"body-parser": "^2.2.0",
 		"chalk": "^5.6.2",
@@ -33,7 +35,7 @@
 		"reflect-metadata": "^0.1.14",
 		"tsx": "^4.20.5",
 		"typeorm": "^0.3.26",
-		"typeorm-seeding": "^1.6.1",
+		"typeorm-extension": "^3.7.1",
 		"typescript": "^5.9.2",
 		"winston": "^3.17.0",
 		"zod": "^4.1.9"
