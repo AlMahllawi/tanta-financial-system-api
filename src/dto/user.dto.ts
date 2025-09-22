@@ -11,31 +11,42 @@ export namespace UserDTO {
 			/^[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*/g,
 		);
 
-	export const Token = z.object(
-		{
-			name: NameSchema,
-		},
-		"Invalid token",
-	);
+	export const Token = z
+		.object(
+			{
+				name: NameSchema,
+			},
+			"Invalid token",
+		)
+		.strict();
 
 	export type Token = z.infer<typeof Token>;
 
-	export const ViewSchema = z.object({
-		name: NameSchema,
-	});
+	export const ViewSchema = z
+		.object({
+			name: NameSchema,
+		})
+		.strict();
 
-	export const AuthorizeSchema = z.object({
-		name: NameSchema,
-		password: z.string().min(8, "Invalid password"),
-	});
+	export const AuthorizeSchema = z
+		.object({
+			name: NameSchema,
+			password: z.string().min(8, "Invalid password"),
+		})
+		.strict();
 
-	export const CreationSchema = z.object({
-		name: UserDTO.NameSchema,
-		password: z
-			.string()
-			.refine((value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value), {
-				message:
-					"Password must be at least 8 characters, contain at least one uppercase letter, one lowercase letter, and one number.",
-			}),
-	});
+	export const CreationSchema = z
+		.object({
+			name: UserDTO.NameSchema,
+			password: z
+				.string()
+				.refine(
+					(value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value),
+					{
+						message:
+							"Password must be at least 8 characters, contain at least one uppercase letter, one lowercase letter, and one number.",
+					},
+				),
+		})
+		.strict();
 }

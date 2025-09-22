@@ -11,25 +11,29 @@ export namespace TransactionDTO {
 		.min(5, "Too short transaction type name")
 		.max(255, "Too long transaction type name");
 
-	export const TypeCreationSchema = z.object({ name: TypeNameSchema });
+	export const TypeCreationSchema = z.object({ name: TypeNameSchema }).strict();
 
 	const IdSchema = z.coerce.number().int().nonnegative();
 
 	const PrioritySchema = z.enum(TransactionPriority, "Invalid priority");
 
-	export const CreationSchema = z.object({
-		title: z
-			.string()
-			.min(5, "Too short transaction title")
-			.max(255, "Too long transaction title"),
-		description: z.string().min(5, "Too short transaction description"),
-		typeName: TypeNameSchema,
-		priority: PrioritySchema.default(TransactionPriority.LOW),
-	});
+	export const CreationSchema = z
+		.object({
+			title: z
+				.string()
+				.min(5, "Too short transaction title")
+				.max(255, "Too long transaction title"),
+			description: z.string().min(5, "Too short transaction description"),
+			typeName: TypeNameSchema,
+			priority: PrioritySchema.default(TransactionPriority.LOW),
+		})
+		.strict();
 
-	export const TargetSchema = z.object({
-		id: IdSchema,
-	});
+	export const TargetSchema = z
+		.object({
+			id: IdSchema,
+		})
+		.strict();
 
 	export const UpdatesSchema = z
 		.object({
@@ -37,6 +41,7 @@ export namespace TransactionDTO {
 			priority: PrioritySchema,
 			fulfilled: z.boolean(),
 		})
+		.strict()
 		.partial()
 		.refine((obj) => Object.keys(obj).length > 0, {
 			message: "At least one modification must be provided",
@@ -44,27 +49,35 @@ export namespace TransactionDTO {
 
 	export type Updates = z.infer<typeof UpdatesSchema>;
 
-	export const ForwardSchema = z.object({
-		receiverName: UserDTO.NameSchema,
-	});
+	export const ForwardSchema = z
+		.object({
+			receiverName: UserDTO.NameSchema,
+		})
+		.strict();
 
-	export const TargetForwardSchema = z.object({
-		...TargetSchema.shape,
-		forwardId: IdSchema,
-	});
+	export const TargetForwardSchema = z
+		.object({
+			...TargetSchema.shape,
+			forwardId: IdSchema,
+		})
+		.strict();
 
-	export const UpdateForwardStatusSchema = z.object({
-		status: z.enum(TransactionForwardStatus),
-	});
+	export const UpdateForwardStatusSchema = z
+		.object({
+			status: z.enum(TransactionForwardStatus),
+		})
+		.strict();
 
-	export const TargetDocumentSchema = z.object({
-		id: IdSchema,
-		userName: UserDTO.NameSchema,
-		document: z
-			.string()
-			.regex(
-				/^[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*\.[a-zA-Z0-9]+$/g,
-			)
-			.toLowerCase(),
-	});
+	export const TargetDocumentSchema = z
+		.object({
+			id: IdSchema,
+			userName: UserDTO.NameSchema,
+			document: z
+				.string()
+				.regex(
+					/^[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*\.[a-zA-Z0-9]+$/g,
+				)
+				.toLowerCase(),
+		})
+		.strict();
 }
