@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "4785e723-6a19-44d2-a5aa-f326c5895a24",
+		"_postman_id": "c6023c01-7ba6-4fe8-bd4e-d1741fe74cf7",
 		"name": "API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "21781372"
+		"_exporter_id": "21781372",
+		"_collection_link": "https://mohammad-almahllawi.postman.co/workspace/Tanta-Financial-System~172bd887-fc91-4abe-833e-42485b8fae03/collection/21781372-c6023c01-7ba6-4fe8-bd4e-d1741fe74cf7?action=share&source=collection_link&creator=21781372"
 	},
 	"item": [
 		{
@@ -15,7 +16,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"exec": [""],
+								"exec": [
+									""
+								],
 								"type": "text/javascript",
 								"packages": {}
 							}
@@ -35,8 +38,12 @@
 						},
 						"url": {
 							"raw": "{{API_URL}}/users",
-							"host": ["{{API_URL}}"],
-							"path": ["users"]
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"users"
+							]
 						}
 					},
 					"response": [
@@ -56,8 +63,12 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/users",
-									"host": ["{{API_URL}}"],
-									"path": ["users"]
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"users"
+									]
 								}
 							},
 							"status": "Created",
@@ -70,15 +81,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "51"
+									"value": "202"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"33-oSoSGdOx28AfmI1sIoTU8OWd84A\""
+									"value": "W/\"ca-PG+coY99sbZwSOqV172HLnRsiL0\""
 								},
 								{
 									"key": "Date",
-									"value": "Wed, 17 Sep 2025 23:23:37 GMT"
+									"value": "Mon, 22 Sep 2025 01:02:15 GMT"
 								},
 								{
 									"key": "Connection",
@@ -90,7 +101,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"user\": {\n        \"id\": 1,\n        \"name\": \"user1\"\n    }\n}"
+							"body": "{\n    \"status\": \"success\",\n    \"user\": {\n        \"name\": \"user1\",\n        \"createdAt\": \"2025-09-22T01:02:15.395Z\",\n        \"updatedAt\": \"2025-09-22T01:02:15.395Z\"\n    }\n}"
 						},
 						{
 							"name": "Conflict",
@@ -108,8 +119,12 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/users",
-									"host": ["{{API_URL}}"],
-									"path": ["users"]
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"users"
+									]
 								}
 							},
 							"status": "Conflict",
@@ -130,7 +145,7 @@
 								},
 								{
 									"key": "Date",
-									"value": "Wed, 17 Sep 2025 23:26:02 GMT"
+									"value": "Mon, 22 Sep 2025 01:02:57 GMT"
 								},
 								{
 									"key": "Connection",
@@ -152,7 +167,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"exec": [""],
+								"exec": [
+									""
+								],
 								"type": "text/javascript",
 								"packages": {}
 							}
@@ -163,20 +180,28 @@
 						"header": [],
 						"url": {
 							"raw": "{{API_URL}}/users",
-							"host": ["{{API_URL}}"],
-							"path": ["users"]
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"users"
+							]
 						}
 					},
 					"response": [
 						{
-							"name": "Success",
+							"name": "View All",
 							"originalRequest": {
 								"method": "GET",
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/users",
-									"host": ["{{API_URL}}"],
-									"path": ["users"]
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"users"
+									]
 								}
 							},
 							"status": "OK",
@@ -189,15 +214,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "54"
+									"value": "47"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"36-LKA2E79/QA9vVtgdcm1NpHKxwjs\""
+									"value": "W/\"2f-yXXLwyFs7/T8z8zruL+fDzJRJTE\""
 								},
 								{
 									"key": "Date",
-									"value": "Wed, 17 Sep 2025 23:27:09 GMT"
+									"value": "Mon, 22 Sep 2025 01:00:11 GMT"
 								},
 								{
 									"key": "Connection",
@@ -209,7 +234,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"users\": [\n        {\n            \"id\": 1,\n            \"name\": \"user1\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"user2\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"user3\"\n        }\n        // ...\n    ]\n}"
+							"body": "{\n    \"status\": \"success\",\n    \"users\": [\n        {\n            \"name\": \"user1\"\n        },\n        {\n            \"name\": \"user2\"\n        },\n        {\n            \"name\": \"user3\"\n        }\n        // ...\n    ]\n}"
 						}
 					]
 				},
@@ -219,7 +244,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"exec": [""],
+								"exec": [
+									""
+								],
 								"type": "text/javascript",
 								"packages": {}
 							}
@@ -229,13 +256,18 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{API_URL}}/users/:id",
-							"host": ["{{API_URL}}"],
-							"path": ["users", ":id"],
+							"raw": "{{API_URL}}/users/:name",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"users",
+								":name"
+							],
 							"variable": [
 								{
-									"key": "id",
-									"value": "1"
+									"key": "name",
+									"value": "user1"
 								}
 							]
 						}
@@ -247,13 +279,18 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{API_URL}}/users/:id",
-									"host": ["{{API_URL}}"],
-									"path": ["users", ":id"],
+									"raw": "{{API_URL}}/users/:name",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"users",
+										":name"
+									],
 									"variable": [
 										{
-											"key": "id",
-											"value": "1"
+											"key": "name",
+											"value": "user1"
 										}
 									]
 								}
@@ -268,15 +305,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "51"
+									"value": "44"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"33-y3rM8Yy/XvTcBrZkmDoneHcd17Q\""
+									"value": "W/\"2c-UsH3q7Kq3QDKQ/JraS5OgqvdbQQ\""
 								},
 								{
 									"key": "Date",
-									"value": "Wed, 17 Sep 2025 23:28:00 GMT"
+									"value": "Mon, 22 Sep 2025 00:59:49 GMT"
 								},
 								{
 									"key": "Connection",
@@ -288,7 +325,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"user\": {\n        \"id\": 1,\n        \"name\": \"user1\"\n    }\n}"
+							"body": "{\n    \"status\": \"success\",\n    \"user\": {\n        \"name\": \"user1\"\n    }\n}"
 						},
 						{
 							"name": "Not Found",
@@ -296,13 +333,18 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{API_URL}}/users/:id",
-									"host": ["{{API_URL}}"],
-									"path": ["users", ":id"],
+									"raw": "{{API_URL}}/users/:name",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"users",
+										":name"
+									],
 									"variable": [
 										{
-											"key": "id",
-											"value": "999"
+											"key": "name",
+											"value": "userX"
 										}
 									]
 								}
@@ -317,15 +359,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "65"
+									"value": "70"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"41-ONJnUugyXjMViJ9nYV7thyT2nxY\""
+									"value": "W/\"46-oa0EWYMqNfuvpBMMYsQKsYJFjMA\""
 								},
 								{
 									"key": "Date",
-									"value": "Wed, 17 Sep 2025 23:28:31 GMT"
+									"value": "Mon, 22 Sep 2025 01:01:27 GMT"
 								},
 								{
 									"key": "Connection",
@@ -337,7 +379,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"not-found\",\n    \"message\": \"No user was found with id 999.\"\n}"
+							"body": "{\n    \"status\": \"not-found\",\n    \"message\": \"No user was found with name: userX.\"\n}"
 						}
 					]
 				},
@@ -349,7 +391,9 @@
 							"script": {
 								"exec": [
 									"const response = pm.response.json();",
-									"pm.environment.set(\"authToken\", response.token);"
+									"pm.environment.set(\"authToken\", response.token);",
+									"const body = pm.request.body.raw ? JSON.parse(pm.request.body.raw) : {};",
+									"pm.environment.set(\"userName\", body.name);"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -370,8 +414,12 @@
 						},
 						"url": {
 							"raw": "{{API_URL}}/auth",
-							"host": ["{{API_URL}}"],
-							"path": ["auth"]
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"auth"
+							]
 						}
 					},
 					"response": [
@@ -391,8 +439,12 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/auth",
-									"host": ["{{API_URL}}"],
-									"path": ["auth"]
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"auth"
+									]
 								}
 							},
 							"status": "OK",
@@ -453,8 +505,13 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/transactions/types",
-									"host": ["{{API_URL}}"],
-									"path": ["transactions", "types"]
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										"types"
+									]
 								}
 							},
 							"response": [
@@ -474,8 +531,13 @@
 										},
 										"url": {
 											"raw": "{{API_URL}}/transactions/types",
-											"host": ["{{API_URL}}"],
-											"path": ["transactions", "types"]
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												"types"
+											]
 										}
 									},
 									"status": "Created",
@@ -526,8 +588,13 @@
 										},
 										"url": {
 											"raw": "{{API_URL}}/transactions/types",
-											"host": ["{{API_URL}}"],
-											"path": ["transactions", "types"]
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												"types"
+											]
 										}
 									},
 									"status": "Conflict",
@@ -571,8 +638,13 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions/types",
-									"host": ["{{API_URL}}"],
-									"path": ["transactions", "types"]
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										"types"
+									]
 								}
 							},
 							"response": [
@@ -583,8 +655,13 @@
 										"header": [],
 										"url": {
 											"raw": "{{API_URL}}/transactions/types",
-											"host": ["{{API_URL}}"],
-											"path": ["transactions", "types"]
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												"types"
+											]
 										}
 									},
 									"status": "OK",
@@ -622,6 +699,1608 @@
 							]
 						}
 					]
+				},
+				{
+					"name": "Document",
+					"item": [
+						{
+							"name": "Attach",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										":id",
+										"document",
+										":userName",
+										":document"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										},
+										{
+											"key": "userName",
+											"value": "{{userName}}"
+										},
+										{
+											"key": "document",
+											"value": "capture4.png"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												":id",
+												"document",
+												":userName",
+												":document"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "1"
+												},
+												{
+													"key": "userName",
+													"value": "user1"
+												},
+												{
+													"key": "document",
+													"value": "capture4.png"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "104"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"68-n752CgAIYDrD4J0XOz06e83jSvw\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 22 Sep 2025 01:21:16 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"transactionDocument\": {\n        \"id\": 1,\n        \"transactionId\": 1,\n        \"documentURI\": \"user1/capture4.png\"\n    }\n}"
+								},
+								{
+									"name": "Conflict",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												":id",
+												"document",
+												":userName",
+												":document"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "1"
+												},
+												{
+													"key": "userName",
+													"value": "user1"
+												},
+												{
+													"key": "document",
+													"value": "capture4.png"
+												}
+											]
+										}
+									},
+									"status": "Conflict",
+									"code": 409,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "836"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"344-94TcokpmBDXAvD8NxtzBVeGVIdE\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 22 Sep 2025 01:21:54 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"conflict\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Deattach",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										":id",
+										"document",
+										":userName",
+										":document"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										},
+										{
+											"key": "userName",
+											"value": "{{userName}}"
+										},
+										{
+											"key": "document",
+											"value": "capture4.png"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												":id",
+												"document",
+												":userName",
+												":document"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "1"
+												},
+												{
+													"key": "userName",
+													"value": "user1"
+												},
+												{
+													"key": "document",
+													"value": "capture4.png"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "51"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"33-WEjRi0yWUTbi+xdFE4L4+cbYGxs\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 22 Sep 2025 01:23:06 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"deleted\": \"user1/capture4.png\"\n}"
+								},
+								{
+									"name": "Not Found",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												":id",
+												"document",
+												":userName",
+												":document"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "1"
+												},
+												{
+													"key": "userName",
+													"value": "user1"
+												},
+												{
+													"key": "document",
+													"value": "capture4.png"
+												}
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "92"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"5c-9jLw3gPk7H1wNksUv2JiXaMtkHA\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 22 Sep 2025 01:23:51 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"not-found\",\n    \"message\": \"No document user1/capture4.png for the transaction id: 1.\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Forwards",
+					"item": [
+						{
+							"name": "Create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"receiverName\": \"user2\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{API_URL}}/transactions/:id/forwards",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										":id",
+										"forwards"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"receiverName\": \"user2\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_URL}}/transactions/:id/forwards",
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												":id",
+												"forwards"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "2"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "686"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"2ae-2M9WJquaWB2WFs1RtStqjSmXNj8\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 22 Sep 2025 01:34:06 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"transactionForward\": {\n        \"id\": 3,\n        \"transaction\": {\n            \"id\": 2,\n            \"title\": \"Some Title\",\n            \"description\": \"A not very detailed description.\",\n            \"fulfilled\": false,\n            \"priority\": \"low\",\n            \"createdAt\": \"2025-09-22T01:07:57.313Z\"\n        },\n        \"status\": \"waiting\",\n        \"sender\": {\n            \"name\": \"user1\",\n            \"createdAt\": \"2025-09-22T01:02:15.395Z\",\n            \"updatedAt\": \"2025-09-22T01:02:15.395Z\"\n        },\n        \"receiver\": {\n            \"name\": \"user2\",\n            \"createdAt\": \"2025-09-22T01:24:45.342Z\",\n            \"updatedAt\": \"2025-09-22T01:24:45.342Z\"\n        },\n        \"forwardedAt\": \"2025-09-22T01:34:06.792Z\",\n        \"updatedAt\": \"2025-09-22T01:34:06.792Z\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "View",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{API_URL}}/transactions/:id/forwards",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										":id",
+										"forwards"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{API_URL}}/transactions/:id/forwards",
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												":id",
+												"forwards"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "2"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1006"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"3ee-QIKTptXokhPmh3sPNkt9GAoPpYU\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 22 Sep 2025 01:43:19 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"transactionForwards\": [\n        {\n            \"id\": 2,\n            \"status\": \"needs-editing\",\n            \"sender\": {\n                \"name\": \"user1\",\n                \"createdAt\": \"2025-09-22T01:02:15.395Z\",\n                \"updatedAt\": \"2025-09-22T01:02:15.395Z\"\n            },\n            \"receiver\": {\n                \"name\": \"user2\",\n                \"createdAt\": \"2025-09-22T01:24:45.342Z\",\n                \"updatedAt\": \"2025-09-22T01:24:45.342Z\"\n            },\n            \"forwardedAt\": \"2025-09-22T01:31:57.918Z\",\n            \"updatedAt\": \"2025-09-22T01:31:57.918Z\"\n        },\n        {\n            \"id\": 3,\n            \"status\": \"waiting\",\n            \"sender\": {\n                \"name\": \"user2\",\n                \"createdAt\": \"2025-09-22T01:02:15.395Z\",\n                \"updatedAt\": \"2025-09-22T01:02:15.395Z\"\n            },\n            \"receiver\": {\n                \"name\": \"user1\",\n                \"createdAt\": \"2025-09-22T01:24:45.342Z\",\n                \"updatedAt\": \"2025-09-22T01:24:45.342Z\"\n            },\n            \"forwardedAt\": \"2025-09-22T01:34:06.792Z\",\n            \"updatedAt\": \"2025-09-22T01:34:06.792Z\"\n        }\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "UpdateStatus",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": \"approved\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{API_URL}}/transactions/:id/forwards/:forwardId",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										":id",
+										"forwards",
+										":forwardId"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										},
+										{
+											"key": "forwardId",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"status\": \"rejected\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_URL}}/transactions/:id/forwards/:forwardId",
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												":id",
+												"forwards",
+												":forwardId"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "2"
+												},
+												{
+													"key": "forwardId",
+													"value": "2"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "150"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"96-DcGRp64P5typGpxIX08dt2l403E\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 22 Sep 2025 01:49:21 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"transactionForward\": {\n        \"id\": 2,\n        \"status\": \"rejected\",\n        \"forwardedAt\": \"2025-09-22T01:31:57.918Z\",\n        \"updatedAt\": \"2025-09-22T01:49:21.896Z\"\n    }\n}"
+								},
+								{
+									"name": "Invalid",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"status\": \"invalid\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{API_URL}}/transactions/:id/forwards/:forwardId",
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												":id",
+												"forwards",
+												":forwardId"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "2"
+												},
+												{
+													"key": "forwardId",
+													"value": "2"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "459"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"1cb-EGOqN0TxdNWWRHzq3doM6x4/1AE\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 22 Sep 2025 01:49:42 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"bad-request\",\n    \"timestamp\": \"2025-09-22T01:49:42.130Z\"\n}"
+								}
+							]
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{API_URL}}/transactions/:id/forwards/:forwardId",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										":id",
+										"forwards",
+										":forwardId"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "2"
+										},
+										{
+											"key": "forwardId",
+											"value": "4"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Delete",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{API_URL}}/transactions/:id/forwards/:forwardId",
+											"host": [
+												"{{API_URL}}"
+											],
+											"path": [
+												"transactions",
+												":id",
+												"forwards",
+												":forwardId"
+											],
+											"variable": [
+												{
+													"key": "id",
+													"value": "1"
+												},
+												{
+													"key": "forwardId",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "32"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"20-WhQB6X0q6OV4y8KMAe4eCVkfLm0\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 22 Sep 2025 01:51:33 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"status\": \"success\",\n    \"deleted\": 1\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Sutiable Title\",\n    \"description\": \"A very detailed description.\",\n    \"typeName\": \"Type1\",\n    \"priority\": \"medium\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/transactions",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Sutiable Title\",\n    \"description\": \"A very detailed description.\",\n    \"typeName\": \"Type1\",\n    \"priority\": \"medium\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{API_URL}}/transactions",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "399"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"18f-RpiZEcE+cdTQY2XmT9dlUYJHlPg\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:04:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"transaction\": {\n        \"id\": 1,\n        \"title\": \"Sutiable Title\",\n        \"description\": \"A very detailed description.\",\n        \"type\": {\n            \"name\": \"Type1\"\n        },\n        \"fulfilled\": false,\n        \"priority\": \"medium\",\n        \"creator\": {\n            \"name\": \"admin\",\n            \"createdAt\": \"2025-09-22T00:58:36.247Z\",\n            \"updatedAt\": \"2025-09-22T00:58:36.247Z\"\n        },\n        \"createdAt\": \"2025-09-22T01:04:53.030Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "ViewAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/transactions",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{API_URL}}/transactions",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "346"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"15a-OCgd4a/KYnAfhhira05Jcm1EMRA\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:08:04 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"transactions\": [\n        {\n            \"id\": 1,\n            \"title\": \"Sutiable Title\",\n            \"description\": \"A very detailed description.\",\n            \"fulfilled\": false,\n            \"priority\": \"medium\",\n            \"createdAt\": \"2025-09-22T01:04:53.030Z\"\n        },\n        {\n            \"id\": 2,\n            \"title\": \"Some Title\",\n            \"description\": \"A not very detailed description.\",\n            \"fulfilled\": false,\n            \"priority\": \"low\",\n            \"createdAt\": \"2025-09-22T01:07:57.313Z\"\n        }\n        // ...\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "View",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/transactions/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"transactions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "View",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{API_URL}}/transactions/:id",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "190"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"be-VpuZonRI9z9qkALXAmvzwpk7bZE\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:09:08 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"transaction\": {\n        \"id\": 1,\n        \"title\": \"Sutiable Title\",\n        \"description\": \"A very detailed description.\",\n        \"fulfilled\": false,\n        \"priority\": \"medium\",\n        \"createdAt\": \"2025-09-22T01:04:53.030Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Ignore Title\",\n    \"description\": \"A very short desc.\",\n    \"typeName\": \"Type2\",\n    \"priority\": \"high\",\n    \"fulfilled\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/transactions/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"transactions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Ignore Title\",\n    \"description\": \"A very short desc.\",\n    \"typeName\": \"Type2\",\n    \"priority\": \"high\",\n    \"fulfilled\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{API_URL}}/transactions/:id",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "206"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"ce-Gmtn3xog2ou4/+mWLIsofIMjYhU\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:13:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"updatedTransaction\": {\n        \"id\": 1,\n        \"title\": \"Ignore Title\",\n        \"description\": \"A very short desc.\",\n        \"type\": {\n            \"name\": \"Type2\"\n        },\n        \"fulfilled\": true,\n        \"priority\": \"high\",\n        \"createdAt\": \"2025-09-22T01:04:53.030Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/transactions/:id",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"transactions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{API_URL}}/transactions/:id",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "32"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"20-hNAlDkb+KVCoKTCpe7DJ/UtzuY4\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:15:43 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"deleted\": 1\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{API_URL}}/transactions/:id",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"transactions",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "71"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"47-TRYSY+QLmXuFtyYK6a58Zg33xRc\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:16:19 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"not-found\",\n    \"message\": \"No transaction was found with id: 1.\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Documents",
+			"item": [
+				{
+					"name": "Upload",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{API_URL}}/documents",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"documents"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{API_URL}}/documents",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"documents"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "55"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"37-vlprNS/c2WG7x3+uzcS3WXsL/Mo\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:17:09 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"documentURI\": \"admin/capture4.png\"\n}"
+						},
+						{
+							"name": "Conflict",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{API_URL}}/documents",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"documents"
+									]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "94"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5e-OmA9dzxMJ5vWL/wMsYvg6waG/eI\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:17:18 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"error\",\n    \"name\": \"Conflict\",\n    \"timestamp\": \"2025-09-22T01:17:18.929Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{API_URL}}/documents/:userName/:document",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"documents",
+								":userName",
+								":document"
+							],
+							"variable": [
+								{
+									"key": "userName",
+									"value": "{{userName}}"
+								},
+								{
+									"key": "document",
+									"value": "Capture4.PNG"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{API_URL}}/documents/:userName/:document",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"documents",
+										":userName",
+										":document"
+									],
+									"variable": [
+										{
+											"key": "userName",
+											"value": "user1"
+										},
+										{
+											"key": "document",
+											"value": "Capture4.PNG"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "51"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"33-WEjRi0yWUTbi+xdFE4L4+cbYGxs\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:18:55 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"deleted\": \"user1/capture4.png\"\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{API_URL}}/documents/:userName/:document",
+									"host": [
+										"{{API_URL}}"
+									],
+									"path": [
+										"documents",
+										":userName",
+										":document"
+									],
+									"variable": [
+										{
+											"key": "userName",
+											"value": "user1"
+										},
+										{
+											"key": "document",
+											"value": "Capture4.PNG"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "77"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4d-/UWtjcqkqeVlZ7pXjqPPU3LcLB0\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:19:39 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"not-found\",\n    \"message\": \"There was no document: user1/capture4.png.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "View",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/documents/:userName/:document",
+							"host": [
+								"{{API_URL}}"
+							],
+							"path": [
+								"documents",
+								":userName",
+								":document"
+							],
+							"variable": [
+								{
+									"key": "userName",
+									"value": "{{userName}}"
+								},
+								{
+									"key": "document",
+									"value": "capture4.png"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -632,7 +2311,9 @@
 				"header": [],
 				"url": {
 					"raw": "{{API_URL}}",
-					"host": ["{{API_URL}}"]
+					"host": [
+						"{{API_URL}}"
+					]
 				}
 			},
 			"response": [
@@ -643,7 +2324,9 @@
 						"header": [],
 						"url": {
 							"raw": "{{API_URL}}",
-							"host": ["{{API_URL}}"]
+							"host": [
+								"{{API_URL}}"
+							]
 						}
 					},
 					"status": "OK",
@@ -696,14 +2379,18 @@
 			"listen": "prerequest",
 			"script": {
 				"type": "text/javascript",
-				"exec": [""]
+				"exec": [
+					""
+				]
 			}
 		},
 		{
 			"listen": "test",
 			"script": {
 				"type": "text/javascript",
-				"exec": [""]
+				"exec": [
+					""
+				]
 			}
 		}
 	]
