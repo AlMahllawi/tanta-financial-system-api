@@ -1,4 +1,4 @@
-abstract class BaseCustomException extends Error {
+export abstract class BaseCustomException extends Error {
 	constructor(
 		message: string,
 		public readonly context?: any,

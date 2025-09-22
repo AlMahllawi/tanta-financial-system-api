@@ -1,5 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
 import { NODE_ENV } from "../utils/env.js";
+import { BaseCustomException } from "../utils/exceptions.js";
 import { logger } from "../utils/logger.js";
 
 export function exposed(
@@ -9,10 +11,16 @@ export function exposed(
 	next: NextFunction,
 	timestamp: string,
 ) {
-	const { status, statusCode, expose: _, ...error } = err;
-	res
-		.status(status ?? statusCode ?? 500)
-		.json({ status: "error", ...error, timestamp });
+	if (err instanceof BaseCustomException) {
+		res.status(500).json({ status: "error", message: err.message, timestamp });
+	} else if (err instanceof ZodError) {
+		res.status(400).json({ status: "error", issues: err.issues, timestamp });
+	} else {
+		const { status, statusCode, expose: _, ...error } = err;
+		res
+			.status(status ?? statusCode ?? 500)
+			.json({ status: "error", ...error, timestamp });
+	}
 }
 
 export function internal(
@@ -42,6 +50,9 @@ export default function (
 	const timestamp = new Date().toISOString();
 
 	const { authorization: _, ...requestHeaders } = req.headers;
+
+	if (err instanceof BaseCustomException || err instanceof ZodError)
+		return exposed(err, req, res, next, timestamp);
 
 	logger.error({
 		timestamp,
