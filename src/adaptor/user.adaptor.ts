@@ -1,6 +1,6 @@
 import { compare, hash } from "bcrypt";
 import jwt from "jsonwebtoken";
-import { type FindOptionsSelect, In } from "typeorm";
+import { In } from "typeorm";
 import datasource from "../datasource.js";
 import type { UserDTO } from "../dto/user.dto.js";
 import { User } from "../entities/user.entity.js";
@@ -77,16 +77,11 @@ export namespace UserAdaptor {
 	}
 
 	export async function view(name: string) {
-		return await datasource.getRepository(User).findOne({
-			where: { name },
-			select: User.VisibleColumns as FindOptionsSelect<User>,
-		});
+		return await datasource.getRepository(User).findOneBy({ name });
 	}
 
 	export async function viewAll() {
 		// TODO: paging
-		return await datasource.getRepository(User).find({
-			select: User.VisibleColumns as FindOptionsSelect<User>,
-		});
+		return await datasource.getRepository(User).find();
 	}
 }

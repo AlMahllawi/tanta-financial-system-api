@@ -1,8 +1,14 @@
 import { z } from "zod";
 
-// TODO: view DTO (omit hashedPassword, etc...)
-
 export namespace UserDTO {
+	export const ViewSchema = z
+		.object({
+			name: z.string(),
+			createdAt: z.date(),
+			updatedAt: z.date(),
+		})
+		.strip();
+
 	export const NameSchema = z
 		.string()
 		.min(5, "Too short user name")
@@ -22,7 +28,7 @@ export namespace UserDTO {
 
 	export type Token = z.infer<typeof Token>;
 
-	export const ViewSchema = z
+	export const TargetSchema = z
 		.object({
 			name: NameSchema,
 		})

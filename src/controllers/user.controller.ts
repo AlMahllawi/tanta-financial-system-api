@@ -22,7 +22,10 @@ export async function authorizeUser(req: Request, res: Response) {
 export async function viewAllUsers(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 	const users = await UserAdaptor.viewAll();
-	res.status(200).json({ status: "success", users });
+	res.status(200).json({
+		status: "success",
+		users: users.map((u) => UserDTO.ViewSchema.parse(u)),
+	});
 }
 
 export async function createUser(req: Request, res: Response) {
@@ -30,7 +33,10 @@ export async function createUser(req: Request, res: Response) {
 	const { name, password } = UserDTO.CreationSchema.parse(req.body);
 	try {
 		const user = await UserAdaptor.create(name, password);
-		res.status(201).json({ status: "success", user });
+
+		res
+			.status(201)
+			.json({ status: "success", user: UserDTO.ViewSchema.parse(user) });
 	} catch (error: any) {
 		if (!(error instanceof Exceptions.Conflict)) throw error;
 
@@ -40,9 +46,12 @@ export async function createUser(req: Request, res: Response) {
 
 export async function viewUser(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
-	const { name } = UserDTO.ViewSchema.parse(req.params);
+	const { name } = UserDTO.TargetSchema.parse(req.params);
 	const user = await UserAdaptor.view(name);
-	if (user) res.status(200).json({ status: "success", user });
+	if (user)
+		res
+			.status(200)
+			.json({ status: "success", user: UserDTO.ViewSchema.parse(user) });
 	else
 		res.status(404).json({
 			status: "not-found",

@@ -12,8 +12,6 @@ import {
 } from "../types/enums.js";
 import { Exceptions } from "../utils/exceptions.js";
 
-// TODO: use DTO to omit object to suit view
-
 export namespace TransactionAdaptor {
 	export async function types() {
 		return await datasource.getRepository(TransactionType).find();

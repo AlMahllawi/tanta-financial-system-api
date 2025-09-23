@@ -6,6 +6,50 @@ import {
 import { UserDTO } from "./user.dto.js";
 
 export namespace TransactionDTO {
+	export const TypeViewSchema = z.object({ name: z.string() }).strip();
+
+	const PrioritySchema = z.enum(TransactionPriority, "Invalid priority");
+
+	export const ViewSchema = z
+		.object({
+			id: z.number(),
+			title: z.string(),
+			description: z.string(),
+			type: z.string(),
+			fulfilled: z.boolean(),
+			priority: PrioritySchema,
+			creator: UserDTO.ViewSchema,
+			createdAt: z.date(),
+		})
+		.strip();
+
+	export type View = z.infer<typeof ViewSchema>;
+
+	export const DocumentViewSchema = z
+		.object({
+			id: z.number(),
+			transactionId: z.number(),
+			documentURI: z.string(),
+		})
+		.strip();
+
+	const ForwardStatusSchema = z.enum(
+		TransactionForwardStatus,
+		"Invalid status",
+	);
+
+	export const ForwardViewSchema = z
+		.object({
+			id: z.string(),
+			transaction: ViewSchema,
+			status: ForwardStatusSchema,
+			sender: UserDTO.ViewSchema,
+			receiver: UserDTO.ViewSchema,
+			forwardedAt: z.date(),
+			updatedAt: z.date(),
+		})
+		.strip();
+
 	export const TypeNameSchema = z
 		.string()
 		.min(5, "Too short transaction type name")
@@ -14,8 +58,6 @@ export namespace TransactionDTO {
 	export const TypeCreationSchema = z.object({ name: TypeNameSchema }).strict();
 
 	const IdSchema = z.coerce.number().int().nonnegative();
-
-	const PrioritySchema = z.enum(TransactionPriority, "Invalid priority");
 
 	export const CreationSchema = z
 		.object({
@@ -64,7 +106,7 @@ export namespace TransactionDTO {
 
 	export const UpdateForwardStatusSchema = z
 		.object({
-			status: z.enum(TransactionForwardStatus),
+			status: ForwardStatusSchema,
 		})
 		.strict();
 

@@ -64,6 +64,4 @@ export class User {
 		(transactionForward) => transactionForward.receiver,
 	)
 	receivedTransactionForwards!: TransactionForward[];
-
-	static VisibleColumns = ["name"];
 }

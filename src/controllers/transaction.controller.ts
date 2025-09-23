@@ -19,7 +19,10 @@ export async function createTransactionType(req: Request, res: Response) {
 	const { name } = TransactionDTO.TypeCreationSchema.parse(req.body);
 	try {
 		const transactionType = await TransactionAdaptor.createType(name);
-		res.status(201).json({ status: "success", transactionType });
+		res.status(201).json({
+			status: "success",
+			transactionType: TransactionDTO.TypeViewSchema.parse(transactionType),
+		});
 	} catch (error: unknown) {
 		if (!(error instanceof Exceptions.Conflict)) throw error;
 
@@ -41,7 +44,10 @@ export async function createTransaction(req: Request, res: Response) {
 		priority,
 	);
 
-	res.status(201).json({ status: "success", transaction: transaction });
+	res.status(201).json({
+		status: "success",
+		transaction: TransactionDTO.ViewSchema.parse(transaction),
+	});
 }
 
 export async function viewTransactions(req: Request, res: Response) {
@@ -60,14 +66,21 @@ export async function viewTransactions(req: Request, res: Response) {
 		? TransactionAdaptor.view()
 		: TransactionAdaptor.view(req.user));
 
-	res.status(200).json({ status: "success", transactions });
+	res.status(200).json({
+		status: "success",
+		transactions: transactions.map((t) => TransactionDTO.ViewSchema.parse(t)),
+	});
 }
 
 export async function viewTransaction(req: Request, res: Response) {
 	const { id } = TransactionDTO.TargetSchema.parse(req.params);
 	// TODO: check access
 	const transaction = await TransactionAdaptor.view(id);
-	if (transaction) res.status(200).json({ status: "success", transaction });
+	if (transaction)
+		res.status(200).json({
+			status: "success",
+			transaction: TransactionDTO.ViewSchema.parse(transaction),
+		});
 	else
 		res.status(404).json({
 			status: "not-found",
@@ -83,7 +96,10 @@ export async function updateTransaction(req: Request, res: Response) {
 
 	const updatedTransaction = await TransactionAdaptor.update(id, updates);
 
-	res.status(200).json({ status: "success", updatedTransaction });
+	res.status(200).json({
+		status: "success",
+		updatedTransaction: TransactionDTO.ViewSchema.parse(updatedTransaction),
+	});
 }
 
 export async function deleteTransaction(req: Request, res: Response) {
@@ -112,7 +128,11 @@ export async function attachTransactionDocument(req: Request, res: Response) {
 		`${userName}/${document}`,
 	);
 
-	res.status(200).json({ status: "success", transactionDocument });
+	res.status(200).json({
+		status: "success",
+		transactionDocument:
+			TransactionDTO.DocumentViewSchema.parse(transactionDocument),
+	});
 }
 
 export async function detachTransactionDocument(req: Request, res: Response) {
@@ -149,7 +169,11 @@ export async function createTransactionForward(req: Request, res: Response) {
 		req.user.name,
 		receiverName,
 	);
-	res.status(200).json({ status: "success", transactionForward });
+	res.status(200).json({
+		status: "success",
+		transactionForward:
+			TransactionDTO.ForwardViewSchema.parse(transactionForward),
+	});
 }
 
 export async function viewTransactionForwards(req: Request, res: Response) {
@@ -159,7 +183,12 @@ export async function viewTransactionForwards(req: Request, res: Response) {
 
 	const transactionForwards = await TransactionAdaptor.viewForwards(id);
 
-	res.status(200).json({ status: "success", transactionForwards });
+	res.status(200).json({
+		status: "success",
+		transactionForwards: transactionForwards.map((tf) =>
+			TransactionDTO.ForwardViewSchema.parse(tf),
+		),
+	});
 }
 
 export async function updateTransactionForwardStatus(
@@ -180,7 +209,13 @@ export async function updateTransactionForwardStatus(
 		status,
 	);
 
-	res.status(200).json({ status: "success", transactionForward });
+	res
+		.status(200)
+		.json({
+			status: "success",
+			transactionForward:
+				TransactionDTO.ForwardViewSchema.parse(transactionForward),
+		});
 }
 
 export async function deleteTransactionForward(req: Request, res: Response) {
