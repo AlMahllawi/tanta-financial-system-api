@@ -32,6 +32,7 @@
 		"jsonwebtoken": "^9.0.2",
 		"multer": "^2.0.2",
 		"pg": "^8.16.3",
+		"random": "^5.4.1",
 		"reflect-metadata": "^0.1.14",
 		"tsx": "^4.20.5",
 		"typeorm": "^0.3.26",

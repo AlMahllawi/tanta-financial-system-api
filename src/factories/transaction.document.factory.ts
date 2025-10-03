@@ -1,0 +1,20 @@
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+import { setSeederFactory } from "typeorm-extension";
+import { TransactionDocument } from "../entities/transaction.document.entity.js";
+import type { User } from "../entities/user.entity.js";
+import { DOCUMENTS_PATH } from "../utils/env.js";
+
+export default setSeederFactory(
+	TransactionDocument,
+	(faker, meta: { transactionId: number; uploader: User }) => {
+		const transactionDocument = new TransactionDocument();
+		transactionDocument.transactionId = meta.transactionId;
+		const documentURI = `${meta.uploader.name}/${faker.word.words(3)}.txt`;
+		const uploaderDir = join(DOCUMENTS_PATH, meta.uploader.name);
+		if (!existsSync(uploaderDir)) mkdirSync(uploaderDir);
+		writeFileSync(join(DOCUMENTS_PATH, documentURI), faker.word.words(15));
+		transactionDocument.documentURI = documentURI;
+		return transactionDocument;
+	},
+);
