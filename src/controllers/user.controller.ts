@@ -72,3 +72,5 @@ export async function viewUser(req: Request, res: Response) {
 			message: `No user was found with name: ${name}.`,
 		});
 }
+
+// TODO: change user password

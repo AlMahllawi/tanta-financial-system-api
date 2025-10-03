@@ -4,6 +4,7 @@ import type { Request, Response } from "express";
 import multer from "multer";
 import { DocumentDTO } from "../dto/document.dto.js";
 import { castToUploadRequest } from "../types/cast.js";
+import { UserGroups } from "../types/enums.js";
 import {
 	assertAuthenticatedRequest,
 	assertUploadRequest,
@@ -82,8 +83,7 @@ export async function deleteDocument(req: Request, res: Response) {
 
 	const { userName, document } = DocumentDTO.URIScheme.parse(req.params);
 
-	if (req.user.name !== userName)
-		// TODO: check if admin, then allow
+	if (req.user.name !== userName && req.user.group !== UserGroups.ADMIN)
 		throw new Exceptions.Forbidden(
 			`The document ${document} belongs to the user ${userName}. Can't proceed with the deletion.`,
 		);

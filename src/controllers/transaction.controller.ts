@@ -226,11 +226,18 @@ export async function updateTransactionForwardStatus(
 }
 
 export async function deleteTransactionForward(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
 	const { id, forwardId } = TransactionDTO.TargetForwardSchema.parse(
 		req.params,
 	);
 
-	// TODO: must be last sender, creator or admin
+	// TODO: allow last sender and creator
+	if (req.user.group !== UserGroups.ADMIN)
+		return res.status(403).json({
+			status: "forbidden",
+			message: `Missing access to delete a transaction forward.`,
+		});
 
 	const deleted = await TransactionAdaptor.deleteForward(id, forwardId);
 
