@@ -17,10 +17,10 @@
 		"migration:generate": "node ./run.js migration:generate",
 		"entity:create": "node ./run.js entity:create",
 		"seed:create": "typeorm-extension seed:create --root ./src/seeds",
-		"seed:run": "typeorm-extension seed:run --dataSource ./src/datasource.ts"
+		"seed:run": "pnpm build && typeorm-extension seed:run --dataSource ./src/datasource.ts"
 	},
 	"author": "AlMahllawi",
-	"packageManager": "pnpm@10.16.1",
+	"packageManager": "pnpm@10.18.0",
 	"dependencies": {
 		"bcrypt": "^5.1.1",
 		"body-parser": "^2.2.0",

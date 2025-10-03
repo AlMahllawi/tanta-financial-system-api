@@ -1,10 +1,7 @@
 {
 	"info": {
-		"_postman_id": "c6023c01-7ba6-4fe8-bd4e-d1741fe74cf7",
 		"name": "API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "21781372",
-		"_collection_link": "https://mohammad-almahllawi.postman.co/workspace/Tanta-Financial-System~172bd887-fc91-4abe-833e-42485b8fae03/collection/21781372-c6023c01-7ba6-4fe8-bd4e-d1741fe74cf7?action=share&source=collection_link&creator=21781372"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -12,18 +9,6 @@
 			"item": [
 				{
 					"name": "Create",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -38,12 +23,8 @@
 						},
 						"url": {
 							"raw": "{{API_URL}}/users",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"users"
-							]
+							"host": ["{{API_URL}}"],
+							"path": ["users"]
 						}
 					},
 					"response": [
@@ -63,12 +44,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/users",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"users"
-									]
+									"host": ["{{API_URL}}"],
+									"path": ["users"]
 								}
 							},
 							"status": "Created",
@@ -119,12 +96,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/users",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"users"
-									]
+									"host": ["{{API_URL}}"],
+									"path": ["users"]
 								}
 							},
 							"status": "Conflict",
@@ -163,29 +136,13 @@
 				},
 				{
 					"name": "View All",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{API_URL}}/users",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"users"
-							],
+							"host": ["{{API_URL}}"],
+							"path": ["users"],
 							"query": [
 								{
 									"key": "pageNumber",
@@ -208,12 +165,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/users?pageNumber=1&pageSize=10",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"users"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["users"],
 									"query": [
 										{
 											"key": "pageNumber",
@@ -262,30 +215,13 @@
 				},
 				{
 					"name": "View",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{API_URL}}/users/:name",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"users",
-								":name"
-							],
+							"host": ["{{API_URL}}"],
+							"path": ["users", ":name"],
 							"variable": [
 								{
 									"key": "name",
@@ -302,13 +238,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/users/:name",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"users",
-										":name"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["users", ":name"],
 									"variable": [
 										{
 											"key": "name",
@@ -356,13 +287,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/users/:name",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"users",
-										":name"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["users", ":name"],
 									"variable": [
 										{
 											"key": "name",
@@ -436,12 +362,8 @@
 						},
 						"url": {
 							"raw": "{{API_URL}}/auth",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"auth"
-							]
+							"host": ["{{API_URL}}"],
+							"path": ["auth"]
 						}
 					},
 					"response": [
@@ -461,12 +383,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/auth",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"auth"
-									]
+									"host": ["{{API_URL}}"],
+									"path": ["auth"]
 								}
 							},
 							"status": "OK",
@@ -527,13 +445,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/transactions/types",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions",
-										"types"
-									]
+									"host": ["{{API_URL}}"],
+									"path": ["transactions", "types"]
 								}
 							},
 							"response": [
@@ -553,13 +466,8 @@
 										},
 										"url": {
 											"raw": "{{API_URL}}/transactions/types",
-											"host": [
-												"{{API_URL}}"
-											],
-											"path": [
-												"transactions",
-												"types"
-											]
+											"host": ["{{API_URL}}"],
+											"path": ["transactions", "types"]
 										}
 									},
 									"status": "Created",
@@ -610,13 +518,8 @@
 										},
 										"url": {
 											"raw": "{{API_URL}}/transactions/types",
-											"host": [
-												"{{API_URL}}"
-											],
-											"path": [
-												"transactions",
-												"types"
-											]
+											"host": ["{{API_URL}}"],
+											"path": ["transactions", "types"]
 										}
 									},
 									"status": "Conflict",
@@ -660,13 +563,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions/types",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions",
-										"types"
-									]
+									"host": ["{{API_URL}}"],
+									"path": ["transactions", "types"]
 								}
 							},
 							"response": [
@@ -677,13 +575,8 @@
 										"header": [],
 										"url": {
 											"raw": "{{API_URL}}/transactions/types",
-											"host": [
-												"{{API_URL}}"
-											],
-											"path": [
-												"transactions",
-												"types"
-											]
+											"host": ["{{API_URL}}"],
+											"path": ["transactions", "types"]
 										}
 									},
 									"status": "OK",
@@ -732,9 +625,7 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
-									"host": [
-										"{{API_URL}}"
-									],
+									"host": ["{{API_URL}}"],
 									"path": [
 										"transactions",
 										":id",
@@ -766,9 +657,7 @@
 										"header": [],
 										"url": {
 											"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
-											"host": [
-												"{{API_URL}}"
-											],
+											"host": ["{{API_URL}}"],
 											"path": [
 												"transactions",
 												":id",
@@ -831,9 +720,7 @@
 										"header": [],
 										"url": {
 											"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
-											"host": [
-												"{{API_URL}}"
-											],
+											"host": ["{{API_URL}}"],
 											"path": [
 												"transactions",
 												":id",
@@ -898,9 +785,7 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
-									"host": [
-										"{{API_URL}}"
-									],
+									"host": ["{{API_URL}}"],
 									"path": [
 										"transactions",
 										":id",
@@ -932,9 +817,7 @@
 										"header": [],
 										"url": {
 											"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
-											"host": [
-												"{{API_URL}}"
-											],
+											"host": ["{{API_URL}}"],
 											"path": [
 												"transactions",
 												":id",
@@ -997,9 +880,7 @@
 										"header": [],
 										"url": {
 											"raw": "{{API_URL}}/transactions/:id/document/:userName/:document",
-											"host": [
-												"{{API_URL}}"
-											],
+											"host": ["{{API_URL}}"],
 											"path": [
 												"transactions",
 												":id",
@@ -1078,14 +959,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/transactions/:id/forwards",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions",
-										":id",
-										"forwards"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["transactions", ":id", "forwards"],
 									"variable": [
 										{
 											"key": "id",
@@ -1111,14 +986,8 @@
 										},
 										"url": {
 											"raw": "{{API_URL}}/transactions/:id/forwards",
-											"host": [
-												"{{API_URL}}"
-											],
-											"path": [
-												"transactions",
-												":id",
-												"forwards"
-											],
+											"host": ["{{API_URL}}"],
+											"path": ["transactions", ":id", "forwards"],
 											"variable": [
 												{
 													"key": "id",
@@ -1168,14 +1037,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions/:id/forwards",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions",
-										":id",
-										"forwards"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["transactions", ":id", "forwards"],
 									"query": [
 										{
 											"key": "pageNumber",
@@ -1204,14 +1067,8 @@
 										"header": [],
 										"url": {
 											"raw": "{{API_URL}}/transactions/:id/forwards?pageNumber=1&pageSize=2",
-											"host": [
-												"{{API_URL}}"
-											],
-											"path": [
-												"transactions",
-												":id",
-												"forwards"
-											],
+											"host": ["{{API_URL}}"],
+											"path": ["transactions", ":id", "forwards"],
 											"query": [
 												{
 													"key": "pageNumber",
@@ -1280,15 +1137,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/transactions/:id/forwards/:forwardId",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions",
-										":id",
-										"forwards",
-										":forwardId"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["transactions", ":id", "forwards", ":forwardId"],
 									"variable": [
 										{
 											"key": "id",
@@ -1318,15 +1168,8 @@
 										},
 										"url": {
 											"raw": "{{API_URL}}/transactions/:id/forwards/:forwardId",
-											"host": [
-												"{{API_URL}}"
-											],
-											"path": [
-												"transactions",
-												":id",
-												"forwards",
-												":forwardId"
-											],
+											"host": ["{{API_URL}}"],
+											"path": ["transactions", ":id", "forwards", ":forwardId"],
 											"variable": [
 												{
 													"key": "id",
@@ -1387,15 +1230,8 @@
 										},
 										"url": {
 											"raw": "{{API_URL}}/transactions/:id/forwards/:forwardId",
-											"host": [
-												"{{API_URL}}"
-											],
-											"path": [
-												"transactions",
-												":id",
-												"forwards",
-												":forwardId"
-											],
+											"host": ["{{API_URL}}"],
+											"path": ["transactions", ":id", "forwards", ":forwardId"],
 											"variable": [
 												{
 													"key": "id",
@@ -1449,15 +1285,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions/:id/forwards/:forwardId",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions",
-										":id",
-										"forwards",
-										":forwardId"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["transactions", ":id", "forwards", ":forwardId"],
 									"variable": [
 										{
 											"key": "id",
@@ -1478,15 +1307,8 @@
 										"header": [],
 										"url": {
 											"raw": "{{API_URL}}/transactions/:id/forwards/:forwardId",
-											"host": [
-												"{{API_URL}}"
-											],
-											"path": [
-												"transactions",
-												":id",
-												"forwards",
-												":forwardId"
-											],
+											"host": ["{{API_URL}}"],
+											"path": ["transactions", ":id", "forwards", ":forwardId"],
 											"variable": [
 												{
 													"key": "id",
@@ -1551,12 +1373,8 @@
 						},
 						"url": {
 							"raw": "{{API_URL}}/transactions",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"transactions"
-							]
+							"host": ["{{API_URL}}"],
+							"path": ["transactions"]
 						}
 					},
 					"response": [
@@ -1576,12 +1394,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/transactions",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions"
-									]
+									"host": ["{{API_URL}}"],
+									"path": ["transactions"]
 								}
 							},
 							"status": "Created",
@@ -1625,12 +1439,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{API_URL}}/transactions",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"transactions"
-							],
+							"host": ["{{API_URL}}"],
+							"path": ["transactions"],
 							"query": [
 								{
 									"key": "pageNumber",
@@ -1653,12 +1463,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions?pageNumber=1&pageSize=2",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["transactions"],
 									"query": [
 										{
 											"key": "pageNumber",
@@ -1710,12 +1516,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions?created&pageNumber=1&pageSize=2",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["transactions"],
 									"query": [
 										{
 											"key": "created",
@@ -1773,13 +1575,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{API_URL}}/transactions/:id",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"transactions",
-								":id"
-							],
+							"host": ["{{API_URL}}"],
+							"path": ["transactions", ":id"],
 							"variable": [
 								{
 									"key": "id",
@@ -1796,13 +1593,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions/:id",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions",
-										":id"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["transactions", ":id"],
 									"variable": [
 										{
 											"key": "id",
@@ -1861,13 +1653,8 @@
 						},
 						"url": {
 							"raw": "{{API_URL}}/transactions/:id",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"transactions",
-								":id"
-							],
+							"host": ["{{API_URL}}"],
+							"path": ["transactions", ":id"],
 							"variable": [
 								{
 									"key": "id",
@@ -1893,13 +1680,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/transactions/:id",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions",
-										":id"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["transactions", ":id"],
 									"variable": [
 										{
 											"key": "id",
@@ -1949,13 +1731,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{API_URL}}/transactions/:id",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"transactions",
-								":id"
-							],
+							"host": ["{{API_URL}}"],
+							"path": ["transactions", ":id"],
 							"variable": [
 								{
 									"key": "id",
@@ -1972,13 +1749,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions/:id",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions",
-										":id"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["transactions", ":id"],
 									"variable": [
 										{
 											"key": "id",
@@ -2026,13 +1798,8 @@
 								"header": [],
 								"url": {
 									"raw": "{{API_URL}}/transactions/:id",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"transactions",
-										":id"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["transactions", ":id"],
 									"variable": [
 										{
 											"key": "id",
@@ -2097,12 +1864,8 @@
 						},
 						"url": {
 							"raw": "{{API_URL}}/documents",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"documents"
-							]
+							"host": ["{{API_URL}}"],
+							"path": ["documents"]
 						}
 					},
 					"response": [
@@ -2123,12 +1886,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/documents",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"documents"
-									]
+									"host": ["{{API_URL}}"],
+									"path": ["documents"]
 								}
 							},
 							"status": "OK",
@@ -2180,12 +1939,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/documents",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"documents"
-									]
+									"host": ["{{API_URL}}"],
+									"path": ["documents"]
 								}
 							},
 							"status": "Conflict",
@@ -2239,14 +1994,8 @@
 						},
 						"url": {
 							"raw": "{{API_URL}}/documents/:userName/:document",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"documents",
-								":userName",
-								":document"
-							],
+							"host": ["{{API_URL}}"],
+							"path": ["documents", ":userName", ":document"],
 							"variable": [
 								{
 									"key": "userName",
@@ -2277,14 +2026,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/documents/:userName/:document",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"documents",
-										":userName",
-										":document"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["documents", ":userName", ":document"],
 									"variable": [
 										{
 											"key": "userName",
@@ -2346,14 +2089,8 @@
 								},
 								"url": {
 									"raw": "{{API_URL}}/documents/:userName/:document",
-									"host": [
-										"{{API_URL}}"
-									],
-									"path": [
-										"documents",
-										":userName",
-										":document"
-									],
+									"host": ["{{API_URL}}"],
+									"path": ["documents", ":userName", ":document"],
 									"variable": [
 										{
 											"key": "userName",
@@ -2407,14 +2144,8 @@
 						"header": [],
 						"url": {
 							"raw": "{{API_URL}}/documents/:userName/:document",
-							"host": [
-								"{{API_URL}}"
-							],
-							"path": [
-								"documents",
-								":userName",
-								":document"
-							],
+							"host": ["{{API_URL}}"],
+							"path": ["documents", ":userName", ":document"],
 							"variable": [
 								{
 									"key": "userName",
@@ -2438,9 +2169,7 @@
 				"header": [],
 				"url": {
 					"raw": "{{API_URL}}",
-					"host": [
-						"{{API_URL}}"
-					]
+					"host": ["{{API_URL}}"]
 				}
 			},
 			"response": [
@@ -2451,9 +2180,7 @@
 						"header": [],
 						"url": {
 							"raw": "{{API_URL}}",
-							"host": [
-								"{{API_URL}}"
-							]
+							"host": ["{{API_URL}}"]
 						}
 					},
 					"status": "OK",
@@ -2500,25 +2227,5 @@
 				"type": "string"
 			}
 		]
-	},
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	]
+	}
 }
