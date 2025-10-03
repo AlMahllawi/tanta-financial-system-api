@@ -2,13 +2,11 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
-	JoinTable,
-	ManyToMany,
 	OneToMany,
 	PrimaryColumn,
 	UpdateDateColumn,
 } from "typeorm";
-import { Permission } from "./permission.entity.js";
+import { UserGroups } from "../types/enums.js";
 import { Transaction } from "./transaction.entity.js";
 import { TransactionForward } from "./transaction.forward.entity.js";
 
@@ -30,23 +28,6 @@ export class User {
 	@UpdateDateColumn()
 	updatedAt!: Date;
 
-	@ManyToMany(
-		() => Permission,
-		(permission) => permission.users,
-	)
-	@JoinTable({
-		name: "UsersPermissions",
-		joinColumn: {
-			name: "user",
-			referencedColumnName: "name",
-		},
-		inverseJoinColumn: {
-			name: "permission",
-			referencedColumnName: "name",
-		},
-	})
-	permissions!: Permission[];
-
 	@OneToMany(
 		() => Transaction,
 		(transaction) => transaction.creator,
@@ -64,4 +45,11 @@ export class User {
 		(transactionForward) => transactionForward.receiver,
 	)
 	receivedTransactionForwards!: TransactionForward[];
+
+	@Column({
+		type: "enum",
+		enum: UserGroups,
+		default: UserGroups.USER,
+	})
+	group!: UserGroups;
 }

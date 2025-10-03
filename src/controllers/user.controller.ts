@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { UserAdaptor } from "../adaptor/user.adaptor.js";
 import { UserDTO } from "../dto/user.dto.js";
+import { UserGroups } from "../types/enums.js";
 import { assertAuthenticatedRequest } from "../types/guard.js";
 import { Exceptions } from "../utils/exceptions.js";
 
@@ -30,6 +31,12 @@ export async function viewAllUsers(req: Request, res: Response) {
 
 export async function createUser(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
+
+	if (req.user.group !== UserGroups.ADMIN)
+		return res
+			.status(403)
+			.json({ status: "forbidden", message: "Missing access." });
+
 	const { name, password } = UserDTO.CreationSchema.parse(req.body);
 	try {
 		const user = await UserAdaptor.create(name, password);

@@ -1,14 +1,11 @@
 import type { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1758558448417 implements MigrationInterface {
-	name = "Init1758558448417";
+export class Init1759484455349 implements MigrationInterface {
+	name = "Init1759484455349";
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(
-			`CREATE TABLE "TransactionDocuments" ("id" SERIAL NOT NULL, "transactionId" integer NOT NULL, "documentURI" text NOT NULL, CONSTRAINT "PK_8488f8e87bde7dacf065cec4cbb" PRIMARY KEY ("id"))`,
-		);
-		await queryRunner.query(
-			`CREATE UNIQUE INDEX "IDX_da02ffeccc7e9456775a52528a" ON "TransactionDocuments" ("transactionId", "documentURI") `,
+			`CREATE TABLE "Users" ("name" character varying(255) NOT NULL, "hashedPassword" text NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_User" PRIMARY KEY ("name"))`,
 		);
 		await queryRunner.query(
 			`CREATE TYPE "public"."TransactionForwards_status_enum" AS ENUM('waiting', 'needs-editing', 'rejected', 'approved', 'fulfilled')`,
@@ -26,22 +23,10 @@ export class Init1758558448417 implements MigrationInterface {
 			`CREATE TABLE "Transactions" ("id" SERIAL NOT NULL, "title" character varying(255) NOT NULL, "description" text NOT NULL, "fulfilled" boolean NOT NULL DEFAULT false, "priority" "public"."Transactions_priority_enum" NOT NULL DEFAULT 'low', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "type" character varying(255), "creatorName" character varying(255) NOT NULL, CONSTRAINT "PK_7761bf9766670b894ff2fdb3700" PRIMARY KEY ("id"))`,
 		);
 		await queryRunner.query(
-			`CREATE TABLE "Users" ("name" character varying(255) NOT NULL, "hashedPassword" text NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_User" PRIMARY KEY ("name"))`,
+			`CREATE TABLE "TransactionDocuments" ("id" SERIAL NOT NULL, "transactionId" integer NOT NULL, "documentURI" text NOT NULL, CONSTRAINT "PK_8488f8e87bde7dacf065cec4cbb" PRIMARY KEY ("id"))`,
 		);
 		await queryRunner.query(
-			`CREATE TABLE "Permissions" ("name" character varying(255) NOT NULL, CONSTRAINT "PK_Permission" PRIMARY KEY ("name"))`,
-		);
-		await queryRunner.query(
-			`CREATE TABLE "UsersPermissions" ("user" character varying(255) NOT NULL, "permission" character varying(255) NOT NULL, CONSTRAINT "PK_182476683fc5125bc9ac4542015" PRIMARY KEY ("user", "permission"))`,
-		);
-		await queryRunner.query(
-			`CREATE INDEX "IDX_402bdcfebaa4b1da3676f4b53a" ON "UsersPermissions" ("user") `,
-		);
-		await queryRunner.query(
-			`CREATE INDEX "IDX_a56a2164ad71c72f9a98e3426e" ON "UsersPermissions" ("permission") `,
-		);
-		await queryRunner.query(
-			`ALTER TABLE "TransactionDocuments" ADD CONSTRAINT "FK_5af1652efbaf92c671aec181de3" FOREIGN KEY ("transactionId") REFERENCES "Transactions"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
+			`CREATE UNIQUE INDEX "IDX_da02ffeccc7e9456775a52528a" ON "TransactionDocuments" ("transactionId", "documentURI") `,
 		);
 		await queryRunner.query(
 			`ALTER TABLE "TransactionForwards" ADD CONSTRAINT "FK_55ee1426da442ba907eccacd71f" FOREIGN KEY ("transactionId") REFERENCES "Transactions"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
@@ -59,19 +44,13 @@ export class Init1758558448417 implements MigrationInterface {
 			`ALTER TABLE "Transactions" ADD CONSTRAINT "FK_7de4df2c396e0b5caf8d4020304" FOREIGN KEY ("creatorName") REFERENCES "Users"("name") ON DELETE RESTRICT ON UPDATE NO ACTION`,
 		);
 		await queryRunner.query(
-			`ALTER TABLE "UsersPermissions" ADD CONSTRAINT "FK_402bdcfebaa4b1da3676f4b53a7" FOREIGN KEY ("user") REFERENCES "Users"("name") ON DELETE CASCADE ON UPDATE CASCADE`,
-		);
-		await queryRunner.query(
-			`ALTER TABLE "UsersPermissions" ADD CONSTRAINT "FK_a56a2164ad71c72f9a98e3426e8" FOREIGN KEY ("permission") REFERENCES "Permissions"("name") ON DELETE NO ACTION ON UPDATE NO ACTION`,
+			`ALTER TABLE "TransactionDocuments" ADD CONSTRAINT "FK_5af1652efbaf92c671aec181de3" FOREIGN KEY ("transactionId") REFERENCES "Transactions"("id") ON DELETE CASCADE ON UPDATE NO ACTION`,
 		);
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(
-			`ALTER TABLE "UsersPermissions" DROP CONSTRAINT "FK_a56a2164ad71c72f9a98e3426e8"`,
-		);
-		await queryRunner.query(
-			`ALTER TABLE "UsersPermissions" DROP CONSTRAINT "FK_402bdcfebaa4b1da3676f4b53a7"`,
+			`ALTER TABLE "TransactionDocuments" DROP CONSTRAINT "FK_5af1652efbaf92c671aec181de3"`,
 		);
 		await queryRunner.query(
 			`ALTER TABLE "Transactions" DROP CONSTRAINT "FK_7de4df2c396e0b5caf8d4020304"`,
@@ -89,17 +68,9 @@ export class Init1758558448417 implements MigrationInterface {
 			`ALTER TABLE "TransactionForwards" DROP CONSTRAINT "FK_55ee1426da442ba907eccacd71f"`,
 		);
 		await queryRunner.query(
-			`ALTER TABLE "TransactionDocuments" DROP CONSTRAINT "FK_5af1652efbaf92c671aec181de3"`,
+			`DROP INDEX "public"."IDX_da02ffeccc7e9456775a52528a"`,
 		);
-		await queryRunner.query(
-			`DROP INDEX "public"."IDX_a56a2164ad71c72f9a98e3426e"`,
-		);
-		await queryRunner.query(
-			`DROP INDEX "public"."IDX_402bdcfebaa4b1da3676f4b53a"`,
-		);
-		await queryRunner.query(`DROP TABLE "UsersPermissions"`);
-		await queryRunner.query(`DROP TABLE "Permissions"`);
-		await queryRunner.query(`DROP TABLE "Users"`);
+		await queryRunner.query(`DROP TABLE "TransactionDocuments"`);
 		await queryRunner.query(`DROP TABLE "Transactions"`);
 		await queryRunner.query(`DROP TYPE "public"."Transactions_priority_enum"`);
 		await queryRunner.query(`DROP TABLE "TransactionTypes"`);
@@ -107,9 +78,6 @@ export class Init1758558448417 implements MigrationInterface {
 		await queryRunner.query(
 			`DROP TYPE "public"."TransactionForwards_status_enum"`,
 		);
-		await queryRunner.query(
-			`DROP INDEX "public"."IDX_da02ffeccc7e9456775a52528a"`,
-		);
-		await queryRunner.query(`DROP TABLE "TransactionDocuments"`);
+		await queryRunner.query(`DROP TABLE "Users"`);
 	}
 }

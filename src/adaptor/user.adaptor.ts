@@ -1,6 +1,5 @@
 import { compare, hash } from "bcrypt";
 import jwt from "jsonwebtoken";
-import { In } from "typeorm";
 import datasource from "../datasource.js";
 import type { UserDTO } from "../dto/user.dto.js";
 import { User } from "../entities/user.entity.js";
@@ -17,44 +16,6 @@ export namespace UserAdaptor {
 		const content: UserDTO.Token = { name: user.name };
 
 		return jwt.sign(content, JWT_SECRET, { expiresIn: "1d" });
-	}
-
-	export async function missingPermissions(
-		name: string,
-		permissions: string[],
-	): Promise<string[]> {
-		if (permissions.length === 0) return [];
-
-		const userPermissions = await datasource.getRepository(User).find({
-			join: {
-				alias: "user",
-				innerJoin: {
-					permissions: "user.permissions",
-				},
-			},
-			where: {
-				name,
-				permissions: {
-					name: In([...permissions, "Administrator"]),
-				},
-			},
-			select: ["permissions"],
-			relations: ["permissions"],
-		});
-
-		let missingPermissions = permissions.filter(
-			(permission) =>
-				!userPermissions
-					.flatMap((user) => user.permissions)
-					.map((permission) => permission.name)
-					.includes(permission),
-		);
-
-		if (missingPermissions.includes("Administrator"))
-			missingPermissions.splice(missingPermissions.indexOf("Administrator"), 1);
-		else missingPermissions = [];
-
-		return missingPermissions;
 	}
 
 	export async function create(name: string, password: string) {

@@ -11,3 +11,8 @@ export enum TransactionPriority {
 	MEDIUM = "medium",
 	LOW = "low",
 }
+
+export enum UserGroups {
+	ADMIN = "admin",
+	USER = "user",
+}

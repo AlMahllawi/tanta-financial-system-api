@@ -1,8 +1,7 @@
 import type { Request, Response } from "express";
 import { TransactionAdaptor } from "../adaptor/transaction.adaptor.js";
-import { UserAdaptor } from "../adaptor/user.adaptor.js";
 import { TransactionDTO } from "../dto/transaction.dto.js";
-import { missingPermissionResponse } from "../middlewares/permissions.middleware.js";
+import { UserGroups } from "../types/enums.js";
 import { assertAuthenticatedRequest } from "../types/guard.js";
 import { Exceptions } from "../utils/exceptions.js";
 
@@ -54,13 +53,10 @@ export async function viewTransactions(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
 	const viewAll = "all" in req.query;
-	const permissions = ["ViewAllTransactions"];
-	if (
-		viewAll &&
-		(await UserAdaptor.missingPermissions(req.user.name, permissions)).length >
-			0
-	)
-		return missingPermissionResponse(res, permissions);
+	if (viewAll && req.user.group !== UserGroups.ADMIN)
+		return res
+			.status(403)
+			.json({ status: "forbidden", message: "Missing access." });
 
 	const transactions = await (viewAll
 		? TransactionAdaptor.view()
@@ -209,13 +205,11 @@ export async function updateTransactionForwardStatus(
 		status,
 	);
 
-	res
-		.status(200)
-		.json({
-			status: "success",
-			transactionForward:
-				TransactionDTO.ForwardViewSchema.parse(transactionForward),
-		});
+	res.status(200).json({
+		status: "success",
+		transactionForward:
+			TransactionDTO.ForwardViewSchema.parse(transactionForward),
+	});
 }
 
 export async function deleteTransactionForward(req: Request, res: Response) {
