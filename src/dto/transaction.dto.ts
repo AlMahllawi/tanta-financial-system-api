@@ -15,7 +15,7 @@ export namespace TransactionDTO {
 			id: z.number(),
 			title: z.string(),
 			description: z.string(),
-			type: z.string(),
+			type: TypeViewSchema,
 			fulfilled: z.boolean(),
 			priority: PrioritySchema,
 			creator: UserDTO.ViewSchema,
@@ -40,8 +40,7 @@ export namespace TransactionDTO {
 
 	export const ForwardViewSchema = z
 		.object({
-			id: z.string(),
-			transaction: ViewSchema,
+			id: z.int(),
 			status: ForwardStatusSchema,
 			sender: UserDTO.ViewSchema,
 			receiver: UserDTO.ViewSchema,

@@ -41,8 +41,13 @@ export namespace UserAdaptor {
 		return await datasource.getRepository(User).findOneBy({ name });
 	}
 
-	export async function viewAll() {
-		// TODO: paging
-		return await datasource.getRepository(User).find();
+	export async function viewAll(pageNumber: number, pageSize: number) {
+		return await datasource.getRepository(User).find({
+			skip: (pageNumber - 1) * pageSize,
+			take: pageSize,
+			order: {
+				name: "asc",
+			},
+		});
 	}
 }

@@ -71,15 +71,38 @@ export namespace TransactionAdaptor {
 		return await datasource.getRepository(Transaction).save(transaction);
 	}
 
-	export async function view(): Promise<Transaction[]>;
-	export async function view(id: number): Promise<Transaction | null>;
-	export async function view(user: User): Promise<Transaction[]>;
-	export async function view(param?: number | User) {
-		const transactionRepository = datasource.getRepository(Transaction);
-		if (!param) return await transactionRepository.find();
-		if (typeof param === "number")
-			return await transactionRepository.findOneBy({ id: param });
-		return await transactionRepository.findBy({ creator: param });
+	export async function view(id: number) {
+		return await datasource.getRepository(Transaction).findOneBy({ id });
+	}
+
+	export async function viewAll(
+		pageNumber: number,
+		pageSize: number,
+	): Promise<Transaction[]> {
+		return await datasource.getRepository(Transaction).find({
+			relations: ["type", "creator"],
+			skip: (pageNumber - 1) * pageSize,
+			take: pageSize,
+			order: {
+				id: "desc",
+			},
+		});
+	}
+
+	export async function createdBy(
+		creatorName: string,
+		pageNumber: number,
+		pageSize: number,
+	) {
+		return await datasource.getRepository(Transaction).find({
+			relations: ["type", "creator"],
+			skip: (pageNumber - 1) * pageSize,
+			take: pageSize,
+			order: {
+				id: "desc",
+			},
+			where: { creator: { name: creatorName } },
+		});
 	}
 
 	export async function update(
@@ -199,9 +222,17 @@ export namespace TransactionAdaptor {
 			.save(transactionForward);
 	}
 
-	export async function viewForwards(transactionId: number) {
+	export async function viewForwards(
+		transactionId: number,
+		pageNumber: number,
+		pageSize: number,
+	) {
 		return await datasource.getRepository(TransactionForward).find({
-			// select: { sender: { name: true }, receiver: { name: true } },
+			skip: (pageNumber - 1) * pageSize,
+			take: pageSize,
+			order: {
+				id: "desc",
+			},
 			relations: ["sender", "receiver"],
 			where: { transaction: { id: transactionId } },
 		});

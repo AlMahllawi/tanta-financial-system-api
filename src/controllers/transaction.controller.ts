@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { TransactionAdaptor } from "../adaptor/transaction.adaptor.js";
 import { TransactionDTO } from "../dto/transaction.dto.js";
+import { UtilsDTO } from "../dto/utils.dto.js";
 import { UserGroups } from "../types/enums.js";
 import { assertAuthenticatedRequest } from "../types/guard.js";
 import { Exceptions } from "../utils/exceptions.js";
@@ -52,18 +53,22 @@ export async function createTransaction(req: Request, res: Response) {
 export async function viewTransactions(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const viewAll = "all" in req.query;
-	if (viewAll && req.user.group !== UserGroups.ADMIN)
-		return res
-			.status(403)
-			.json({ status: "forbidden", message: "Missing access." });
+	const viewCreated = "created" in req.query;
+	if (!viewCreated && req.user.group !== UserGroups.ADMIN)
+		return res.status(403).json({
+			status: "forbidden",
+			message: "Missing access to view all transactions.",
+		});
 
-	const transactions = await (viewAll
-		? TransactionAdaptor.view()
-		: TransactionAdaptor.view(req.user));
+	const { pageNumber, pageSize } = UtilsDTO.Paging.parse(req.query);
+
+	const transactions = await (viewCreated
+		? TransactionAdaptor.createdBy(req.user.name, pageNumber, pageSize)
+		: TransactionAdaptor.viewAll(pageNumber, pageSize));
 
 	res.status(200).json({
 		status: "success",
+		page: { number: pageNumber, size: pageSize },
 		transactions: transactions.map((t) => TransactionDTO.ViewSchema.parse(t)),
 	});
 }
@@ -177,10 +182,18 @@ export async function viewTransactionForwards(req: Request, res: Response) {
 
 	const { id } = TransactionDTO.TargetSchema.parse(req.params);
 
-	const transactionForwards = await TransactionAdaptor.viewForwards(id);
+	const { pageNumber, pageSize } = UtilsDTO.Paging.parse(req.query);
+
+	const transactionForwards = await TransactionAdaptor.viewForwards(
+		id,
+		pageNumber,
+		pageSize,
+	);
 
 	res.status(200).json({
 		status: "success",
+		page: { number: pageNumber, size: pageSize },
+		transactionId: id,
 		transactionForwards: transactionForwards.map((tf) =>
 			TransactionDTO.ForwardViewSchema.parse(tf),
 		),
