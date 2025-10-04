@@ -3,6 +3,8 @@ import {
 	TransactionForwardStatus,
 	TransactionPriority,
 } from "../types/enums.js";
+import { IsNameRegExp } from "../utils/regex.js";
+import { DocumentDTO } from "./document.dto.js";
 import { UserDTO } from "./user.dto.js";
 
 export namespace TransactionDTO {
@@ -51,8 +53,10 @@ export namespace TransactionDTO {
 
 	export const TypeNameSchema = z
 		.string()
+		.trim()
 		.min(5, "Too short transaction type name")
-		.max(255, "Too long transaction type name");
+		.max(255, "Too long transaction type name")
+		.regex(IsNameRegExp);
 
 	export const TypeCreationSchema = z.object({ name: TypeNameSchema }).strict();
 
@@ -112,13 +116,7 @@ export namespace TransactionDTO {
 	export const TargetDocumentSchema = z
 		.object({
 			id: IdSchema,
-			userName: UserDTO.NameSchema,
-			document: z
-				.string()
-				.regex(
-					/^[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*\.[a-zA-Z0-9]+$/g,
-				)
-				.toLowerCase(),
+			...DocumentDTO.TargetScheme.shape,
 		})
 		.strict();
 }

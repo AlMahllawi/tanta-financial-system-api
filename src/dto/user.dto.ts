@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { UserGroups } from "../types/enums.js";
+import { IsNameRegExp } from "../utils/regex.js";
 
 export namespace UserDTO {
 	export const ViewSchema = z
@@ -12,11 +13,10 @@ export namespace UserDTO {
 
 	export const NameSchema = z
 		.string()
+		.trim()
 		.min(5, "Too short user name")
 		.max(255, "Too long user name")
-		.regex(
-			/^[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-\s]*[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-]+[\u0621-\u064A\u0660-\u0669a-zA-Z0-9-_\s]*/g,
-		);
+		.regex(IsNameRegExp);
 
 	export const Token = z.looseObject(
 		{

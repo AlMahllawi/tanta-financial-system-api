@@ -74,19 +74,23 @@ export async function viewTransactions(req: Request, res: Response) {
 }
 
 export async function viewTransaction(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
 	const { id } = TransactionDTO.TargetSchema.parse(req.params);
+
 	// TODO: check access
+
 	const transaction = await TransactionAdaptor.view(id);
-	if (transaction)
-		res.status(200).json({
-			status: "success",
-			transaction: TransactionDTO.ViewSchema.parse(transaction),
-		});
-	else
-		res.status(404).json({
+	if (!transaction)
+		return res.status(404).json({
 			status: "not-found",
 			message: `No transaction was found with id: ${id}.`,
 		});
+
+	res.status(200).json({
+		status: "success",
+		transaction: TransactionDTO.ViewSchema.parse(transaction),
+	});
 }
 
 export async function updateTransaction(req: Request, res: Response) {
@@ -120,13 +124,12 @@ export async function attachTransactionDocument(req: Request, res: Response) {
 
 	// TODO: check access
 
-	const { id, userName, document } = TransactionDTO.TargetDocumentSchema.parse(
-		req.params,
-	);
+	const { id, userName, documentName } =
+		TransactionDTO.TargetDocumentSchema.parse(req.params);
 
 	const transactionDocument = await TransactionAdaptor.attachDocument(
 		id,
-		`${userName}/${document}`,
+		`${userName}/${documentName}`,
 	);
 
 	res.status(200).json({
@@ -141,11 +144,10 @@ export async function detachTransactionDocument(req: Request, res: Response) {
 
 	// TODO: check access
 
-	const { id, userName, document } = TransactionDTO.TargetDocumentSchema.parse(
-		req.params,
-	);
+	const { id, userName, documentName } =
+		TransactionDTO.TargetDocumentSchema.parse(req.params);
 
-	const documentURI = `${userName}/${document}`;
+	const documentURI = `${userName}/${documentName}`;
 
 	const deleted = await TransactionAdaptor.detachDocument(id, documentURI);
 

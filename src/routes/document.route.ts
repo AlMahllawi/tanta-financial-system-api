@@ -19,8 +19,12 @@ router.post(
 	uploadDocument,
 );
 
-router.get("/documents/:userName/:document", authMiddleware, viewDocument);
+router.get("/documents/:userName/:documentName", authMiddleware, viewDocument);
 
-router.delete("/documents/:userName/:document", authMiddleware, deleteDocument);
+router.delete(
+	"/documents/:userName/:documentName",
+	authMiddleware,
+	deleteDocument,
+);
 
 export default router;

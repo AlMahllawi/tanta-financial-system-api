@@ -12,15 +12,11 @@ import {
 import { DOCUMENTS_PATH } from "../utils/env.js";
 import { Exceptions } from "../utils/exceptions.js";
 
-function sensitizeUserName(name: string) {
-	return name.replace(/[^a-zA-Z0-9_-]/g, "").toLowerCase();
-}
-
 const storage = multer.diskStorage({
 	destination: (req: Request, file: Express.Multer.File, cb) => {
 		assertAuthenticatedRequest(req);
 
-		const uploadPath = join(DOCUMENTS_PATH, sensitizeUserName(req.user.name));
+		const uploadPath = join(DOCUMENTS_PATH, req.user.name);
 
 		mkdirSync(uploadPath, { recursive: true });
 
@@ -61,11 +57,9 @@ export async function uploadDocument(req: Request, res: Response) {
 export async function viewDocument(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const { userName, document } = DocumentDTO.URIScheme.parse(req.params);
+	const { userName, documentName } = DocumentDTO.TargetScheme.parse(req.params);
 
-	// TODO: check access
-
-	const documentURI = join(sensitizeUserName(userName), document);
+	const documentURI = join(userName, documentName);
 
 	const documentPath = join(DOCUMENTS_PATH, documentURI);
 
@@ -81,14 +75,14 @@ export async function viewDocument(req: Request, res: Response) {
 export async function deleteDocument(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const { userName, document } = DocumentDTO.URIScheme.parse(req.params);
+	const { userName, documentName } = DocumentDTO.TargetScheme.parse(req.params);
 
 	if (req.user.name !== userName && req.user.group !== UserGroups.ADMIN)
 		throw new Exceptions.Forbidden(
-			`The document ${document} belongs to the user ${userName}. Can't proceed with the deletion.`,
+			`The document ${documentName} belongs to the user ${userName}. Can't proceed with the deletion.`,
 		);
 
-	const documentURI = join(sensitizeUserName(userName), document);
+	const documentURI = join(userName, documentName);
 
 	const documentPath = join(DOCUMENTS_PATH, documentURI);
 
