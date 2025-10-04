@@ -69,7 +69,7 @@ export async function viewUser(req: Request, res: Response) {
 	else
 		res.status(404).json({
 			status: "not-found",
-			message: `No user was found with name: ${name}.`,
+			message: `No user was found with name: "${name}".`,
 		});
 }
 

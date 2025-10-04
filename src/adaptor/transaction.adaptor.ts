@@ -27,7 +27,7 @@ export namespace TransactionAdaptor {
 			if (error.driverError?.constraint !== "PK_TransactionType") throw error;
 
 			throw new Exceptions.Conflict(
-				`There exist a transaction type with the name: ${name}.`,
+				`There exist a transaction type with the name: "${name}".`,
 			);
 		}
 
@@ -52,7 +52,7 @@ export namespace TransactionAdaptor {
 
 		if (!type)
 			throw new Exceptions.Invalid(
-				`Invalid transaction type name: ${typeName}.`,
+				`Invalid transaction type name: "${typeName}".`,
 			);
 
 		transaction.type = type;
@@ -62,7 +62,7 @@ export namespace TransactionAdaptor {
 			.findOneBy({ name: creatorName });
 
 		if (!creator)
-			throw new Exceptions.Invalid(`No user with name: ${creatorName}.`);
+			throw new Exceptions.Invalid(`No user with name: "${creatorName}".`);
 
 		transaction.creator = creator;
 
@@ -117,7 +117,7 @@ export namespace TransactionAdaptor {
 
 		if (!transaction)
 			throw new Exceptions.Invalid(
-				`Invalid transaction identifier: ${transactionId}.`,
+				`Invalid transaction identifier: "${transactionId}".`,
 			);
 
 		if (updates.title !== undefined) transaction.title = updates.title;
@@ -137,7 +137,7 @@ export namespace TransactionAdaptor {
 
 			if (!type)
 				throw new Exceptions.Invalid(
-					`Invalid transaction type name: ${updates.typeName}.`,
+					`Invalid transaction type name: "${updates.typeName}".`,
 				);
 
 			transaction.type = type;
@@ -203,7 +203,7 @@ export namespace TransactionAdaptor {
 
 		if (!senderUser)
 			throw new Exceptions.Invalid(
-				`There was no user with the name: ${senderName}. Can't create a transaction forward.`,
+				`There was no user with the name: "${senderName}". Can't create a transaction forward.`,
 			);
 
 		transactionForward.sender = senderUser;
@@ -212,7 +212,7 @@ export namespace TransactionAdaptor {
 
 		if (!receiverUser)
 			throw new Exceptions.Invalid(
-				`There was no user with the name: ${receiverUser}. Can't create a transaction forward.`,
+				`There was no user with the name: "${receiverUser}". Can't create a transaction forward.`,
 			);
 
 		transactionForward.receiver = receiverUser;

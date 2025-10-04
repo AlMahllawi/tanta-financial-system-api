@@ -30,7 +30,7 @@ export namespace UserAdaptor {
 			if (error.driverError?.constraint !== "PK_User") throw error;
 
 			throw new Exceptions.Conflict(
-				`There exist a user with the name: ${name}. Can't proceed with the creation.`,
+				`There exist a user with the name: "${name}". Can't proceed with the creation.`,
 			);
 		}
 

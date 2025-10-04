@@ -111,7 +111,7 @@ export async function deleteTransaction(req: Request, res: Response) {
 	else
 		res.status(404).json({
 			status: "not-found",
-			message: `No transaction was found with id: ${id}.`,
+			message: `No transaction was found with id: "${id}".`,
 		});
 }
 
@@ -154,7 +154,7 @@ export async function detachTransactionDocument(req: Request, res: Response) {
 	else
 		res.status(404).json({
 			status: "not-found",
-			message: `No document ${documentURI} for the transaction id: ${id}.`,
+			message: `No document ${documentURI} for the transaction id: "${id}".`,
 		});
 }
 
@@ -245,6 +245,6 @@ export async function deleteTransactionForward(req: Request, res: Response) {
 	else
 		res.status(404).json({
 			status: "not-found",
-			message: `No transaction forward was found with id: ${forwardId}.`,
+			message: `No transaction forward was found with id: "${forwardId}".`,
 		});
 }
