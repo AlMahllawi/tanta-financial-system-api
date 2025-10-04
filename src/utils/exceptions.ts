@@ -12,6 +12,8 @@ export abstract class BaseCustomException extends Error {
 	}
 }
 
+// TODO: remove
+
 export namespace Exceptions {
 	export class Invalid extends BaseCustomException {}
 

@@ -23,6 +23,8 @@ app.get("/", (req, res) => {
 	res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// TODO: log actions
+
 app.use(userRouter);
 
 app.use(documentRouter);
