@@ -24,7 +24,7 @@ export namespace DocumentDTO {
 
 	export const TargetScheme = z
 		.object({
-			userName: UserDTO.NameSchema,
+			uploaderName: UserDTO.NameSchema,
 			documentName: NameScheme,
 		})
 		.strict();

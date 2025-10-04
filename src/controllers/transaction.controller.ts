@@ -78,13 +78,24 @@ export async function viewTransaction(req: Request, res: Response) {
 
 	const { id } = TransactionDTO.TargetSchema.parse(req.params);
 
-	// TODO: check access
-
 	const transaction = await TransactionAdaptor.view(id);
 	if (!transaction)
 		return res.status(404).json({
 			status: "not-found",
-			message: `No transaction was found with id: ${id}.`,
+			message: `No transaction was found with id: "${id}".`,
+		});
+
+	if (
+		req.user.name !== transaction.creator.name &&
+		req.user.group !== UserGroups.ADMIN &&
+		!(await TransactionAdaptor.hasBeenForwardedTo(
+			transaction.id,
+			req.user.name,
+		))
+	)
+		return res.status(403).json({
+			status: "forbidden",
+			message: `You don't have access to the transaction with the id: "${id}".`,
 		});
 
 	res.status(200).json({
@@ -94,10 +105,24 @@ export async function viewTransaction(req: Request, res: Response) {
 }
 
 export async function updateTransaction(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
 	const { id } = TransactionDTO.TargetSchema.parse(req.params);
 	const updates = TransactionDTO.UpdatesSchema.parse(req.body);
 
-	// TODO: check access
+	const creatorName = await TransactionAdaptor.creatorName(id);
+
+	if (!creatorName)
+		return res.status(404).json({
+			status: "not-found",
+			message: `No transaction was found with id: "${id}".`,
+		});
+
+	if (req.user.name !== creatorName && req.user.group !== UserGroups.ADMIN)
+		return res.status(403).json({
+			status: "forbidden",
+			message: `You don't have access to update the transaction with the id: "${id}".`,
+		});
 
 	const updatedTransaction = await TransactionAdaptor.update(id, updates);
 
@@ -108,8 +133,24 @@ export async function updateTransaction(req: Request, res: Response) {
 }
 
 export async function deleteTransaction(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
 	const { id } = TransactionDTO.TargetSchema.parse(req.params);
-	// TODO: check access
+
+	const creatorName = await TransactionAdaptor.creatorName(id);
+
+	if (!creatorName)
+		return res.status(404).json({
+			status: "not-found",
+			message: `No transaction was found with id: "${id}".`,
+		});
+
+	if (req.user.name !== creatorName && req.user.group !== UserGroups.ADMIN)
+		return res.status(403).json({
+			status: "forbidden",
+			message: `You don't have access to delete the transaction with the id: "${id}".`,
+		});
+
 	const deleted = await TransactionAdaptor.remove(id);
 	if (deleted) res.status(200).json({ status: "success", deleted: id });
 	else
@@ -119,17 +160,45 @@ export async function deleteTransaction(req: Request, res: Response) {
 		});
 }
 
+async function getLastReceiverName(id: number) {
+	return (
+		await TransactionAdaptor.lastForward(
+			id,
+			{ receiver: { name: true } },
+			{
+				receiver: true,
+			},
+		)
+	)?.receiver.name;
+}
+
 export async function attachTransactionDocument(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	// TODO: check access
-
-	const { id, userName, documentName } =
+	const { id, uploaderName, documentName } =
 		TransactionDTO.TargetDocumentSchema.parse(req.params);
+
+	const creatorName = await TransactionAdaptor.creatorName(id);
+
+	if (!creatorName)
+		return res.status(404).json({
+			status: "not-found",
+			message: `No transaction was found with id: "${id}".`,
+		});
+
+	if (
+		req.user.name !== creatorName &&
+		req.user.group !== UserGroups.ADMIN &&
+		req.user.name !== (await getLastReceiverName(id))
+	)
+		return res.status(403).json({
+			status: "forbidden",
+			message: `You don't have access to attach a document to the transaction with the id: "${id}".`,
+		});
 
 	const transactionDocument = await TransactionAdaptor.attachDocument(
 		id,
-		`${userName}/${documentName}`,
+		`${uploaderName}/${documentName}`,
 	);
 
 	res.status(200).json({
@@ -142,12 +211,29 @@ export async function attachTransactionDocument(req: Request, res: Response) {
 export async function detachTransactionDocument(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	// TODO: check access
-
-	const { id, userName, documentName } =
+	const { id, uploaderName, documentName } =
 		TransactionDTO.TargetDocumentSchema.parse(req.params);
 
-	const documentURI = `${userName}/${documentName}`;
+	const creatorName = await TransactionAdaptor.creatorName(id);
+
+	if (!creatorName)
+		return res.status(404).json({
+			status: "not-found",
+			message: `No transaction was found with id: "${id}".`,
+		});
+
+	const documentURI = `${uploaderName}/${documentName}`;
+
+	if (
+		req.user.name !== creatorName &&
+		req.user.name !== uploaderName &&
+		req.user.group !== UserGroups.ADMIN &&
+		req.user.name !== (await getLastReceiverName(id))
+	)
+		return res.status(403).json({
+			status: "forbidden",
+			message: `You don't have access to detach a document from the transaction with the id: "${id}".`,
+		});
 
 	const deleted = await TransactionAdaptor.detachDocument(id, documentURI);
 
@@ -206,13 +292,39 @@ export async function updateTransactionForwardStatus(
 	req: Request,
 	res: Response,
 ) {
+	assertAuthenticatedRequest(req);
+
 	const { id, forwardId } = TransactionDTO.TargetForwardSchema.parse(
 		req.params,
 	);
 
 	const { status } = TransactionDTO.UpdateForwardStatusSchema.parse(req.body);
 
-	// TODO: must be last receiver
+	const lastForward = await TransactionAdaptor.lastForward(
+		id,
+		{ id: true, receiver: { name: true } },
+		{
+			receiver: true,
+		},
+	);
+
+	if (!lastForward)
+		return res.status(404).json({
+			status: "not-found",
+			message: `Transaction with the id: "${id}" has not been forwarded yet.`,
+		});
+
+	if (forwardId !== lastForward.id)
+		return res.status(404).json({
+			status: "not-found",
+			message: `Transaction with the id: "${id}" has been forwarded afterwards.`,
+		});
+
+	if (req.user.name !== lastForward.receiver.name)
+		return res.status(403).json({
+			status: "forbidden",
+			message: `You don't have access to update the transaction forward with the id: "${forwardId}".`,
+		});
 
 	const transactionForward = await TransactionAdaptor.updateForwardStatus(
 		id,
@@ -234,7 +346,32 @@ export async function deleteTransactionForward(req: Request, res: Response) {
 		req.params,
 	);
 
-	// TODO: allow last sender and creator
+	const lastForward = await TransactionAdaptor.lastForward(
+		id,
+		{ id: true, sender: { name: true } },
+		{
+			sender: true,
+		},
+	);
+
+	if (!lastForward)
+		return res.status(404).json({
+			status: "not-found",
+			message: `Transaction with the id: "${id}" has not been forwarded yet.`,
+		});
+
+	if (forwardId !== lastForward.id)
+		return res.status(404).json({
+			status: "not-found",
+			message: `Transaction with the id: "${id}" has been forwarded afterwards.`,
+		});
+
+	if (req.user.name !== lastForward.sender.name)
+		return res.status(403).json({
+			status: "forbidden",
+			message: `You don't have access to delete the transaction forward with the id: "${forwardId}".`,
+		});
+
 	if (req.user.group !== UserGroups.ADMIN)
 		return res.status(403).json({
 			status: "forbidden",

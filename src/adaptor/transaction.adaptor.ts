@@ -1,4 +1,4 @@
-import { In } from "typeorm";
+import { type FindOptionsRelations, type FindOptionsSelect, In } from "typeorm";
 import datasource from "../datasource.js";
 import type { TransactionDTO } from "../dto/transaction.dto.js";
 import { TransactionDocument } from "../entities/transaction.document.entity.js";
@@ -146,6 +146,18 @@ export namespace TransactionAdaptor {
 		return await transactionRepository.save(transaction);
 	}
 
+	export async function creatorName(id: number) {
+		const transaction = await datasource.getRepository(Transaction).findOne({
+			relations: { creator: true },
+			select: { creator: { name: true } },
+			where: { id },
+		});
+
+		if (!transaction) return null;
+
+		return transaction.creator.name;
+	}
+
 	export async function remove(id: number) {
 		return (
 			((await datasource.getRepository(Transaction).delete({ id })).affected ??
@@ -220,6 +232,38 @@ export namespace TransactionAdaptor {
 		return await datasource
 			.getRepository(TransactionForward)
 			.save(transactionForward);
+	}
+
+	export async function lastForward(
+		transactionId: number,
+		select?: FindOptionsSelect<TransactionForward>,
+		relations?: FindOptionsRelations<TransactionForward>,
+	) {
+		if (!relations) relations = {};
+		relations.transaction = true;
+
+		return await datasource.getRepository(TransactionForward).findOne({
+			order: { id: "desc" },
+			...(select ? { select } : {}),
+			relations,
+			where: { transaction: { id: transactionId } },
+		});
+	}
+
+	export async function hasBeenForwardedTo(
+		transactionId: number,
+		receiverName: string,
+	) {
+		return (
+			(await datasource.getRepository(TransactionForward).findOne({
+				select: { id: true },
+				relations: { transaction: true },
+				where: {
+					transaction: { id: transactionId },
+					receiver: { name: receiverName },
+				},
+			})) !== null
+		);
 	}
 
 	export async function viewForwards(

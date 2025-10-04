@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import type { Request, Response } from "express";
 import multer from "multer";
+import { DocumentAdaptor } from "../adaptor/document.adaptor.js";
 import { DocumentDTO } from "../dto/document.dto.js";
 import { castToUploadRequest } from "../types/cast.js";
 import { UserGroups } from "../types/enums.js";
@@ -57,9 +58,11 @@ export async function uploadDocument(req: Request, res: Response) {
 export async function viewDocument(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const { userName, documentName } = DocumentDTO.TargetScheme.parse(req.params);
+	const { uploaderName, documentName } = DocumentDTO.TargetScheme.parse(
+		req.params,
+	);
 
-	const documentURI = join(userName, documentName);
+	const documentURI = join(uploaderName, documentName);
 
 	const documentPath = join(DOCUMENTS_PATH, documentURI);
 
@@ -69,20 +72,31 @@ export async function viewDocument(req: Request, res: Response) {
 			message: `There was no document: "${documentURI}".`,
 		});
 
+	if (
+		req.user.group !== UserGroups.ADMIN &&
+		!(await DocumentAdaptor.hasAccess(req.user, documentURI))
+	)
+		return res.status(403).json({
+			status: "forbidden",
+			message: `Missing access to document: "${documentURI}".`,
+		});
+
 	res.status(200).sendFile(documentPath);
 }
 
 export async function deleteDocument(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const { userName, documentName } = DocumentDTO.TargetScheme.parse(req.params);
+	const { uploaderName, documentName } = DocumentDTO.TargetScheme.parse(
+		req.params,
+	);
 
-	if (req.user.name !== userName && req.user.group !== UserGroups.ADMIN)
+	if (req.user.name !== uploaderName && req.user.group !== UserGroups.ADMIN)
 		throw new Exceptions.Forbidden(
-			`The document ${documentName} belongs to the user ${userName}. Can't proceed with the deletion.`,
+			`The document ${documentName} belongs to the user ${uploaderName}. Can't proceed with the deletion.`,
 		);
 
-	const documentURI = join(userName, documentName);
+	const documentURI = join(uploaderName, documentName);
 
 	const documentPath = join(DOCUMENTS_PATH, documentURI);
 
