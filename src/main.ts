@@ -3,6 +3,7 @@ import chalk from "chalk";
 import type { Express } from "express";
 import express from "express";
 import "express-async-errors";
+import type { Server } from "http";
 import datasource from "./datasource.js";
 import errorHandler from "./middlewares/error.middleware.js";
 import {
@@ -37,11 +38,13 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
+let server: Server | undefined;
+
 datasource
 	.initialize()
 	.then(() => {
 		logger.info(chalk.green("Connected to the database"));
-		app.listen(PORT, () => {
+		server = app.listen(PORT, () => {
 			logger.info(`${chalk.green("Listening on port")} ${chalk.magenta(PORT)}`);
 		});
 	})
@@ -51,6 +54,21 @@ datasource
 	});
 
 async function cleanup() {
+	if (server) {
+		await new Promise<void>((resolve) => {
+			if (!server || !server.listening) return resolve();
+			server.close((err) => {
+				if (err) {
+					logger.info(chalk.red("Failed to close the HTTP server"));
+					logger.error(err);
+				} else {
+					logger.info(chalk.green("Closed the HTTP server"));
+				}
+				resolve();
+			});
+		});
+	}
+
 	try {
 		if (!datasource.isInitialized) return;
 		await datasource.destroy();
@@ -63,4 +81,3 @@ async function cleanup() {
 
 process.on("SIGINT", cleanup);
 process.on("SIGTERM", cleanup);
-process.on("beforeExit", cleanup);
