@@ -15,10 +15,10 @@ pnpm install
 
 ### Set up the environment
 ```bash
-cp example.env .env
+cp .env.example .env
 ```
 Change the environment to be `development` and insert the [database connection URL](https://stackoverflow.com/questions/3582552/what-is-the-format-for-the-postgresql-connection-string-url).
-```properties
+```dotenv
 NODE_ENV=development
 
 DB_CONNECTION_URL="postgres://almahllawi:n0nS3cure@localhost:5432/TantaFinancial"
@@ -27,6 +27,11 @@ DB_CONNECTION_URL="postgres://almahllawi:n0nS3cure@localhost:5432/TantaFinancial
 ### Run the migrations
 ```bash
 pnpm migration:run
+```
+
+### Seed the database
+```bash
+pnpm build && pnpm seed:run
 ```
 
 ### Launch the API

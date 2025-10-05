@@ -1,6 +1,6 @@
 {
 	"name": "tanta-financial-system-api",
-	"version": "1.0.0",
+	"version": "1.0.0-alpha",
 	"description": "Track financial and administrative transactions progress, submission and review.",
 	"main": "./dist/main.js",
 	"type": "module",
@@ -17,7 +17,7 @@
 		"migration:generate": "node ./run.js migration:generate",
 		"entity:create": "node ./run.js entity:create",
 		"seed:create": "typeorm-extension seed:create --root ./src/seeds",
-		"seed:run": "pnpm build && typeorm-extension seed:run --dataSource ./src/datasource.ts"
+		"seed:run": "typeorm-extension seed:run --dataSource ./src/datasource.ts"
 	},
 	"author": "AlMahllawi",
 	"packageManager": "pnpm@10.18.0",
