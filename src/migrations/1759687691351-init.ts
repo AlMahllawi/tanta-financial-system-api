@@ -1,11 +1,14 @@
 import type { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1759484455349 implements MigrationInterface {
-	name = "Init1759484455349";
+export class Init1759687691351 implements MigrationInterface {
+	name = "Init1759687691351";
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
 		await queryRunner.query(
-			`CREATE TABLE "Users" ("name" character varying(255) NOT NULL, "hashedPassword" text NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_User" PRIMARY KEY ("name"))`,
+			`CREATE TYPE "public"."Users_group_enum" AS ENUM('admin', 'user')`,
+		);
+		await queryRunner.query(
+			`CREATE TABLE "Users" ("name" character varying(255) NOT NULL, "hashedPassword" text NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "group" "public"."Users_group_enum" NOT NULL DEFAULT 'user', CONSTRAINT "PK_User" PRIMARY KEY ("name"))`,
 		);
 		await queryRunner.query(
 			`CREATE TYPE "public"."TransactionForwards_status_enum" AS ENUM('waiting', 'needs-editing', 'rejected', 'approved', 'fulfilled')`,
@@ -79,5 +82,6 @@ export class Init1759484455349 implements MigrationInterface {
 			`DROP TYPE "public"."TransactionForwards_status_enum"`,
 		);
 		await queryRunner.query(`DROP TABLE "Users"`);
+		await queryRunner.query(`DROP TYPE "public"."Users_group_enum"`);
 	}
 }
