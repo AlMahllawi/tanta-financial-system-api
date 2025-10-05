@@ -1,6 +1,7 @@
 {
 	"info": {
 		"name": "API",
+		"description": "# API Collection Documentation\n\nThis collection contains endpoints meant for interacting with [Tanta Financial System API](https://github.com/AlMahllawi/tanta-financial-system-api).\n\n---\n\n## Starting\n\nFirst of all, to be able to test the endpoints, authenticate (using `Users/Authenticate` endpoint) as `admin` with the default password: `admin1234`.\n\n---\n\nFor detailed examples of requests and responses, please refer to the saved examples within each request in this collection.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -1443,6 +1444,11 @@
 							"path": ["transactions"],
 							"query": [
 								{
+									"key": "created",
+									"value": null,
+									"disabled": true
+								},
+								{
 									"key": "pageNumber",
 									"value": "1",
 									"disabled": true
@@ -2143,16 +2149,16 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{API_URL}}/documents/:userName/:document",
+							"raw": "{{API_URL}}/documents/:userName/:documentName",
 							"host": ["{{API_URL}}"],
-							"path": ["documents", ":userName", ":document"],
+							"path": ["documents", ":userName", ":documentName"],
 							"variable": [
 								{
 									"key": "userName",
 									"value": "{{userName}}"
 								},
 								{
-									"key": "document",
+									"key": "documentName",
 									"value": "capture4.png"
 								}
 							]
