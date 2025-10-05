@@ -38,3 +38,9 @@ export const DOCUMENTS_PATH = variable(
 	"DOCUMENTS_PATH",
 	join(process.cwd(), "documents"),
 );
+
+import fs from "node:fs";
+
+if (!fs.existsSync(DOCUMENTS_PATH)) fs.mkdirSync(DOCUMENTS_PATH);
+if (!fs.statSync(DOCUMENTS_PATH).isDirectory())
+	throw new Error("Invalid documents path.");
