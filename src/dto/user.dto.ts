@@ -6,6 +6,7 @@ export namespace UserDTO {
 	export const ViewSchema = z
 		.object({
 			name: z.string(),
+			group: z.string(),
 			createdAt: z.date(),
 			updatedAt: z.date(),
 		})

@@ -259,15 +259,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "44"
+									"value": "144"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"2c-UsH3q7Kq3QDKQ/JraS5OgqvdbQQ\""
+									"value": "W/\"90-Zw8AsCMqlAGvPeoceK39teVP7+g\""
 								},
 								{
 									"key": "Date",
-									"value": "Mon, 22 Sep 2025 00:59:49 GMT"
+									"value": "Fri, 10 Oct 2025 16:21:22 GMT"
 								},
 								{
 									"key": "Connection",
@@ -279,7 +279,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"user\": {\n        \"name\": \"user1\"\n    }\n}"
+							"body": "{\n    \"status\": \"success\",\n    \"user\": {\n        \"name\": \"user1\",\n        \"group\": \"user\",\n        \"createdAt\": \"2025-10-05T18:40:45.024Z\",\n        \"updatedAt\": \"2025-10-05T18:40:45.024Z\"\n    }\n}"
 						},
 						{
 							"name": "Not Found",
