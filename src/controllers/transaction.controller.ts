@@ -44,6 +44,8 @@ export async function createTransaction(req: Request, res: Response) {
 		priority,
 	);
 
+	// TODO: handle documents attaching as well
+
 	res.status(201).json({
 		status: "success",
 		transaction: TransactionDTO.ViewSchema.parse(transaction),
