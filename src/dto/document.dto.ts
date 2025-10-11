@@ -3,13 +3,18 @@ import { NameRegExp } from "../utils/regex.js";
 import { UserDTO } from "./user.dto.js";
 
 export namespace DocumentDTO {
+	const DocumentNameRegExp = new RegExp(
+		`${NameRegExp.source}\\.[A-Za-z0-9]+`,
+		NameRegExp.flags,
+	);
+
 	export const URIScheme = z
 		.string()
 		.trim()
 		.nonempty()
 		.regex(
 			new RegExp(
-				`^${NameRegExp.source}\\/${NameRegExp.source}$`,
+				`^${NameRegExp.source}\\/${DocumentNameRegExp.source}$`,
 				NameRegExp.flags,
 			),
 		);
@@ -19,7 +24,7 @@ export namespace DocumentDTO {
 		.trim()
 		.nonempty()
 		.regex(
-			new RegExp(`^${NameRegExp.source}\\.[A-Za-z0-9]+$`, NameRegExp.flags),
+			new RegExp(`^${DocumentNameRegExp.source}$`, DocumentNameRegExp.flags),
 		);
 
 	export const TargetScheme = z

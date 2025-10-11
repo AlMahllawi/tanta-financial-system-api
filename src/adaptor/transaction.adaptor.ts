@@ -84,7 +84,7 @@ export namespace TransactionAdaptor {
 		pageSize: number,
 	): Promise<Transaction[]> {
 		return await datasource.getRepository(Transaction).find({
-			relations: { type: true, creator: true },
+			relations: { type: true, creator: true, documents: true },
 			skip: (pageNumber - 1) * pageSize,
 			take: pageSize,
 			order: {
@@ -99,7 +99,7 @@ export namespace TransactionAdaptor {
 		pageSize: number,
 	) {
 		return await datasource.getRepository(Transaction).find({
-			relations: ["type", "creator"],
+			relations: { type: true, creator: true, documents: true },
 			skip: (pageNumber - 1) * pageSize,
 			take: pageSize,
 			order: {
@@ -107,6 +107,22 @@ export namespace TransactionAdaptor {
 			},
 			where: { creator: { name: creatorName } },
 		});
+	}
+
+	export async function forwardedBy(
+		forwarderName: string,
+		pageNumber: number,
+		pageSize: number,
+	) {
+		// TODO
+	}
+
+	export async function forwardedTo(
+		recipientName: string,
+		pageNumber: number,
+		pageSize: number,
+	) {
+		// TODO
 	}
 
 	export async function update(
@@ -117,7 +133,7 @@ export namespace TransactionAdaptor {
 
 		const transaction = (
 			await transactionRepository.find({
-				relations: { type: true, creator: true },
+				relations: { type: true, creator: true, documents: true },
 				where: {
 					id: transactionId,
 				},
@@ -286,7 +302,7 @@ export namespace TransactionAdaptor {
 			order: {
 				id: "desc",
 			},
-			relations: ["sender", "receiver"],
+			relations: { sender: true, receiver: true },
 			where: { transaction: { id: transactionId } },
 		});
 	}

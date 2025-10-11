@@ -12,6 +12,14 @@ export namespace TransactionDTO {
 
 	const PrioritySchema = z.enum(TransactionPriority, "Invalid priority");
 
+	export const DocumentViewSchema = z
+		.object({
+			id: z.number(),
+			transactionId: z.number(),
+			documentURI: z.string(),
+		})
+		.strip();
+
 	export const ViewSchema = z
 		.object({
 			id: z.number(),
@@ -22,18 +30,11 @@ export namespace TransactionDTO {
 			priority: PrioritySchema,
 			creator: UserDTO.ViewSchema,
 			createdAt: z.date(),
+			documents: z.array(DocumentViewSchema), // TODO: update postman
 		})
 		.strip();
 
 	export type View = z.infer<typeof ViewSchema>;
-
-	export const DocumentViewSchema = z
-		.object({
-			id: z.number(),
-			transactionId: z.number(),
-			documentURI: z.string(),
-		})
-		.strip();
 
 	const ForwardStatusSchema = z.enum(
 		TransactionForwardStatus,
