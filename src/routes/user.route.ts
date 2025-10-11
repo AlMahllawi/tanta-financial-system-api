@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
 	authorizeUser,
+	changePassword,
 	createUser,
 	viewAllUsers,
 	viewUser,
@@ -16,5 +17,7 @@ router.post("/auth", authorizeUser);
 router.get("/users", authMiddleware, viewAllUsers);
 
 router.get("/users/:name", authMiddleware, viewUser);
+
+router.patch("/users/:name", authMiddleware, changePassword);
 
 export default router;

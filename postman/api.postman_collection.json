@@ -421,6 +421,93 @@
 							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Logged in successfully.\",\n    \"token\": \"...\",\n    \"user\": {\n        \"name\": \"user1\",\n        \"group\": \"user\",\n        \"createdAt\": \"2025-10-11T12:35:38.832Z\",\n        \"updatedAt\": \"2025-10-11T12:35:38.832Z\"\n    }\n}"
 						}
 					]
+				},
+				{
+					"name": "ChangePassword",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"P455word\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_URL}}/users/:name",
+							"host": ["{{API_URL}}"],
+							"path": ["users", ":name"],
+							"variable": [
+								{
+									"key": "name",
+									"value": "user1"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"password\": \"P455word\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{API_URL}}/users/:name",
+									"host": ["{{API_URL}}"],
+									"path": ["users", ":name"],
+									"variable": [
+										{
+											"key": "name",
+											"value": "user1"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "58"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3a-jhpuUnKjtDO0EBm7IzKQ6reimHU\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 11 Oct 2025 15:38:00 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Changed user1's password.\"\n}"
+						}
+					]
 				}
 			]
 		},
@@ -1620,7 +1707,7 @@
 							},
 							"response": [
 								{
-									"name": "Delete",
+									"name": "Success",
 									"originalRequest": {
 										"method": "DELETE",
 										"header": [],
@@ -1911,7 +1998,7 @@
 					},
 					"response": [
 						{
-							"name": "View",
+							"name": "Success",
 							"originalRequest": {
 								"method": "GET",
 								"header": [],

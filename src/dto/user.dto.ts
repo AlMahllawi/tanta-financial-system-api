@@ -34,6 +34,19 @@ export namespace UserDTO {
 		})
 		.strict();
 
+	const PasswordSchema = z
+		.string()
+		.refine((value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value), {
+			message:
+				"Password must be at least 8 characters, contain at least one uppercase letter, one lowercase letter, and one number.",
+		});
+
+	export const ChangePasswordSchema = z
+		.object({
+			password: PasswordSchema,
+		})
+		.strict();
+
 	export const AuthorizeSchema = z
 		.object({
 			name: NameSchema,
@@ -44,15 +57,7 @@ export namespace UserDTO {
 	export const CreationSchema = z
 		.object({
 			name: UserDTO.NameSchema,
-			password: z
-				.string()
-				.refine(
-					(value) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value),
-					{
-						message:
-							"Password must be at least 8 characters, contain at least one uppercase letter, one lowercase letter, and one number.",
-					},
-				),
+			password: PasswordSchema,
 			group: z.enum(UserGroups).default(UserGroups.USER),
 		})
 		.strict();

@@ -76,4 +76,27 @@ export async function viewUser(req: Request, res: Response) {
 		});
 }
 
-// TODO: change user password
+export async function changePassword(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
+	const { name } = UserDTO.TargetSchema.parse(req.params);
+	const { password } = UserDTO.ChangePasswordSchema.parse(req.body);
+
+	if (req.user.name !== name && req.user.group !== UserGroups.ADMIN)
+		return res.status(403).json({
+			status: "forbidden",
+			message: "Missing access to changes user's password.",
+		});
+
+	const user = await UserAdaptor.changePassword(name, password);
+
+	if (user)
+		res
+			.status(200)
+			.json({ status: "success", message: `Changed ${user.name}'s password.` });
+	else
+		res.status(404).json({
+			status: "not-found",
+			message: `No user was found with name: "${name}".`,
+		});
+}

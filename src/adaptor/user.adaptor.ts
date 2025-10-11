@@ -56,4 +56,16 @@ export namespace UserAdaptor {
 			},
 		});
 	}
+
+	export async function changePassword(name: string, password: string) {
+		const userRepository = datasource.getRepository(User);
+
+		const user = await userRepository.findOneBy({ name });
+
+		if (!user) return null;
+
+		user.hashedPassword = await hash(password, BCRYPT_SALT);
+
+		return await userRepository.save(user);
+	}
 }
