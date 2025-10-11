@@ -63,11 +63,11 @@ export class Transaction {
 		() => TransactionDocument,
 		(transactionDocument) => transactionDocument.transaction,
 	)
-	transactionDocuments!: TransactionDocument[];
+	documents!: TransactionDocument[];
 
 	@OneToMany(
 		() => TransactionForward,
 		(transactionForward) => transactionForward.transaction,
 	)
-	transactionForwards!: TransactionForward[];
+	forwards!: TransactionForward[];
 }

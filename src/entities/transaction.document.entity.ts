@@ -23,7 +23,7 @@ export class TransactionDocument {
 
 	@ManyToOne(
 		() => Transaction,
-		(transaction) => transaction.transactionDocuments,
+		(transaction) => transaction.documents,
 		{
 			onDelete: "CASCADE",
 		},

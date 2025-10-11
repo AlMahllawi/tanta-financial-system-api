@@ -26,7 +26,7 @@ export class TransactionForward {
 
 	@ManyToOne(
 		() => Transaction,
-		(transaction) => transaction.transactionForwards,
+		(transaction) => transaction.forwards,
 		{
 			onDelete: "CASCADE",
 			nullable: false,
