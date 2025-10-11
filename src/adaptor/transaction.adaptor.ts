@@ -72,7 +72,11 @@ export namespace TransactionAdaptor {
 	}
 
 	export async function view(id: number) {
-		return await datasource.getRepository(Transaction).findOneBy({ id });
+		return (
+			await datasource
+				.getRepository(Transaction)
+				.find({ relations: { type: true, creator: true }, where: { id } })
+		)[0];
 	}
 
 	export async function viewAll(
@@ -80,7 +84,7 @@ export namespace TransactionAdaptor {
 		pageSize: number,
 	): Promise<Transaction[]> {
 		return await datasource.getRepository(Transaction).find({
-			relations: ["type", "creator"],
+			relations: { type: true, creator: true },
 			skip: (pageNumber - 1) * pageSize,
 			take: pageSize,
 			order: {
@@ -111,9 +115,14 @@ export namespace TransactionAdaptor {
 	) {
 		const transactionRepository = datasource.getRepository(Transaction);
 
-		const transaction = await transactionRepository.findOneBy({
-			id: transactionId,
-		});
+		const transaction = (
+			await transactionRepository.find({
+				relations: { type: true, creator: true },
+				where: {
+					id: transactionId,
+				},
+			})
+		)[0];
 
 		if (!transaction)
 			throw new Exceptions.Invalid(

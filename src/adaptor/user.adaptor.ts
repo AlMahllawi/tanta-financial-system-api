@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import datasource from "../datasource.js";
 import type { UserDTO } from "../dto/user.dto.js";
 import { User } from "../entities/user.entity.js";
+import type { UserGroups } from "../types/enums.js";
 import { BCRYPT_SALT, JWT_SECRET } from "../utils/env.js";
 import { Exceptions } from "../utils/exceptions.js";
 
@@ -15,13 +16,18 @@ export namespace UserAdaptor {
 
 		const content: UserDTO.Token = { name: user.name };
 
-		return jwt.sign(content, JWT_SECRET, { expiresIn: "1d" });
+		return { token: jwt.sign(content, JWT_SECRET, { expiresIn: "1d" }), user };
 	}
 
-	export async function create(name: string, password: string) {
+	export async function create(
+		name: string,
+		password: string,
+		group: UserGroups,
+	) {
 		const user = new User();
 
 		user.name = name;
+		user.group = group;
 		user.hashedPassword = await hash(password, BCRYPT_SALT);
 
 		try {

@@ -10,10 +10,13 @@ export async function authorizeUser(req: Request, res: Response) {
 	const { name, password } = UserDTO.AuthorizeSchema.parse(req.body);
 
 	try {
-		const token = await UserAdaptor.authorize(name, password);
-		res
-			.status(200)
-			.json({ status: "success", message: "Logged in successfully.", token });
+		const { token, user } = await UserAdaptor.authorize(name, password);
+		res.status(200).json({
+			status: "success",
+			message: "Logged in successfully.",
+			token,
+			user: UserDTO.ViewSchema.parse(user),
+		});
 	} catch (error: any) {
 		if (!(error instanceof Exceptions.Invalid)) throw error;
 
@@ -44,9 +47,9 @@ export async function createUser(req: Request, res: Response) {
 			message: "Missing access to create a user.",
 		});
 
-	const { name, password } = UserDTO.CreationSchema.parse(req.body);
+	const { name, password, group } = UserDTO.CreationSchema.parse(req.body);
 	try {
-		const user = await UserAdaptor.create(name, password);
+		const user = await UserAdaptor.create(name, password, group);
 
 		res
 			.status(201)

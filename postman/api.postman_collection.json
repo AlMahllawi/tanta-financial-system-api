@@ -190,15 +190,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "1109"
+									"value": "1284"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"455-dWlrbFxqfPY2qze385j68yqPdxQ\""
+									"value": "W/\"504-f4Jw7Ewl/zt08zjvxWF76mi8H1s\""
 								},
 								{
 									"key": "Date",
-									"value": "Fri, 03 Oct 2025 14:04:58 GMT"
+									"value": "Sat, 11 Oct 2025 12:46:11 GMT"
 								},
 								{
 									"key": "Connection",
@@ -210,7 +210,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"page\": {\n        \"number\": 1,\n        \"size\": 10\n    },\n    \"users\": [\n        {\n            \"name\": \"user1\",\n            \"createdAt\": \"2025-10-03T13:50:00.159Z\",\n            \"updatedAt\": \"2025-10-03T13:50:00.159Z\"\n        },\n        {\n            \"name\": \"user2\",\n            \"createdAt\": \"2025-10-03T13:50:00.150Z\",\n            \"updatedAt\": \"2025-10-03T13:50:00.150Z\"\n        },\n        {\n            \"name\": \"user3\",\n            \"createdAt\": \"2025-10-03T13:50:00.146Z\",\n            \"updatedAt\": \"2025-10-03T13:50:00.146Z\"\n        },\n        {\n            \"name\": \"user4\",\n            \"createdAt\": \"2025-10-03T13:50:00.153Z\",\n            \"updatedAt\": \"2025-10-03T13:50:00.153Z\"\n        },\n        {\n            \"name\": \"user5\",\n            \"createdAt\": \"2025-10-03T13:50:00.161Z\",\n            \"updatedAt\": \"2025-10-03T13:50:00.161Z\"\n        },\n        {\n            \"name\": \"user6\",\n            \"createdAt\": \"2025-10-03T13:50:00.154Z\",\n            \"updatedAt\": \"2025-10-03T13:50:00.154Z\"\n        },\n        {\n            \"name\": \"user7\",\n            \"createdAt\": \"2025-10-03T13:50:00.160Z\",\n            \"updatedAt\": \"2025-10-03T13:50:00.160Z\"\n        },\n        {\n            \"name\": \"user8\",\n            \"createdAt\": \"2025-10-03T13:50:00.160Z\",\n            \"updatedAt\": \"2025-10-03T13:50:00.160Z\"\n        },\n        {\n            \"name\": \"user9\",\n            \"createdAt\": \"2025-10-03T13:50:00.154Z\",\n            \"updatedAt\": \"2025-10-03T13:50:00.154Z\"\n        },\n        {\n            \"name\": \"user10\",\n            \"createdAt\": \"2025-10-03T13:50:00.150Z\",\n            \"updatedAt\": \"2025-10-03T13:50:00.150Z\"\n        }\n    ]\n}"
+							"body": "{\n    \"status\": \"success\",\n    \"page\": {\n        \"number\": 1,\n        \"size\": 10\n    },\n    \"users\": [\n        {\n            \"name\": \"user1\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:37:10.744Z\",\n            \"updatedAt\": \"2025-10-05T18:37:10.744Z\"\n        },\n        {\n            \"name\": \"user2\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:40:45.024Z\",\n            \"updatedAt\": \"2025-10-05T18:40:45.024Z\"\n        },\n        {\n            \"name\": \"user3\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:40:45.009Z\",\n            \"updatedAt\": \"2025-10-05T18:40:45.009Z\"\n        },\n        {\n            \"name\": \"user4\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:37:10.755Z\",\n            \"updatedAt\": \"2025-10-05T18:37:10.755Z\"\n        },\n        {\n            \"name\": \"user5\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:39:41.285Z\",\n            \"updatedAt\": \"2025-10-05T18:39:41.285Z\"\n        },\n        {\n            \"name\": \"user6\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:37:10.754Z\",\n            \"updatedAt\": \"2025-10-05T18:37:10.754Z\"\n        },\n        {\n            \"name\": \"user7\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:37:10.751Z\",\n            \"updatedAt\": \"2025-10-05T18:37:10.751Z\"\n        },\n        {\n            \"name\": \"user8\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:40:45.015Z\",\n            \"updatedAt\": \"2025-10-05T18:40:45.015Z\"\n        },\n        {\n            \"name\": \"user9\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:39:41.294Z\",\n            \"updatedAt\": \"2025-10-05T18:39:41.294Z\"\n        },\n        {\n            \"name\": \"user10\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:37:10.752Z\",\n            \"updatedAt\": \"2025-10-05T18:37:10.752Z\"\n        }\n    ]\n}"
 						}
 					]
 				},
@@ -398,15 +398,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "204"
+									"value": "332"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"cc-JElWLtX2smDN2Uzn5x4G4Ix+DzE\""
+									"value": "W/\"14c-k/TJ/Ga4y7uMEd/gYN8RwyghQas\""
 								},
 								{
 									"key": "Date",
-									"value": "Wed, 17 Sep 2025 23:26:49 GMT"
+									"value": "Sat, 11 Oct 2025 12:35:45 GMT"
 								},
 								{
 									"key": "Connection",
@@ -418,9 +418,327 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Logged in successfully.\",\n    \"token\": \"...\"\n}"
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"Logged in successfully.\",\n    \"token\": \"...\",\n    \"user\": {\n        \"name\": \"user1\",\n        \"group\": \"user\",\n        \"createdAt\": \"2025-10-11T12:35:38.832Z\",\n        \"updatedAt\": \"2025-10-11T12:35:38.832Z\"\n    }\n}"
 						}
 					]
+				}
+			]
+		},
+		{
+			"name": "Documents",
+			"item": [
+				{
+					"name": "Upload",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{API_URL}}/documents",
+							"host": ["{{API_URL}}"],
+							"path": ["documents"]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{API_URL}}/documents",
+									"host": ["{{API_URL}}"],
+									"path": ["documents"]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "55"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"37-vlprNS/c2WG7x3+uzcS3WXsL/Mo\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:17:09 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"documentURI\": \"admin/capture4.png\"\n}"
+						},
+						{
+							"name": "Conflict",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{API_URL}}/documents",
+									"host": ["{{API_URL}}"],
+									"path": ["documents"]
+								}
+							},
+							"status": "Conflict",
+							"code": 409,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "94"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5e-OmA9dzxMJ5vWL/wMsYvg6waG/eI\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:17:18 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"error\",\n    \"name\": \"Conflict\",\n    \"timestamp\": \"2025-09-22T01:17:18.929Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{API_URL}}/documents/:userName/:document",
+							"host": ["{{API_URL}}"],
+							"path": ["documents", ":userName", ":document"],
+							"variable": [
+								{
+									"key": "userName",
+									"value": "{{userName}}"
+								},
+								{
+									"key": "document",
+									"value": "Capture4.PNG"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{API_URL}}/documents/:userName/:document",
+									"host": ["{{API_URL}}"],
+									"path": ["documents", ":userName", ":document"],
+									"variable": [
+										{
+											"key": "userName",
+											"value": "user1"
+										},
+										{
+											"key": "document",
+											"value": "Capture4.PNG"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "51"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"33-WEjRi0yWUTbi+xdFE4L4+cbYGxs\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:18:55 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"deleted\": \"user1/capture4.png\"\n}"
+						},
+						{
+							"name": "Not Found",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "file",
+											"type": "file",
+											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{API_URL}}/documents/:userName/:document",
+									"host": ["{{API_URL}}"],
+									"path": ["documents", ":userName", ":document"],
+									"variable": [
+										{
+											"key": "userName",
+											"value": "user1"
+										},
+										{
+											"key": "document",
+											"value": "Capture4.PNG"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "77"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"4d-/UWtjcqkqeVlZ7pXjqPPU3LcLB0\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 22 Sep 2025 01:19:39 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"not-found\",\n    \"message\": \"There was no document: user1/capture4.png.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "View",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_URL}}/documents/:userName/:documentName",
+							"host": ["{{API_URL}}"],
+							"path": ["documents", ":userName", ":documentName"],
+							"variable": [
+								{
+									"key": "userName",
+									"value": "{{userName}}"
+								},
+								{
+									"key": "documentName",
+									"value": "capture4.png"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -1493,15 +1811,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "862"
+									"value": "931"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"35e-07FLCn5KpFFl8Wgld/x+435UJsY\""
+									"value": "W/\"3a3-sKKRSjVxmjhi65GR3eZy01x4KoY\""
 								},
 								{
 									"key": "Date",
-									"value": "Fri, 03 Oct 2025 20:07:11 GMT"
+									"value": "Sat, 11 Oct 2025 12:49:49 GMT"
 								},
 								{
 									"key": "Connection",
@@ -1513,7 +1831,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"page\": {\n        \"number\": 1,\n        \"size\": 2\n    },\n    \"transactions\": [\n\n        {\n            \"id\": 2,\n            \"title\": \"Second Transaction\",\n            \"description\": \"Some decent description of the transaction.\",\n            \"type\": {\n                \"name\": \"graffiti\"\n            },\n            \"fulfilled\": true,\n            \"priority\": \"low\",\n            \"creator\": {\n                \"name\": \"Shawna Jenkins\",\n                \"createdAt\": \"2025-10-03T19:56:44.102Z\",\n                \"updatedAt\": \"2025-10-03T19:56:44.102Z\"\n            },\n            \"createdAt\": \"2025-10-03T19:56:44.834Z\"\n        },\n        {\n            \"id\": 1,\n            \"title\": \"First Transaction\",\n            \"description\": \"Some decent description of the transaction.\",\n            \"type\": {\n                \"name\": \"university\"\n            },\n            \"fulfilled\": false,\n            \"priority\": \"high\",\n            \"creator\": {\n                \"name\": \"Alberta Beier\",\n                \"createdAt\": \"2025-10-03T19:56:44.102Z\",\n                \"updatedAt\": \"2025-10-03T19:56:44.102Z\"\n            },\n            \"createdAt\": \"2025-10-03T19:56:44.838Z\"\n        }\n    ]\n}"
+							"body": "{\n    \"status\": \"success\",\n    \"page\": {\n        \"number\": 1,\n        \"size\": 2\n    },\n    \"transactions\": [\n        {\n            \"id\": 151,\n            \"title\": \"mining by Terry Prosacco-Connelly II\",\n            \"description\": \"invoice transaction at Hamill and Sons using card ending with ***(...4359) for PYG 515.41 in account ***35070245\",\n            \"type\": {\n                \"name\": \"mining\"\n            },\n            \"fulfilled\": false,\n            \"priority\": \"high\",\n            \"creator\": {\n                \"name\": \"Terry Prosacco-Connelly II\",\n                \"group\": \"user\",\n                \"createdAt\": \"2025-10-05T18:40:45.024Z\",\n                \"updatedAt\": \"2025-10-05T18:40:45.024Z\"\n            },\n            \"createdAt\": \"2025-10-05T18:40:45.316Z\"\n        },\n        {\n            \"id\": 150,\n            \"title\": \"breastplate by Terry Prosacco-Connelly II\",\n            \"description\": \"withdrawal transaction at Bradtke Inc using card ending with ***(...3714) for NPR 715.13 in account ***43394019\",\n            \"type\": {\n                \"name\": \"breastplate\"\n            },\n            \"fulfilled\": false,\n            \"priority\": \"high\",\n            \"creator\": {\n                \"name\": \"Terry Prosacco-Connelly II\",\n                \"group\": \"user\",\n                \"createdAt\": \"2025-10-05T18:40:45.024Z\",\n                \"updatedAt\": \"2025-10-05T18:40:45.024Z\"\n            },\n            \"createdAt\": \"2025-10-05T18:40:45.314Z\"\n        }\n    ]\n}"
 						},
 						{
 							"name": "Created",
@@ -1550,15 +1868,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "862"
+									"value": "931"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"35e-07FLCn5KpFFl8Wgld/x+435UJsY\""
+									"value": "W/\"3a3-sKKRSjVxmjhi65GR3eZy01x4KoY\""
 								},
 								{
 									"key": "Date",
-									"value": "Fri, 03 Oct 2025 20:07:11 GMT"
+									"value": "Sat, 11 Oct 2025 12:52:00 GMT"
 								},
 								{
 									"key": "Connection",
@@ -1570,7 +1888,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"page\": {\n        \"number\": 1,\n        \"size\": 2\n    },\n    \"transactions\": [\n        {\n            \"id\": 3,\n            \"title\": \"Third Transaction\",\n            \"description\": \"Some decent description of the transaction.\",\n            \"type\": {\n                \"name\": \"assignment\"\n            },\n            \"fulfilled\": true,\n            \"priority\": \"low\",\n            \"creator\": {\n                \"name\": \"Alberta Beier\",\n                \"createdAt\": \"2025-10-03T19:56:44.102Z\",\n                \"updatedAt\": \"2025-10-03T19:56:44.102Z\"\n            },\n            \"createdAt\": \"2025-10-03T19:56:44.834Z\"\n        },\n        {\n            \"id\": 1,\n            \"title\": \"First Transaction\",\n            \"description\": \"Some decent description of the transaction.\",\n            \"type\": {\n                \"name\": \"university\"\n            },\n            \"fulfilled\": false,\n            \"priority\": \"high\",\n            \"creator\": {\n                \"name\": \"Alberta Beier\",\n                \"createdAt\": \"2025-10-03T19:56:44.102Z\",\n                \"updatedAt\": \"2025-10-03T19:56:44.102Z\"\n            },\n            \"createdAt\": \"2025-10-03T19:56:44.838Z\"\n        }\n    ]\n}"
+							"body": "{\n    \"status\": \"success\",\n    \"page\": {\n        \"number\": 1,\n        \"size\": 2\n    },\n    \"transactions\": [\n        {\n            \"id\": 151,\n            \"title\": \"mining by Terry Prosacco-Connelly II\",\n            \"description\": \"invoice transaction at Hamill and Sons using card ending with ***(...4359) for PYG 515.41 in account ***35070245\",\n            \"type\": {\n                \"name\": \"mining\"\n            },\n            \"fulfilled\": false,\n            \"priority\": \"high\",\n            \"creator\": {\n                \"name\": \"Terry Prosacco-Connelly II\",\n                \"group\": \"user\",\n                \"createdAt\": \"2025-10-05T18:40:45.024Z\",\n                \"updatedAt\": \"2025-10-05T18:40:45.024Z\"\n            },\n            \"createdAt\": \"2025-10-05T18:40:45.316Z\"\n        },\n        {\n            \"id\": 150,\n            \"title\": \"breastplate by Terry Prosacco-Connelly II\",\n            \"description\": \"withdrawal transaction at Bradtke Inc using card ending with ***(...3714) for NPR 715.13 in account ***43394019\",\n            \"type\": {\n                \"name\": \"breastplate\"\n            },\n            \"fulfilled\": false,\n            \"priority\": \"high\",\n            \"creator\": {\n                \"name\": \"Terry Prosacco-Connelly II\",\n                \"group\": \"user\",\n                \"createdAt\": \"2025-10-05T18:40:45.024Z\",\n                \"updatedAt\": \"2025-10-05T18:40:45.024Z\"\n            },\n            \"createdAt\": \"2025-10-05T18:40:45.314Z\"\n        }\n    ]\n}"
 						}
 					]
 				},
@@ -1604,7 +1922,7 @@
 									"variable": [
 										{
 											"key": "id",
-											"value": "1"
+											"value": "151"
 										}
 									]
 								}
@@ -1619,15 +1937,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "190"
+									"value": "462"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"be-VpuZonRI9z9qkALXAmvzwpk7bZE\""
+									"value": "W/\"1ce-mbGBJFd0t/MU9UVfI8btDzLYaLM\""
 								},
 								{
 									"key": "Date",
-									"value": "Mon, 22 Sep 2025 01:09:08 GMT"
+									"value": "Sat, 11 Oct 2025 12:58:25 GMT"
 								},
 								{
 									"key": "Connection",
@@ -1639,7 +1957,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"transaction\": {\n        \"id\": 1,\n        \"title\": \"Sutiable Title\",\n        \"description\": \"A very detailed description.\",\n        \"fulfilled\": false,\n        \"priority\": \"medium\",\n        \"createdAt\": \"2025-09-22T01:04:53.030Z\"\n    }\n}"
+							"body": "{\n    \"status\": \"success\",\n    \"transaction\": {\n        \"id\": 151,\n        \"title\": \"mining by Terry Prosacco-Connelly II\",\n        \"description\": \"invoice transaction at Hamill and Sons using card ending with ***(...4359) for PYG 515.41 in account ***35070245\",\n        \"type\": {\n            \"name\": \"mining\"\n        },\n        \"fulfilled\": false,\n        \"priority\": \"high\",\n        \"creator\": {\n            \"name\": \"Terry Prosacco-Connelly II\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:40:45.024Z\",\n            \"updatedAt\": \"2025-10-05T18:40:45.024Z\"\n        },\n        \"createdAt\": \"2025-10-05T18:40:45.316Z\"\n    }\n}"
 						}
 					]
 				},
@@ -1677,7 +1995,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"title\": \"Ignore Title\",\n    \"description\": \"A very short desc.\",\n    \"typeName\": \"Type2\",\n    \"priority\": \"high\",\n    \"fulfilled\": true\n}",
+									"raw": "{\n    \"title\": \"Ignore Title\",\n    \"description\": \"A very short desc.\",\n    \"typeName\": \"breeze\",\n    \"priority\": \"high\",\n    \"fulfilled\": true\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1691,7 +2009,7 @@
 									"variable": [
 										{
 											"key": "id",
-											"value": "1"
+											"value": "150"
 										}
 									]
 								}
@@ -1706,15 +2024,15 @@
 								},
 								{
 									"key": "Content-Length",
-									"value": "206"
+									"value": "350"
 								},
 								{
 									"key": "ETag",
-									"value": "W/\"ce-Gmtn3xog2ou4/+mWLIsofIMjYhU\""
+									"value": "W/\"15e-ogDkv3W0jOvS99kfwKVqVuvdTd0\""
 								},
 								{
 									"key": "Date",
-									"value": "Mon, 22 Sep 2025 01:13:49 GMT"
+									"value": "Sat, 11 Oct 2025 13:04:14 GMT"
 								},
 								{
 									"key": "Connection",
@@ -1726,7 +2044,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"updatedTransaction\": {\n        \"id\": 1,\n        \"title\": \"Ignore Title\",\n        \"description\": \"A very short desc.\",\n        \"type\": {\n            \"name\": \"Type2\"\n        },\n        \"fulfilled\": true,\n        \"priority\": \"high\",\n        \"createdAt\": \"2025-09-22T01:04:53.030Z\"\n    }\n}"
+							"body": "{\n    \"status\": \"success\",\n    \"updatedTransaction\": {\n        \"id\": 150,\n        \"title\": \"Ignore Title\",\n        \"description\": \"A very short desc.\",\n        \"type\": {\n            \"name\": \"breeze\"\n        },\n        \"fulfilled\": true,\n        \"priority\": \"high\",\n        \"creator\": {\n            \"name\": \"Terry Prosacco-Connelly II\",\n            \"group\": \"user\",\n            \"createdAt\": \"2025-10-05T18:40:45.024Z\",\n            \"updatedAt\": \"2025-10-05T18:40:45.024Z\"\n        },\n        \"createdAt\": \"2025-10-05T18:40:45.314Z\"\n    }\n}"
 						}
 					]
 				},
@@ -1847,324 +2165,6 @@
 							"body": "{\n    \"status\": \"not-found\",\n    \"message\": \"No transaction was found with id: 1.\"\n}"
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "Documents",
-			"item": [
-				{
-					"name": "Upload",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{API_URL}}/documents",
-							"host": ["{{API_URL}}"],
-							"path": ["documents"]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "file",
-											"type": "file",
-											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{API_URL}}/documents",
-									"host": ["{{API_URL}}"],
-									"path": ["documents"]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
-								},
-								{
-									"key": "Content-Length",
-									"value": "55"
-								},
-								{
-									"key": "ETag",
-									"value": "W/\"37-vlprNS/c2WG7x3+uzcS3WXsL/Mo\""
-								},
-								{
-									"key": "Date",
-									"value": "Mon, 22 Sep 2025 01:17:09 GMT"
-								},
-								{
-									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Keep-Alive",
-									"value": "timeout=5"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"documentURI\": \"admin/capture4.png\"\n}"
-						},
-						{
-							"name": "Conflict",
-							"originalRequest": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "file",
-											"type": "file",
-											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{API_URL}}/documents",
-									"host": ["{{API_URL}}"],
-									"path": ["documents"]
-								}
-							},
-							"status": "Conflict",
-							"code": 409,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
-								},
-								{
-									"key": "Content-Length",
-									"value": "94"
-								},
-								{
-									"key": "ETag",
-									"value": "W/\"5e-OmA9dzxMJ5vWL/wMsYvg6waG/eI\""
-								},
-								{
-									"key": "Date",
-									"value": "Mon, 22 Sep 2025 01:17:18 GMT"
-								},
-								{
-									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Keep-Alive",
-									"value": "timeout=5"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"status\": \"error\",\n    \"name\": \"Conflict\",\n    \"timestamp\": \"2025-09-22T01:17:18.929Z\"\n}"
-						}
-					]
-				},
-				{
-					"name": "Delete",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{API_URL}}/documents/:userName/:document",
-							"host": ["{{API_URL}}"],
-							"path": ["documents", ":userName", ":document"],
-							"variable": [
-								{
-									"key": "userName",
-									"value": "{{userName}}"
-								},
-								{
-									"key": "document",
-									"value": "Capture4.PNG"
-								}
-							]
-						}
-					},
-					"response": [
-						{
-							"name": "Success",
-							"originalRequest": {
-								"method": "DELETE",
-								"header": [],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "file",
-											"type": "file",
-											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{API_URL}}/documents/:userName/:document",
-									"host": ["{{API_URL}}"],
-									"path": ["documents", ":userName", ":document"],
-									"variable": [
-										{
-											"key": "userName",
-											"value": "user1"
-										},
-										{
-											"key": "document",
-											"value": "Capture4.PNG"
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
-								},
-								{
-									"key": "Content-Length",
-									"value": "51"
-								},
-								{
-									"key": "ETag",
-									"value": "W/\"33-WEjRi0yWUTbi+xdFE4L4+cbYGxs\""
-								},
-								{
-									"key": "Date",
-									"value": "Mon, 22 Sep 2025 01:18:55 GMT"
-								},
-								{
-									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Keep-Alive",
-									"value": "timeout=5"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"status\": \"success\",\n    \"deleted\": \"user1/capture4.png\"\n}"
-						},
-						{
-							"name": "Not Found",
-							"originalRequest": {
-								"method": "DELETE",
-								"header": [],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "file",
-											"type": "file",
-											"src": "postman-cloud:///1eee9889-096c-4c90-bb96-ae10668a12ab"
-										}
-									]
-								},
-								"url": {
-									"raw": "{{API_URL}}/documents/:userName/:document",
-									"host": ["{{API_URL}}"],
-									"path": ["documents", ":userName", ":document"],
-									"variable": [
-										{
-											"key": "userName",
-											"value": "user1"
-										},
-										{
-											"key": "document",
-											"value": "Capture4.PNG"
-										}
-									]
-								}
-							},
-							"status": "Not Found",
-							"code": 404,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json; charset=utf-8"
-								},
-								{
-									"key": "Content-Length",
-									"value": "77"
-								},
-								{
-									"key": "ETag",
-									"value": "W/\"4d-/UWtjcqkqeVlZ7pXjqPPU3LcLB0\""
-								},
-								{
-									"key": "Date",
-									"value": "Mon, 22 Sep 2025 01:19:39 GMT"
-								},
-								{
-									"key": "Connection",
-									"value": "keep-alive"
-								},
-								{
-									"key": "Keep-Alive",
-									"value": "timeout=5"
-								}
-							],
-							"cookie": [],
-							"body": "{\n    \"status\": \"not-found\",\n    \"message\": \"There was no document: user1/capture4.png.\"\n}"
-						}
-					]
-				},
-				{
-					"name": "View",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{API_URL}}/documents/:userName/:documentName",
-							"host": ["{{API_URL}}"],
-							"path": ["documents", ":userName", ":documentName"],
-							"variable": [
-								{
-									"key": "userName",
-									"value": "{{userName}}"
-								},
-								{
-									"key": "documentName",
-									"value": "capture4.png"
-								}
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
