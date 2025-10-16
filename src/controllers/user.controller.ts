@@ -29,11 +29,15 @@ export async function viewAllUsers(req: Request, res: Response) {
 
 	const { pageNumber, pageSize } = UtilsDTO.Paging.parse(req.query);
 
-	const users = await UserAdaptor.viewAll(pageNumber, pageSize);
+	const [users, totalUsers] = await UserAdaptor.viewAll(pageNumber, pageSize);
 
 	res.status(200).json({
 		status: "success",
-		page: { number: pageNumber, size: pageSize },
+		page: {
+			number: pageNumber,
+			size: pageSize,
+			last: Math.ceil(totalUsers / pageSize),
+		},
 		users: users.map((u) => UserDTO.ViewSchema.parse(u)),
 	});
 }

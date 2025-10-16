@@ -48,7 +48,7 @@ export namespace UserAdaptor {
 	}
 
 	export async function viewAll(pageNumber: number, pageSize: number) {
-		return await datasource.getRepository(User).find({
+		return await datasource.getRepository(User).findAndCount({
 			skip: (pageNumber - 1) * pageSize,
 			take: pageSize,
 			order: {

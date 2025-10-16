@@ -30,7 +30,7 @@ export namespace TransactionDTO {
 			priority: PrioritySchema,
 			creator: UserDTO.ViewSchema,
 			createdAt: z.date(),
-			documents: z.array(DocumentViewSchema), // TODO: update postman
+			documents: z.array(DocumentViewSchema),
 		})
 		.strip();
 

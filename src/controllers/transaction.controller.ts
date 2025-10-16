@@ -64,13 +64,17 @@ export async function viewTransactions(req: Request, res: Response) {
 
 	const { pageNumber, pageSize } = UtilsDTO.Paging.parse(req.query);
 
-	const transactions = await (viewCreated
+	const [transactions, totalTransactions] = await (viewCreated
 		? TransactionAdaptor.createdBy(req.user.name, pageNumber, pageSize)
 		: TransactionAdaptor.viewAll(pageNumber, pageSize));
 
 	res.status(200).json({
 		status: "success",
-		page: { number: pageNumber, size: pageSize },
+		page: {
+			number: pageNumber,
+			size: pageSize,
+			last: Math.ceil(totalTransactions / pageSize),
+		},
 		transactions: transactions.map((t) => TransactionDTO.ViewSchema.parse(t)),
 	});
 }
@@ -274,7 +278,7 @@ export async function viewTransactionForwards(req: Request, res: Response) {
 
 	const { pageNumber, pageSize } = UtilsDTO.Paging.parse(req.query);
 
-	const transactionForwards = await TransactionAdaptor.viewForwards(
+	const [forwards, totalForwards] = await TransactionAdaptor.viewForwards(
 		id,
 		pageNumber,
 		pageSize,
@@ -282,11 +286,17 @@ export async function viewTransactionForwards(req: Request, res: Response) {
 
 	res.status(200).json({
 		status: "success",
-		page: { number: pageNumber, size: pageSize },
-		transactionId: id,
-		transactionForwards: transactionForwards.map((tf) =>
-			TransactionDTO.ForwardViewSchema.parse(tf),
-		),
+		page: {
+			number: pageNumber,
+			size: pageSize,
+			last: Math.ceil(totalForwards / pageSize),
+		},
+		transaction: {
+			id,
+			forwards: forwards.map((tf) =>
+				TransactionDTO.ForwardViewSchema.parse(tf),
+			),
+		},
 	});
 }
 

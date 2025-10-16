@@ -79,11 +79,8 @@ export namespace TransactionAdaptor {
 		)[0];
 	}
 
-	export async function viewAll(
-		pageNumber: number,
-		pageSize: number,
-	): Promise<Transaction[]> {
-		return await datasource.getRepository(Transaction).find({
+	export async function viewAll(pageNumber: number, pageSize: number) {
+		return await datasource.getRepository(Transaction).findAndCount({
 			relations: { type: true, creator: true, documents: true },
 			skip: (pageNumber - 1) * pageSize,
 			take: pageSize,
@@ -98,7 +95,7 @@ export namespace TransactionAdaptor {
 		pageNumber: number,
 		pageSize: number,
 	) {
-		return await datasource.getRepository(Transaction).find({
+		return await datasource.getRepository(Transaction).findAndCount({
 			relations: { type: true, creator: true, documents: true },
 			skip: (pageNumber - 1) * pageSize,
 			take: pageSize,
@@ -296,7 +293,7 @@ export namespace TransactionAdaptor {
 		pageNumber: number,
 		pageSize: number,
 	) {
-		return await datasource.getRepository(TransactionForward).find({
+		return await datasource.getRepository(TransactionForward).findAndCount({
 			skip: (pageNumber - 1) * pageSize,
 			take: pageSize,
 			order: {
