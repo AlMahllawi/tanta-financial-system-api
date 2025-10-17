@@ -19,6 +19,10 @@ export namespace DocumentDTO {
 			),
 		);
 
+	export const URIsScheme = z.array(URIScheme);
+
+	export type URIs = z.infer<typeof URIsScheme>;
+
 	export const NameScheme = z
 		.string()
 		.trim()

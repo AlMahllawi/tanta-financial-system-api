@@ -62,6 +62,7 @@ export class Transaction {
 	@OneToMany(
 		() => TransactionDocument,
 		(transactionDocument) => transactionDocument.transaction,
+		{ cascade: true },
 	)
 	documents!: TransactionDocument[];
 

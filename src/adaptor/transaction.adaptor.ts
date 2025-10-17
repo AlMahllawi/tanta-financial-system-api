@@ -5,6 +5,7 @@ import {
 	In,
 } from "typeorm";
 import datasource from "../datasource.js";
+import type { DocumentDTO } from "../dto/document.dto.js";
 import type { TransactionDTO } from "../dto/transaction.dto.js";
 import { TransactionDocument } from "../entities/transaction.document.entity.js";
 import { Transaction } from "../entities/transaction.entity.js";
@@ -45,6 +46,7 @@ export namespace TransactionAdaptor {
 		typeName: string,
 		creatorName: string,
 		priority: TransactionPriority = TransactionPriority.LOW,
+		documentsURIs: DocumentDTO.URIs,
 	) {
 		const transaction = new Transaction();
 
@@ -73,14 +75,21 @@ export namespace TransactionAdaptor {
 
 		transaction.priority = priority;
 
+		transaction.documents = documentsURIs.map((uri) => {
+			const document = new TransactionDocument();
+			document.documentURI = uri;
+			return document;
+		});
+
 		return await datasource.getRepository(Transaction).save(transaction);
 	}
 
 	export async function view(id: number) {
 		return (
-			await datasource
-				.getRepository(Transaction)
-				.find({ relations: { type: true, creator: true }, where: { id } })
+			await datasource.getRepository(Transaction).find({
+				relations: { type: true, creator: true, documents: true },
+				where: { id },
+			})
 		)[0];
 	}
 

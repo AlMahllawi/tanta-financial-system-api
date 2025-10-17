@@ -72,6 +72,7 @@ export namespace TransactionDTO {
 			description: z.string().min(5, "Too short transaction description"),
 			typeName: TypeNameSchema,
 			priority: PrioritySchema.default(TransactionPriority.LOW),
+			documentsURIs: DocumentDTO.URIsScheme,
 		})
 		.strict();
 

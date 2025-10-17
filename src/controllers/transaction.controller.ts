@@ -33,7 +33,7 @@ export async function createTransactionType(req: Request, res: Response) {
 export async function createTransaction(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const { title, description, typeName, priority } =
+	const { title, description, typeName, priority, documentsURIs } =
 		TransactionDTO.CreationSchema.parse(req.body);
 
 	const transaction = await TransactionAdaptor.create(
@@ -42,9 +42,8 @@ export async function createTransaction(req: Request, res: Response) {
 		typeName,
 		req.user.name,
 		priority,
+		documentsURIs,
 	);
-
-	// TODO: handle documents attaching as well
 
 	res.status(201).json({
 		status: "success",
