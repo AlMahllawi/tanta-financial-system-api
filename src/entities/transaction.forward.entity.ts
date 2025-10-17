@@ -50,7 +50,10 @@ export class TransactionForward {
 			nullable: false,
 		},
 	)
-	@JoinColumn({ name: "senderId" })
+	@JoinColumn({
+		name: "senderName",
+		foreignKeyConstraintName: "FK_ForwardSenderName",
+	})
 	sender!: Relation<User>;
 
 	@ManyToOne(
@@ -61,7 +64,10 @@ export class TransactionForward {
 			nullable: false,
 		},
 	)
-	@JoinColumn({ name: "receiverId" })
+	@JoinColumn({
+		name: "receiverName",
+		foreignKeyConstraintName: "FK_ForwardReceiverName",
+	})
 	receiver!: Relation<User>;
 
 	@CreateDateColumn()

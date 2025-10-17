@@ -10,7 +10,7 @@
 	"scripts": {
 		"dev": "tsx watch ./src/main.ts",
 		"build": "tsc",
-		"start": "node ./dist/main.js",
+		"start": "pnpm run migration:run && node ./dist/main.js",
 		"typeorm": "tsx ./node_modules/typeorm/cli.js",
 		"typeorm-extension": "tsx ./node_modules/typeorm-extension/bin/cli.mjs",
 		"migration:run": "pnpm typeorm migration:run --dataSource ./src/datasource.ts --transaction",
