@@ -81,6 +81,18 @@ export namespace TransactionDTO {
 		})
 		.strict();
 
+	export const ForwardTargetSchema = z.object({
+		typeName: TypeNameSchema.optional(),
+		fulfilled: z
+			.enum(["true", "false"])
+			.transform((val) => val === "true")
+			.optional(),
+		priority: PrioritySchema.optional(),
+		creatorName: UserDTO.NameSchema.optional(),
+		senderName: UserDTO.NameSchema.optional(),
+		receiverName: UserDTO.NameSchema.optional(),
+	});
+
 	export const UpdatesSchema = z
 		.object({
 			...CreationSchema.shape,

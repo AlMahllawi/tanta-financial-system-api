@@ -1,4 +1,9 @@
-import { type FindOptionsRelations, type FindOptionsSelect, In } from "typeorm";
+import {
+	type FindOptionsRelations,
+	type FindOptionsSelect,
+	type FindOptionsWhere,
+	In,
+} from "typeorm";
 import datasource from "../datasource.js";
 import type { TransactionDTO } from "../dto/transaction.dto.js";
 import { TransactionDocument } from "../entities/transaction.document.entity.js";
@@ -79,7 +84,31 @@ export namespace TransactionAdaptor {
 		)[0];
 	}
 
-	export async function viewAll(pageNumber: number, pageSize: number) {
+	export async function viewAll(
+		pageNumber: number,
+		pageSize: number,
+		filter?: {
+			typeName?: string | undefined;
+			fulfilled?: boolean | undefined;
+			priority?: TransactionPriority | undefined;
+			creatorName?: string | undefined;
+			senderName?: string | undefined;
+			receiverName?: string | undefined;
+		},
+	) {
+		const where: FindOptionsWhere<Transaction> = {};
+
+		if (filter) {
+			if (filter.creatorName) where.creator = { name: filter.creatorName };
+			if (filter.senderName)
+				where.forwards = { sender: { name: filter.senderName } };
+			if (filter.receiverName)
+				where.forwards = { receiver: { name: filter.receiverName } };
+			if (filter.typeName) where.type = { name: filter.typeName };
+			if (filter.fulfilled) where.fulfilled = filter.fulfilled;
+			if (filter.priority) where.priority = filter.priority;
+		}
+
 		return await datasource.getRepository(Transaction).findAndCount({
 			relations: { type: true, creator: true, documents: true },
 			skip: (pageNumber - 1) * pageSize,
@@ -87,39 +116,8 @@ export namespace TransactionAdaptor {
 			order: {
 				id: "desc",
 			},
+			where,
 		});
-	}
-
-	export async function createdBy(
-		creatorName: string,
-		pageNumber: number,
-		pageSize: number,
-	) {
-		return await datasource.getRepository(Transaction).findAndCount({
-			relations: { type: true, creator: true, documents: true },
-			skip: (pageNumber - 1) * pageSize,
-			take: pageSize,
-			order: {
-				id: "desc",
-			},
-			where: { creator: { name: creatorName } },
-		});
-	}
-
-	export async function forwardedBy(
-		forwarderName: string,
-		pageNumber: number,
-		pageSize: number,
-	) {
-		// TODO
-	}
-
-	export async function forwardedTo(
-		recipientName: string,
-		pageNumber: number,
-		pageSize: number,
-	) {
-		// TODO
 	}
 
 	export async function update(

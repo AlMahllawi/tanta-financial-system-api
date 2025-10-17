@@ -55,18 +55,39 @@ export async function createTransaction(req: Request, res: Response) {
 export async function viewTransactions(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const viewCreated = "created" in req.query;
-	if (!viewCreated && req.user.group !== UserGroups.ADMIN)
+	const {
+		pageNumber,
+		pageSize,
+		creatorName,
+		senderName,
+		receiverName,
+		...filter
+	} = UtilsDTO.Paging.extend(TransactionDTO.ForwardTargetSchema.shape).parse(
+		req.query,
+	);
+
+	const userFilter = [creatorName, senderName, receiverName];
+
+	const viewingNonPossessive = userFilter.some(
+		(name) => name && name !== req.user.name,
+	);
+
+	const viewingAll = userFilter.every((name) => name === undefined);
+
+	if (
+		(viewingNonPossessive || viewingAll) &&
+		req.user.group !== UserGroups.ADMIN
+	)
 		return res.status(403).json({
 			status: "forbidden",
-			message: "Missing access to view all transactions.",
+			message: "Missing access to view the transactions.",
 		});
 
-	const { pageNumber, pageSize } = UtilsDTO.Paging.parse(req.query);
-
-	const [transactions, totalTransactions] = await (viewCreated
-		? TransactionAdaptor.createdBy(req.user.name, pageNumber, pageSize)
-		: TransactionAdaptor.viewAll(pageNumber, pageSize));
+	const [transactions, totalTransactions] = await TransactionAdaptor.viewAll(
+		pageNumber,
+		pageSize,
+		filter,
+	);
 
 	res.status(200).json({
 		status: "success",
