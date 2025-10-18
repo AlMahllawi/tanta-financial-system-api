@@ -12,6 +12,7 @@ import {
 	viewTransaction,
 	viewTransactionForwards,
 	viewTransactions,
+	viewTransactionsInbox,
 	viewTransactionTypes,
 } from "../controllers/transaction.controller.js";
 import { authMiddleware } from "../middlewares/user.middleware.js";
@@ -25,6 +26,8 @@ router.get("/transactions/types", authMiddleware, viewTransactionTypes);
 router.post("/transactions", authMiddleware, createTransaction);
 
 router.get("/transactions", authMiddleware, viewTransactions);
+
+router.get("/transactions/inbox", authMiddleware, viewTransactionsInbox);
 
 router.get("/transactions/:id", authMiddleware, viewTransaction);
 

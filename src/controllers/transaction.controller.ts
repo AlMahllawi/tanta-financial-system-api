@@ -54,18 +54,15 @@ export async function createTransaction(req: Request, res: Response) {
 export async function viewTransactions(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
-	const {
-		pageNumber,
-		pageSize,
-		creatorName,
-		senderName,
-		receiverName,
-		...filter
-	} = UtilsDTO.Paging.extend(TransactionDTO.ForwardTargetSchema.shape).parse(
-		req.query,
-	);
+	const { pageNumber, pageSize, ...filter } = UtilsDTO.Paging.extend(
+		TransactionDTO.FilterSchema.shape,
+	).parse(req.query);
 
-	const userFilter = [creatorName, senderName, receiverName];
+	const userFilter = [
+		filter.creatorName,
+		filter.senderName,
+		filter.receiverName,
+	];
 
 	const viewingNonPossessive = userFilter.some(
 		(name) => name && name !== req.user.name,
@@ -85,7 +82,57 @@ export async function viewTransactions(req: Request, res: Response) {
 	const [transactions, totalTransactions] = await TransactionAdaptor.viewAll(
 		pageNumber,
 		pageSize,
-		filter,
+		[filter],
+	);
+
+	res.status(200).json({
+		status: "success",
+		page: {
+			number: pageNumber,
+			size: pageSize,
+			last: Math.ceil(totalTransactions / pageSize),
+		},
+		transactions: transactions.map((t) => TransactionDTO.ViewSchema.parse(t)),
+	});
+}
+
+export async function viewTransactionsInbox(req: Request, res: Response) {
+	assertAuthenticatedRequest(req);
+
+	const { pageNumber, pageSize, ...filter } = UtilsDTO.Paging.extend(
+		TransactionDTO.FilterSchema.shape,
+	).parse(req.query);
+
+	const userFilter = [
+		filter.creatorName,
+		filter.senderName,
+		filter.receiverName,
+	];
+
+	const viewingNonPossessive = userFilter.some(
+		(name) => name && name !== req.user.name,
+	);
+
+	const involved = userFilter.some((name) => name === req.user.name);
+
+	if (viewingNonPossessive && !involved)
+		return res.status(403).json({
+			status: "forbidden",
+			message: "Missing access to view the transactions.",
+		});
+
+	const filters = involved
+		? [filter]
+		: [
+				{ ...filter, creatorName: req.user.name },
+				{ ...filter, senderName: req.user.name },
+				{ ...filter, receiverName: req.user.name },
+			];
+
+	const [transactions, totalTransactions] = await TransactionAdaptor.viewAll(
+		pageNumber,
+		pageSize,
+		filters,
 	);
 
 	res.status(200).json({

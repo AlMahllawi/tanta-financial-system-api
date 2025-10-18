@@ -82,7 +82,7 @@ export namespace TransactionDTO {
 		})
 		.strict();
 
-	export const ForwardTargetSchema = z.object({
+	export const FilterSchema = z.object({
 		typeName: TypeNameSchema.optional(),
 		fulfilled: z
 			.enum(["true", "false"])

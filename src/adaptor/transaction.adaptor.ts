@@ -96,28 +96,15 @@ export namespace TransactionAdaptor {
 	export async function viewAll(
 		pageNumber: number,
 		pageSize: number,
-		filter?: {
+		filters: {
 			typeName?: string | undefined;
 			fulfilled?: boolean | undefined;
 			priority?: TransactionPriority | undefined;
 			creatorName?: string | undefined;
 			senderName?: string | undefined;
 			receiverName?: string | undefined;
-		},
+		}[],
 	) {
-		const where: FindOptionsWhere<Transaction> = {};
-
-		if (filter) {
-			if (filter.creatorName) where.creator = { name: filter.creatorName };
-			if (filter.senderName)
-				where.forwards = { sender: { name: filter.senderName } };
-			if (filter.receiverName)
-				where.forwards = { receiver: { name: filter.receiverName } };
-			if (filter.typeName) where.type = { name: filter.typeName };
-			if (filter.fulfilled) where.fulfilled = filter.fulfilled;
-			if (filter.priority) where.priority = filter.priority;
-		}
-
 		return await datasource.getRepository(Transaction).findAndCount({
 			relations: { type: true, creator: true, documents: true },
 			skip: (pageNumber - 1) * pageSize,
@@ -125,7 +112,18 @@ export namespace TransactionAdaptor {
 			order: {
 				id: "desc",
 			},
-			where,
+			where: filters.map((filter) => {
+				const options: FindOptionsWhere<Transaction> = {};
+				if (filter.creatorName) options.creator = { name: filter.creatorName };
+				if (filter.senderName)
+					options.forwards = { sender: { name: filter.senderName } };
+				if (filter.receiverName)
+					options.forwards = { receiver: { name: filter.receiverName } };
+				if (filter.typeName) options.type = { name: filter.typeName };
+				if (filter.fulfilled) options.fulfilled = filter.fulfilled;
+				if (filter.priority) options.priority = filter.priority;
+				return options;
+			}),
 		});
 	}
 
