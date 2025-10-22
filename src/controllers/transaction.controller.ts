@@ -225,7 +225,8 @@ export async function deleteTransaction(req: Request, res: Response) {
 		});
 
 	const deleted = await TransactionAdaptor.remove(id);
-	if (deleted) res.status(200).json({ status: "success", deleted: id });
+	if (deleted)
+		res.status(200).json({ status: "success", deleted: { transactionId: id } });
 	else
 		res.status(404).json({
 			status: "not-found",
@@ -269,16 +270,24 @@ export async function attachTransactionDocument(req: Request, res: Response) {
 			message: `You don't have access to attach a document to the transaction with the id: "${id}".`,
 		});
 
-	const transactionDocument = await TransactionAdaptor.attachDocument(
-		id,
-		`${uploaderName}/${documentName}`,
-	);
+	try {
+		const transactionDocument = await TransactionAdaptor.attachDocument(
+			id,
+			`${uploaderName}/${documentName}`,
+		);
 
-	res.status(200).json({
-		status: "success",
-		transactionDocument:
-			TransactionDTO.DocumentViewSchema.parse(transactionDocument),
-	});
+		res.status(200).json({
+			status: "success",
+			transactionDocument:
+				TransactionDTO.DocumentViewSchema.parse(transactionDocument),
+		});
+	} catch (error: any) {
+		if (error instanceof Exceptions.Conflict)
+			res.status(409).json({ status: "conflict", message: error.message });
+		if (error instanceof Exceptions.Invalid)
+			res.status(404).json({ status: "not-found", message: error.message });
+		else throw error;
+	}
 }
 
 export async function detachTransactionDocument(req: Request, res: Response) {
@@ -308,14 +317,17 @@ export async function detachTransactionDocument(req: Request, res: Response) {
 			message: `You don't have access to detach a document from the transaction with the id: "${id}".`,
 		});
 
-	const deleted = await TransactionAdaptor.detachDocument(id, documentURI);
+	const detached = await TransactionAdaptor.detachDocument(id, documentURI);
 
-	if (deleted)
-		res.status(200).json({ status: "success", deleted: documentURI });
+	if (detached)
+		res.status(200).json({
+			status: "success",
+			detached: { transactionId: id, documentURI },
+		});
 	else
 		res.status(404).json({
 			status: "not-found",
-			message: `No document ${documentURI} for the transaction id: "${id}".`,
+			message: `The document "${documentURI}" is not attached to the transaction with the id: "${id}".`,
 		});
 }
 
@@ -366,6 +378,8 @@ export async function viewTransactionForwards(req: Request, res: Response) {
 		},
 	});
 }
+
+// TODO: list forward status
 
 export async function updateTransactionForwardStatus(
 	req: Request,
@@ -445,21 +459,21 @@ export async function deleteTransactionForward(req: Request, res: Response) {
 			message: `Transaction with the id: "${id}" has been forwarded afterwards.`,
 		});
 
-	if (req.user.name !== lastForward.sender.name)
+	if (
+		req.user.name !== lastForward.sender.name &&
+		req.user.group !== UserGroups.ADMIN
+	)
 		return res.status(403).json({
 			status: "forbidden",
 			message: `You don't have access to delete the transaction forward with the id: "${forwardId}".`,
 		});
 
-	if (req.user.group !== UserGroups.ADMIN)
-		return res.status(403).json({
-			status: "forbidden",
-			message: `Missing access to delete a transaction forward.`,
-		});
-
 	const deleted = await TransactionAdaptor.deleteForward(id, forwardId);
 
-	if (deleted) res.status(200).json({ status: "success", deleted: forwardId });
+	if (deleted)
+		res
+			.status(200)
+			.json({ status: "success", deleted: { transactionId: id, forwardId } });
 	else
 		res.status(404).json({
 			status: "not-found",

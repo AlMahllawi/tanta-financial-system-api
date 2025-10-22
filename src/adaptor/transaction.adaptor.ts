@@ -13,7 +13,7 @@ import { TransactionForward } from "../entities/transaction.forward.entity.js";
 import { TransactionType } from "../entities/transaction.type.entity.js";
 import { User } from "../entities/user.entity.js";
 import {
-	type TransactionForwardStatus,
+	TransactionForwardStatus,
 	TransactionPriority,
 } from "../types/enums.js";
 import { Exceptions } from "../utils/exceptions.js";
@@ -77,6 +77,7 @@ export namespace TransactionAdaptor {
 
 		transaction.documents = documentsURIs.map((uri) => {
 			const document = new TransactionDocument();
+			document.transaction = transaction;
 			document.documentURI = uri;
 			return document;
 		});
@@ -196,12 +197,28 @@ export namespace TransactionAdaptor {
 		transactionId: number,
 		documentURI: string,
 	) {
+		const transaction = await view(transactionId);
+
+		if (!transaction)
+			throw new Exceptions.Invalid(
+				`There was no transaction with the id: "${transaction}". Can't proceed with the document attaching.`,
+			);
+
 		const transactionDocument = new TransactionDocument();
-		transactionDocument.transactionId = transactionId;
+		transactionDocument.transaction = transaction;
 		transactionDocument.documentURI = documentURI;
-		return await datasource
-			.getRepository(TransactionDocument)
-			.save(transactionDocument);
+		try {
+			return await datasource
+				.getRepository(TransactionDocument)
+				.save(transactionDocument);
+		} catch (error: any) {
+			if (error.driverError?.constraint !== "UniqueTransactionDocument")
+				throw error;
+
+			throw new Exceptions.Conflict(
+				`The document "${documentURI}" is already attached to the transaction with the id: "${transactionId}".`,
+			);
+		}
 	}
 
 	export async function detachDocument(
@@ -212,7 +229,7 @@ export namespace TransactionAdaptor {
 			((
 				await datasource
 					.getRepository(TransactionDocument)
-					.delete({ transactionId, documentURI })
+					.delete({ transaction: { id: transactionId }, documentURI })
 			).affected ?? 1) > 0
 		);
 	}
@@ -317,9 +334,12 @@ export namespace TransactionAdaptor {
 		const transactionForwardRepository =
 			datasource.getRepository(TransactionForward);
 
-		const forward = await transactionForwardRepository.findOneBy({
-			id: forwardId,
-			transaction: { id: transactionId },
+		const forward = await transactionForwardRepository.findOne({
+			where: { id: forwardId, transaction: { id: transactionId } },
+			relations: {
+				sender: true,
+				receiver: true,
+			},
 		});
 
 		if (!forward)
@@ -328,6 +348,15 @@ export namespace TransactionAdaptor {
 			);
 
 		forward.status = status;
+
+		if (
+			[
+				TransactionForwardStatus.APPROVED,
+				TransactionForwardStatus.REJECTED,
+			].includes(status)
+		) {
+			// TODO: update transaction to be fulfilled
+		}
 
 		return await transactionForwardRepository.save(forward);
 	}

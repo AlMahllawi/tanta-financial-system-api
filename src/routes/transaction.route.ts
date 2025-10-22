@@ -36,13 +36,13 @@ router.patch("/transactions/:id", authMiddleware, updateTransaction);
 router.delete("/transactions/:id", authMiddleware, deleteTransaction);
 
 router.post(
-	"/transactions/:id/document/:userName/:document",
+	"/transactions/:id/document/:uploaderName/:documentName",
 	authMiddleware,
 	attachTransactionDocument,
 );
 
 router.delete(
-	"/transactions/:id/document/:userName/:document",
+	"/transactions/:id/document/:uploaderName/:documentName",
 	authMiddleware,
 	detachTransactionDocument,
 );

@@ -89,7 +89,7 @@ export async function changePassword(req: Request, res: Response) {
 	if (req.user.name !== name && req.user.group !== UserGroups.ADMIN)
 		return res.status(403).json({
 			status: "forbidden",
-			message: "Missing access to changes user's password.",
+			message: "Missing access to change user's password.",
 		});
 
 	const user = await UserAdaptor.changePassword(name, password);

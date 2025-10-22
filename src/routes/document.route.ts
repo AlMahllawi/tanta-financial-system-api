@@ -19,10 +19,14 @@ router.post(
 	uploadDocument,
 );
 
-router.get("/documents/:userName/:documentName", authMiddleware, viewDocument);
+router.get(
+	"/documents/:uploaderName/:documentName",
+	authMiddleware,
+	viewDocument,
+);
 
 router.delete(
-	"/documents/:userName/:documentName",
+	"/documents/:uploaderName/:documentName",
 	authMiddleware,
 	deleteDocument,
 );

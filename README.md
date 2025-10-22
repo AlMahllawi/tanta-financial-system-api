@@ -27,6 +27,3 @@ docker compose up -d && docker compose exec -e NODE_ENV=testing app pnpm seed:ru
 ```bash
 docker-compose down
 ```
-
-## TODO
-Update postman and document the endpoints.

@@ -16,7 +16,10 @@ import { User } from "./user.entity.js";
 
 @Entity("Transactions")
 export class Transaction {
-	@PrimaryGeneratedColumn({ type: "int" })
+	@PrimaryGeneratedColumn({
+		primaryKeyConstraintName: "PK_Transaction",
+		type: "int",
+	})
 	id!: number;
 
 	@Column({ type: "varchar", length: 255 })
@@ -29,7 +32,7 @@ export class Transaction {
 		() => TransactionType,
 		(transactionType) => transactionType.transactions,
 	)
-	@JoinColumn({ name: "type" })
+	@JoinColumn({ foreignKeyConstraintName: "FK_TransactionType", name: "type" })
 	type!: TransactionType;
 
 	@Column({
@@ -53,7 +56,10 @@ export class Transaction {
 			nullable: false,
 		},
 	)
-	@JoinColumn({ name: "creatorName" })
+	@JoinColumn({
+		foreignKeyConstraintName: "FK_TransactionCreator",
+		name: "creatorName",
+	})
 	creator!: Relation<User>;
 
 	@CreateDateColumn()

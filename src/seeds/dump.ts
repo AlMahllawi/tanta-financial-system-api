@@ -36,7 +36,7 @@ export class Dump implements Seeder {
 				const transaction = await transactionFactory.save();
 				transactions.push(transaction);
 				transactionDocumentFactory.setMeta({
-					transactionId: transaction.id,
+					transaction,
 					uploader: user,
 				});
 				await transactionDocumentFactory.save();

@@ -13,8 +13,8 @@ export namespace DocumentAdaptor {
 		const transactionsIds = (
 			await datasource
 				.getRepository(TransactionDocument)
-				.find({ select: ["transactionId"], where: { documentURI } })
-		).flatMap((td) => td.transactionId);
+				.find({ select: { transaction: { id: true } }, where: { documentURI } })
+		).flatMap((td) => td.transaction.id);
 
 		return (
 			(await datasource.getRepository(TransactionForward).findOne({

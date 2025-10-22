@@ -30,7 +30,9 @@ const storage = multer.diskStorage({
 		const filename = file.originalname.toLowerCase();
 		if (existsSync(join(req.uploadPath, filename)))
 			cb(
-				new Exceptions.Conflict(`There exist a file with the name ${filename}`),
+				new Exceptions.Conflict(
+					`There exist a file with the name "${filename}".`,
+				),
 				filename,
 			);
 		cb(null, filename);
@@ -54,6 +56,8 @@ export async function uploadDocument(req: Request, res: Response) {
 		documentURI: join(basename(dirname(file.path)), file.filename),
 	});
 }
+
+// TODO: list user documents
 
 export async function viewDocument(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
@@ -110,6 +114,6 @@ export async function deleteDocument(req: Request, res: Response) {
 
 	res.status(200).json({
 		status: "success",
-		deleted: documentURI,
+		deleted: { documentURI },
 	});
 }

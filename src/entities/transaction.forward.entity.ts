@@ -21,7 +21,10 @@ import { User } from "./user.entity.js";
 
 @Entity("TransactionForwards")
 export class TransactionForward {
-	@PrimaryGeneratedColumn({ type: "int" })
+	@PrimaryGeneratedColumn({
+		primaryKeyConstraintName: "PK_TransactionForward",
+		type: "int",
+	})
 	id!: number;
 
 	@ManyToOne(
@@ -32,7 +35,10 @@ export class TransactionForward {
 			nullable: false,
 		},
 	)
-	@JoinColumn({ name: "transactionId" })
+	@JoinColumn({
+		foreignKeyConstraintName: "FK_TransactionForward",
+		name: "transactionId",
+	})
 	transaction!: Relation<Transaction>;
 
 	@Column({

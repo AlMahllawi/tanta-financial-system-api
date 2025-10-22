@@ -10,16 +10,15 @@ import {
 import { Transaction } from "./transaction.entity.js";
 
 @Entity("TransactionDocuments")
-@Index(["transactionId", "documentURI"], { unique: true })
+@Index("UniqueTransactionDocument", ["transaction", "documentURI"], {
+	unique: true,
+})
 export class TransactionDocument {
-	@PrimaryGeneratedColumn({ type: "int" })
+	@PrimaryGeneratedColumn({
+		primaryKeyConstraintName: "PK_TransactionDocument",
+		type: "int",
+	})
 	id!: number;
-
-	@Column({ type: "int" })
-	transactionId!: number;
-
-	@Column({ type: "text" })
-	documentURI!: string;
 
 	@ManyToOne(
 		() => Transaction,
@@ -28,6 +27,12 @@ export class TransactionDocument {
 			onDelete: "CASCADE",
 		},
 	)
-	@JoinColumn()
+	@JoinColumn({
+		foreignKeyConstraintName: "FK_TransactionDocument",
+		name: "transactionId",
+	})
 	transaction!: Relation<Transaction>;
+
+	@Column({ type: "text" })
+	documentURI!: string;
 }

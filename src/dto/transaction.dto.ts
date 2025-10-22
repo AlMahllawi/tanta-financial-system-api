@@ -15,7 +15,6 @@ export namespace TransactionDTO {
 	export const DocumentViewSchema = z
 		.object({
 			id: z.number(),
-			transactionId: z.number(),
 			documentURI: z.string(),
 		})
 		.strip();

@@ -3,7 +3,6 @@ export enum TransactionForwardStatus {
 	NEEDS_EDITING = "needs-editing",
 	REJECTED = "rejected",
 	APPROVED = "approved",
-	FULFILLED = "fulfilled",
 }
 
 export enum TransactionPriority {
