@@ -1,4 +1,4 @@
-FROM node:24.8.0-alpine3.21 AS base
+FROM node:25-alpine3.21 AS base
 RUN npm install -g pnpm
 WORKDIR /app
 
