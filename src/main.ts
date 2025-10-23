@@ -3,7 +3,8 @@ import chalk from "chalk";
 import type { Express } from "express";
 import express from "express";
 import "express-async-errors";
-import type { Server } from "http";
+import type { Server } from "node:http";
+import cors from "cors";
 import datasource from "./datasource.js";
 import errorHandler from "./middlewares/error.middleware.js";
 import {
@@ -11,12 +12,29 @@ import {
 	transactionRouter,
 	userRouter,
 } from "./routes/index.js";
-import { PORT } from "./utils/env.js";
+import { ALLOWED_ORIGINS, PORT } from "./utils/env.js";
+import { Exceptions } from "./utils/exceptions.js";
 import { logger } from "./utils/logger.js";
 
 const app: Express = express();
 
 app.disable("x-powered-by");
+if (ALLOWED_ORIGINS)
+	app.use(
+		cors({
+			credentials: true,
+			origin: (origin, callback) => {
+				if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
+				else
+					callback(
+						new Exceptions.Invalid(
+							`CORS Blocked: Origin '${origin}' is not allowed.`,
+						),
+						false,
+					);
+			},
+		}),
+	);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

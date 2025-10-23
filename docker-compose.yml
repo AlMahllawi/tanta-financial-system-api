@@ -5,11 +5,14 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${PORT:-3000}:3000"
+    env_file:
+      - .env
     environment:
       - CI=true
-      - NODE_ENV=production
-      - PORT=3000
-      - DB_CONNECTION_URL=postgres://tanta:${PASSWORD:-n0nS3cure}@db:5432/TantaFinancial
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=tanta
+      - DB_NAME=TantaFinancial
     depends_on:
       db:
         condition: service_healthy
@@ -24,7 +27,7 @@ services:
     image: postgres:18.0-alpine3.21
     environment:
       - POSTGRES_USER=tanta
-      - POSTGRES_PASSWORD=${PASSWORD:-n0nS3cure}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=TantaFinancial
     volumes:
       - pgdata:/var/lib/postgresql/data

@@ -6,8 +6,6 @@
 	"catppuccin-noctis-icons.files.associations": {
 		// ".env.*": "gear", //! Doesn't seem to have any effect
 		".env.example": "gear",
-		".env.docker": "gear",
-		".env.docker.example": "gear",
 		"*.service.ts": "typescript"
 	},
 	"catppuccin-noctis-icons.folders.associations": {

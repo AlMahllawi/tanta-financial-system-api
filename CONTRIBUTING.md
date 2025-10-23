@@ -17,11 +17,9 @@ pnpm install
 ```bash
 cp .env.example .env
 ```
-Change the environment to be `development` and insert the [database connection URL](https://stackoverflow.com/questions/3582552/what-is-the-format-for-the-postgresql-connection-string-url).
+Change the environment to be `development`.
 ```dotenv
 NODE_ENV=development
-
-DB_CONNECTION_URL="postgres://almahllawi:n0nS3cure@localhost:5432/TantaFinancial"
 ```
 
 ### Run the migrations
