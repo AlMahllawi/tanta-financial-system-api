@@ -27,14 +27,22 @@ const storage = multer.diskStorage({
 	},
 	filename: (req, file, cb) => {
 		assertUploadRequest(req);
-		const filename = file.originalname.toLowerCase();
+		let filename = file.originalname.toLowerCase();
+
+		try {
+			filename = DocumentDTO.NameScheme.parse(filename);
+		} catch (error: any) {
+			return cb(error, filename);
+		}
+
 		if (existsSync(join(req.uploadPath, filename)))
-			cb(
+			return cb(
 				new Exceptions.Conflict(
 					`There exist a file with the name "${filename}".`,
 				),
 				filename,
 			);
+
 		cb(null, filename);
 	},
 });

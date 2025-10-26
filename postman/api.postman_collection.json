@@ -1059,7 +1059,7 @@
 								},
 								{
 									"key": "documentName",
-									"value": "schedule.pdf"
+									"value": "{{lastUploadedDocument}}"
 								}
 							]
 						},
