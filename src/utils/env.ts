@@ -62,6 +62,8 @@ if (!fs.existsSync(DOCUMENTS_PATH)) fs.mkdirSync(DOCUMENTS_PATH);
 if (!fs.statSync(DOCUMENTS_PATH).isDirectory())
 	throw new Error("Invalid documents path.");
 
-export const ALLOWED_ORIGINS = variable("ALLOWED_ORIGINS", "")
-	.split(",")
-	.map((origin) => origin.trim());
+export const ALLOWED_ORIGINS = (() => {
+	const raw = variable("ALLOWED_ORIGINS");
+	if (!raw) return [];
+	return raw.split(",").map((origin) => origin.trim());
+})();

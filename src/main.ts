@@ -4,7 +4,7 @@ import type { Express } from "express";
 import express from "express";
 import "express-async-errors";
 import type { Server } from "node:http";
-import cors from "cors";
+import cors, { type CorsOptions } from "cors";
 import datasource from "./datasource.js";
 import errorHandler from "./middlewares/error.middleware.js";
 import {
@@ -19,23 +19,42 @@ import { logger } from "./utils/logger.js";
 const app: Express = express();
 
 app.disable("x-powered-by");
-if (ALLOWED_ORIGINS)
-	app.use(
-		cors({
-			credentials: true,
-			origin: (origin, callback) => {
-				if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
-				else
-					callback(
-						new Exceptions.Invalid(
-							`CORS Blocked: Origin '${origin}' is not allowed.`,
-						),
-						false,
-					);
-			},
-		}),
+
+if (ALLOWED_ORIGINS.length > 0) {
+	const corsOptions: CorsOptions = {
+		credentials: true,
+	};
+
+	if (ALLOWED_ORIGINS.length === 1 && ALLOWED_ORIGINS[0] === "*")
+		corsOptions.origin = true;
+	else {
+		corsOptions.origin = (origin, callback) => {
+			if (!origin || ALLOWED_ORIGINS.includes(origin)) callback(null, true);
+			else
+				callback(
+					new Exceptions.Invalid(
+						`CORS Blocked: Origin '${origin}' is not allowed.`,
+					),
+					false,
+				);
+		};
+	}
+
+	app.use(cors(corsOptions));
+
+	logger.info(
+		chalk.green(
+			`CORS Mode: ${
+				corsOptions.origin === true ? "Allow All (Reflected)" : "Whitelist"
+			}`,
+		),
 	);
+} else {
+	logger.info(chalk.yellow("CORS not configured. Middleware not applied."));
+}
+
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
