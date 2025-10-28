@@ -61,7 +61,7 @@ export async function uploadDocument(req: Request, res: Response) {
 
 	res.status(200).json({
 		status: "success",
-		documentURI: join(basename(dirname(file.path)), file.filename),
+		documentURI: `${basename(dirname(file.path))}/${file.filename}`,
 	});
 }
 
@@ -74,9 +74,9 @@ export async function viewDocument(req: Request, res: Response) {
 		req.params,
 	);
 
-	const documentURI = join(uploaderName, documentName);
+	const documentURI = `${uploaderName}/${documentName}`;
 
-	const documentPath = join(DOCUMENTS_PATH, documentURI);
+	const documentPath = join(DOCUMENTS_PATH, uploaderName, documentName);
 
 	if (!existsSync(documentPath))
 		return res.status(404).json({
@@ -108,9 +108,9 @@ export async function deleteDocument(req: Request, res: Response) {
 			`The document ${documentName} belongs to the user ${uploaderName}. Can't proceed with the deletion.`,
 		);
 
-	const documentURI = join(uploaderName, documentName);
+	const documentURI = `${uploaderName}/${documentName}`;
 
-	const documentPath = join(DOCUMENTS_PATH, documentURI);
+	const documentPath = join(DOCUMENTS_PATH, uploaderName, documentName);
 
 	if (!existsSync(documentPath))
 		return res.status(404).json({

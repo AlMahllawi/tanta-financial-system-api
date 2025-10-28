@@ -11,10 +11,11 @@ export default setSeederFactory(
 	(faker, meta: { transaction: Transaction; uploader: User }) => {
 		const transactionDocument = new TransactionDocument();
 		transactionDocument.transaction = meta.transaction;
-		const documentURI = `${meta.uploader.name}/${faker.word.words(3)}.txt`;
+		const filename = `${faker.word.words(3)}.txt`;
+		const documentURI = `${meta.uploader.name}/${filename}`;
 		const uploaderDir = join(DOCUMENTS_PATH, meta.uploader.name);
 		if (!existsSync(uploaderDir)) mkdirSync(uploaderDir);
-		writeFileSync(join(DOCUMENTS_PATH, documentURI), faker.word.words(15));
+		writeFileSync(join(uploaderDir, filename), faker.word.words(15));
 		transactionDocument.documentURI = documentURI;
 		return transactionDocument;
 	},
