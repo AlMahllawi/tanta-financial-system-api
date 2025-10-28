@@ -1,8 +1,6 @@
-import { In } from "typeorm";
 import datasource from "../datasource.js";
 import { DocumentDTO } from "../dto/document.dto.js";
 import { TransactionDocument } from "../entities/transaction.document.entity.js";
-import { TransactionForward } from "../entities/transaction.forward.entity.js";
 import type { User } from "../entities/user.entity.js";
 
 export namespace DocumentAdaptor {
@@ -10,18 +8,25 @@ export namespace DocumentAdaptor {
 		const [uploaderName] = DocumentDTO.URIScheme.parse(documentURI).split("/");
 		if (user.name === uploaderName) return true;
 
-		const transactionsIds = (
-			await datasource
-				.getRepository(TransactionDocument)
-				.find({ select: { transaction: { id: true } }, where: { documentURI } })
-		).flatMap((td) => td.transaction.id);
+		const document = await datasource.getRepository(TransactionDocument).findOne({
+			select: { id: true },
+			where: {
+				documentURI,
+				transaction: {
+					forwards: {
+						receiver: { name: user.name },
+					},
+				},
+			},
+			relations: {
+				transaction: {
+					forwards: {
+						receiver: true,
+					},
+				},
+			},
+		});
 
-		return (
-			(await datasource.getRepository(TransactionForward).findOne({
-				select: { id: true },
-				relations: { transaction: true },
-				where: { transaction: { id: In(transactionsIds) }, receiver: user },
-			})) !== null
-		);
+		return document !== null;
 	}
 }
