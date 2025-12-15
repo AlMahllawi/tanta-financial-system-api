@@ -15,3 +15,5 @@ export enum UserGroups {
 	ADMIN = "admin",
 	USER = "user",
 }
+
+// TODO: endpoints

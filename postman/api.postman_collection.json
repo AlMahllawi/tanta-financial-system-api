@@ -15,7 +15,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"user1\",\n    \"password\": \"Pass1234\"\n}",
+							"raw": "{\n    \"name\": \"user1\",\n    \"group\": \"user\",\n    \"password\": \"Pass1234\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

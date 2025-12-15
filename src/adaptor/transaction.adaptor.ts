@@ -12,10 +12,8 @@ import { Transaction } from "../entities/transaction.entity.js";
 import { TransactionForward } from "../entities/transaction.forward.entity.js";
 import { TransactionType } from "../entities/transaction.type.entity.js";
 import { User } from "../entities/user.entity.js";
-import {
-	TransactionForwardStatus,
-	TransactionPriority,
-} from "../types/enums.js";
+import type { TransactionForwardStatus } from "../types/enums.js";
+import { TransactionPriority } from "../types/enums.js";
 import { Exceptions } from "../utils/exceptions.js";
 
 export namespace TransactionAdaptor {
@@ -348,15 +346,6 @@ export namespace TransactionAdaptor {
 			);
 
 		forward.status = status;
-
-		if (
-			[
-				TransactionForwardStatus.APPROVED,
-				TransactionForwardStatus.REJECTED,
-			].includes(status)
-		) {
-			// TODO: update transaction to be fulfilled
-		}
 
 		return await transactionForwardRepository.save(forward);
 	}

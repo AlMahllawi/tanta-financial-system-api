@@ -96,6 +96,7 @@ export async function viewTransactions(req: Request, res: Response) {
 	});
 }
 
+// TODO: document in postman
 export async function viewTransactionsInbox(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
@@ -331,6 +332,12 @@ export async function detachTransactionDocument(req: Request, res: Response) {
 		});
 }
 
+/**
+ * TODO: imply the logic:
+ * - no forward is inserted unless last receiver has fulfilled the last forward (or the are no forwards).
+ * - the sender of the new forward must be either last receiver or last sender (if last receiver updated the forward status)
+ * - reject forwarding if transaction is already fulfilled
+ */
 export async function createTransactionForward(req: Request, res: Response) {
 	assertAuthenticatedRequest(req);
 
@@ -480,3 +487,5 @@ export async function deleteTransactionForward(req: Request, res: Response) {
 			message: `No transaction forward was found with id: "${forwardId}".`,
 		});
 }
+
+// TODO: update transaction to be fulfilled (and check who is able to do so)
