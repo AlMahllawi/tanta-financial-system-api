@@ -1,0 +1,7 @@
+.env
+.env.backup
+.pnpm-store/
+dist/
+documents/
+logs/
+node_modules/
