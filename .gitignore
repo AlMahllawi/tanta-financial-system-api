@@ -5,3 +5,5 @@ dist/
 documents/
 logs/
 node_modules/
+
+/generated/prisma

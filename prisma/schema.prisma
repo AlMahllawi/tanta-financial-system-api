@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  name           String   @id
+  hashedPassword String
+  createdAt      DateTime @default(now())
+  active         Boolean  @default(true)
+  role           UserGroups @default(USER)
+  last_login     DateTime?
+
+  departmentName String
+  department     Department @relation("BelongsTo", fields: [departmentName], references: [name])
+  managedDept    Department? @relation("Manages")
+
+  createdTypes   TransactionType[]
+  uploadedDocs   Document[]
+  createdTrans   Transaction[]
+  sentForwards   TransactionForward[] @relation("SentForwards")
+  receivedForwards TransactionForward[] @relation("ReceivedForwards")
+}
+
+enum UserGroups {
+  ADMIN
+  USER
+}
+
+model Department {
+  name        String @id
+  managerName String @unique
+
+  members     User[] @relation("BelongsTo")
+  managedBy   User   @relation("Manages", fields: [managerName], references: [name])
+}
+
+model Document {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    Bytes
+  uploadedAt DateTime @default(now())
+  uploader   String
+
+  user         User        @relation(fields: [uploader], references: [name])
+  transactions Transaction[] @relation("AttachedTo")
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  type        String
+  fulfilled   Boolean  @default(false)
+  priority    TransactionPriority      @default(LOW)
+  creator     String
+  createdAt   DateTime @default(now())
+
+  transactionType TransactionType @relation(fields: [type], references: [name])
+  user            User            @relation(fields: [creator], references: [name])
+  documents       Document[]      @relation("AttachedTo")
+  forwards        TransactionForward[]
+}
+
+enum TransactionPriority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model TransactionType {
+  name    String @id
+  creator String
+
+  user    User   @relation(fields: [creator], references: [name])
+  transactions Transaction[]
+}
+
+model TransactionForward {
+  id            Int      @id @default(autoincrement())
+  status        TransactionForwardStatus @default(WAITING)
+  comment       String?
+  sender        String
+  receiver      String
+  seen          Boolean  @default(false)
+  forwardedAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  transactionId Int
+
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  senderUser    User        @relation("SentForwards", fields: [sender], references: [name])
+  receiverUser  User        @relation("ReceivedForwards", fields: [receiver], references: [name])
+}
+
+enum TransactionForwardStatus {
+  WAITING
+  NEEDS_EDITING
+  REJECTED
+  APPROVED
+}
+
