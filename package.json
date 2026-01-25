@@ -4,6 +4,7 @@
   "description": "Track financial and administrative transactions progress, submission and review.",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",

@@ -6,4 +6,4 @@ documents/
 logs/
 node_modules/
 
-/generated/prisma
+/prisma/generated
