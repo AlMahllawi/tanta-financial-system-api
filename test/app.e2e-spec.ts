@@ -7,7 +7,7 @@ import { AppModule } from './../src/app.module';
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -16,10 +16,29 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('/ (GET) - Should return API Metadata and Health', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
-      .expect('Hello World!');
+      .expect((res) => {
+        expect(res.body).toEqual({
+          /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+          name: expect.any(String),
+          version: expect.any(String),
+          description: expect.any(String),
+          docs: expect.any(String),
+          timestamp: expect.any(String),
+          health: {
+            status: 'up',
+            uptime: expect.any(Number),
+            memoryUsage: expect.any(Number),
+          },
+          /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+        });
+      });
+  });
+
+  afterAll(async () => {
+    await app.close();
   });
 });
