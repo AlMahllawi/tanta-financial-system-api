@@ -13,7 +13,7 @@ model User {
   createdAt      DateTime @default(now())
   active         Boolean  @default(true)
   role           UserGroups @default(USER)
-  last_login     DateTime?
+  lastLogin      DateTime?
 
   departmentName String
   department     Department @relation("BelongsTo", fields: [departmentName], references: [name])
