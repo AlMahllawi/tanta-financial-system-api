@@ -13,6 +13,7 @@ async function bootstrap() {
     .setVersion(packageJson.version)
     .addTag('Entry')
     .addTag('Users', 'Operations related to user management and profiles')
+    .addTag('Documents', 'Archiving for later use')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
