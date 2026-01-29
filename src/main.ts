@@ -14,6 +14,7 @@ async function bootstrap() {
     .addTag('Entry')
     .addTag('Users', 'Operations related to user management and profiles')
     .addTag('Documents', 'Archiving for later use')
+    .addTag('Transaction Types', 'Manage types of transactions')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
