@@ -11,7 +11,9 @@ describe('TransactionForwardController', () => {
       providers: [TransactionForwardService],
     }).compile();
 
-    controller = module.get<TransactionForwardController>(TransactionForwardController);
+    controller = module.get<TransactionForwardController>(
+      TransactionForwardController,
+    );
   });
 
   it('should be defined', () => {

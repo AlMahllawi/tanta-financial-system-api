@@ -13,26 +13,32 @@ import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dt
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Transaction Forwards')
-@Controller('transaction-forward')
+@Controller('transaction/:transactionId/forward')
 export class TransactionForwardController {
   constructor(
     private readonly transactionForwardService: TransactionForwardService,
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create a new transaction forward' })
-  create(@Body() createTransactionForwardDto: CreateTransactionForwardDto) {
-    return this.transactionForwardService.create(createTransactionForwardDto);
+  @ApiOperation({ summary: 'Forward a transaction' })
+  create(
+    @Param('transactionId') transactionId: string,
+    @Body() createTransactionForwardDto: CreateTransactionForwardDto,
+  ) {
+    return this.transactionForwardService.create(
+      +transactionId,
+      createTransactionForwardDto,
+    );
   }
 
-  @Get(':transactionId')
-  @ApiOperation({ summary: 'Get all transaction forwards by transaction ID' })
+  @Get()
+  @ApiOperation({ summary: "Get all transaction's forwards" })
   findAll(@Param('transactionId') transactionId: string) {
     return this.transactionForwardService.findAll(+transactionId);
   }
 
-  @Patch(':transactionId/:id')
-  @ApiOperation({ summary: 'Update a transaction forward' })
+  @Patch(':id')
+  @ApiOperation({ summary: "Respond to a transaction's forward" })
   update(
     @Param('transactionId') transactionId: string,
     @Param('id') id: string,
@@ -45,8 +51,8 @@ export class TransactionForwardController {
     );
   }
 
-  @Delete(':transactionId/:id')
-  @ApiOperation({ summary: 'Delete a transaction forward' })
+  @Delete(':id')
+  @ApiOperation({ summary: "Undo a transaction's forward" })
   remove(
     @Param('transactionId') transactionId: string,
     @Param('id') id: string,

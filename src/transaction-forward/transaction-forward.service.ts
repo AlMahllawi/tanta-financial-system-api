@@ -4,8 +4,11 @@ import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dt
 
 @Injectable()
 export class TransactionForwardService {
-  create(createTransactionForwardDto: CreateTransactionForwardDto) {
-    return 'This action adds a new transaction forward';
+  create(
+    transactionId: number,
+    createTransactionForwardDto: CreateTransactionForwardDto,
+  ) {
+    return `This action adds a new transaction forward to transaction #${transactionId}`;
   }
 
   findAll(transactionId: number) {
