@@ -23,4 +23,12 @@ export class TransactionService {
   remove(id: number) {
     return `This action removes a #${id} transaction`;
   }
+
+  attachDocument(transactionId: number, documentId: number) {
+    return `This action attaches document #${documentId} to transaction #${transactionId}`;
+  }
+
+  detachDocument(transactionId: number, documentId: number) {
+    return `This action detaches document #${documentId} from transaction #${transactionId}`;
+  }
 }

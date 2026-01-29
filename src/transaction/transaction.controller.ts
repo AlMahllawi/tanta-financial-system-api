@@ -49,4 +49,22 @@ export class TransactionController {
   remove(@Param('id') id: string) {
     return this.transactionService.remove(+id);
   }
+
+  @Post(':id/document/:documentId')
+  @ApiOperation({ summary: 'Attach a document to a transaction' })
+  attachDocument(
+    @Param('id') id: string,
+    @Param('documentId') documentId: string,
+  ) {
+    return this.transactionService.attachDocument(+id, +documentId);
+  }
+
+  @Delete(':id/document/:documentId')
+  @ApiOperation({ summary: 'Detach a document from a transaction' })
+  detachDocument(
+    @Param('id') id: string,
+    @Param('documentId') documentId: string,
+  ) {
+    return this.transactionService.detachDocument(+id, +documentId);
+  }
 }
