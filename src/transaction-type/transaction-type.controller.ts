@@ -4,7 +4,7 @@ import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Transaction Types')
-@Controller('transaction-type')
+@Controller('transactions-types')
 export class TransactionTypeController {
   constructor(
     private readonly transactionTypeService: TransactionTypeService,

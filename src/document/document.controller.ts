@@ -15,7 +15,7 @@ import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Documents')
-@Controller('document')
+@Controller('documents')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
 
