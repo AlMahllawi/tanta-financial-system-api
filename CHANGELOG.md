@@ -9,4 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Departments.
+- Departments resource.
+- User attributes
+  - Department.
+  - Activation.
+  - Last login.
+- Uploaded documents endpoint.
+- Trasaction type creator.
+
+### Changed
+
+- Replaced documentURI with documentId.
+- User group renamed to user role.
+- Soft delete (document, transaction, forward, type).

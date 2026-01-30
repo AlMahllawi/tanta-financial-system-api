@@ -1,19 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto';
+import { TransactionType } from './entities/transaction-type.entity';
+
+const transactionType = new TransactionType();
+transactionType.name = 'Financial';
+transactionType.creator = 'AlMahllawi';
 
 @Injectable()
 export class TransactionTypeService {
   create(createTransactionTypeDto: CreateTransactionTypeDto) {
-    return `This action adds a new transaction type "${createTransactionTypeDto.name}"`;
+    transactionType.name = createTransactionTypeDto.name;
+    return transactionType;
   }
 
   findAll() {
     // TODO: optional creator query
-    return `This action returns all transaction types`;
+    return [transactionType];
   }
 
   remove(name: string) {
     // TODO: reject if there exists a transaction with such type
-    return `This action removes the transaction type "${name}"`;
+    transactionType.name = name;
+    return transactionType;
   }
 }

@@ -1,20 +1,29 @@
 import { Injectable } from '@nestjs/common';
+import { Document } from './entities/document.entity';
+
+const document = new Document();
+document.title = 'Transaction.pdf';
+document.uploader = 'AlMahllawi';
+document.uploadedAt = new Date();
 
 @Injectable()
 export class DocumentService {
   create(file: Express.Multer.File) {
-    return 'This action adds a new document';
+    document.title = file.originalname;
+    return document;
   }
 
   findAll() {
-    return `This action returns all document`;
+    return [document];
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} document`;
+    document.id = id;
+    return document;
   }
 
   remove(id: number) {
-    return `This action removes a #${id} document`;
+    document.id = id;
+    return document;
   }
 }

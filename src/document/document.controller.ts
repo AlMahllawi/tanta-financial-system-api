@@ -11,8 +11,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { DocumentService } from './document.service';
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Document } from './entities/document.entity';
 
 @ApiTags('Documents')
 @Controller('documents')
@@ -31,6 +38,7 @@ export class DocumentController {
       },
     },
   })
+  @ApiResponse({ status: 201, type: Document })
   @UseInterceptors(FileInterceptor('file'))
   create(
     @UploadedFile(
@@ -49,18 +57,21 @@ export class DocumentController {
 
   @Get('uploaded')
   @ApiOperation({ summary: 'Retrieve all documents uploaded by the user' })
+  @ApiResponse({ status: 200, type: [Document] })
   findAll() {
     return this.documentService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a document by ID' })
+  @ApiResponse({ status: 200, type: Document })
   findOne(@Param('id') id: string) {
     return this.documentService.findOne(+id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a document by ID' })
+  @ApiResponse({ status: 200, type: Document })
   remove(@Param('id') id: string) {
     return this.documentService.remove(+id);
   }

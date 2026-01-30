@@ -1,26 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
+import { Department } from './entities/department.entity';
 
 @Injectable()
 export class DepartmentService {
   create(createDepartmentDto: CreateDepartmentDto) {
-    return `This action adds a new department with name "${createDepartmentDto.name}" managed by "${createDepartmentDto.managerName}"`;
+    const department = new Department();
+    department.name = createDepartmentDto.name;
+    department.managerName = createDepartmentDto.managerName;
+    return department;
   }
 
   findAll() {
-    return `This action returns all departments`;
+    const department = new Department();
+    department.name = 'Computer Science';
+    department.managerName = 'AlMahllawi';
+    return [department];
   }
 
   findOne(name: string) {
-    return `This action returns the department with name "${name}"`;
+    const department = new Department();
+    department.name = name;
+    department.managerName = 'AlMahllawi';
+    return department;
   }
 
   update(name: string, updateDepartmentDto: UpdateDepartmentDto) {
-    return `This action updates the department "${name}"`;
-  }
-
-  remove(name: string) {
-    return `This action removes the department "${name}"`;
+    const department = new Department();
+    department.name = name;
+    department.managerName = updateDepartmentDto.managerName || 'AlMahllawi';
+    return department;
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsString, NotEquals } from 'class-validator';
 import { TransactionForwardStatus } from 'prisma/generated/enums';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -8,7 +8,10 @@ const { WAITING: _ignored, ...TransactionForwardStatusUpdate } =
 
 export class UpdateTransactionForwardDto {
   @ApiProperty({ enum: TransactionForwardStatusUpdate })
-  @IsEnum(TransactionForwardStatusUpdate)
-  status: typeof TransactionForwardStatusUpdate;
+  @IsEnum(TransactionForwardStatus)
+  @NotEquals(TransactionForwardStatus.WAITING)
+  status: TransactionForwardStatus;
+
+  @IsString()
   comment: string;
 }

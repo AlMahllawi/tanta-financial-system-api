@@ -4,7 +4,7 @@ import { UserGroups } from 'prisma/generated/enums';
 export class ViewUserDto {
   name: string;
   @ApiProperty({ enum: UserGroups })
-  group: UserGroups;
+  role: UserGroups;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,14 +1,20 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { TransactionPriority } from 'prisma/generated/enums';
+import { IsName } from 'src/common/decorators/is-name';
 
 export class CreateTransactionDto {
+  @IsName()
   title: string;
+  @IsString()
   description: string;
+  @IsName()
   typeName: string;
-  @ApiProperty({ enum: TransactionPriority })
+  @ApiPropertyOptional({
+    enum: TransactionPriority,
+    default: TransactionPriority.LOW,
+  })
   @IsOptional()
   @IsEnum(TransactionPriority)
   priority: TransactionPriority = TransactionPriority.LOW;
-  documentsURIs: string[]; // TODO: repalce with IDs
 }

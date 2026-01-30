@@ -1,23 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { User } from './entities/user.entity';
+import { UserGroups } from 'prisma/generated/enums';
+
+const user = new User();
+user.name = 'AlMahllawi';
+user.active = true;
+user.role = UserGroups.ADMIN;
+user.createdAt = new Date();
+user.lastLogin = new Date();
+user.hashedPassword = '#password';
+user.departmentName = 'Financial';
 
 @Injectable()
 export class UserService {
   create(createUserDto: CreateUserDto) {
-    return `This action creates a new user with name (${createUserDto.name}) with passowrd "${createUserDto.password}" in group ${createUserDto.group}`;
+    const user = new User();
+    user.name = createUserDto.name;
+    user.departmentName = createUserDto.departmentName;
+    user.role = createUserDto.role ?? UserGroups.USER;
+    user.active = true;
+    user.createdAt = new Date();
+    user.lastLogin = null;
+    user.hashedPassword = `#${createUserDto.password}`;
+    return user;
   }
 
   // TODO: paginate
   findAll() {
-    return `This action returns all users`;
+    return [user];
   }
 
   findOne(name: string) {
-    return `This action returns a the user with the name (${name})`;
+    user.name = name;
+    return user;
   }
 
   changePassword(name: string, changePasswordDto: ChangePasswordDto) {
-    return `This action changes the user (${name})'s password to be "${changePasswordDto.password}"`;
+    user.hashedPassword = `#${changePasswordDto.password}`;
+    return user;
   }
 }

@@ -1,16 +1,9 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Department } from './entities/department.entity';
 
 @ApiTags('Departments')
 @Controller('departments')
@@ -19,34 +12,32 @@ export class DepartmentController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new department' })
+  @ApiResponse({ status: 201, type: Department })
   create(@Body() createDepartmentDto: CreateDepartmentDto) {
     return this.departmentService.create(createDepartmentDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Find all departments' })
+  @ApiResponse({ status: 200, type: [Department] })
   findAll() {
     return this.departmentService.findAll();
   }
 
   @Get(':name')
   @ApiOperation({ summary: 'Find a department' })
+  @ApiResponse({ status: 200, type: Department })
   findOne(@Param('name') name: string) {
     return this.departmentService.findOne(name);
   }
 
   @Patch(':name')
-  @ApiOperation({ summary: 'Update a department' })
+  @ApiOperation({ summary: "Change a department's manager" })
+  @ApiResponse({ status: 200, type: Department })
   update(
     @Param('name') name: string,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
   ) {
     return this.departmentService.update(name, updateDepartmentDto);
-  }
-
-  @Delete(':name')
-  @ApiOperation({ summary: 'Delete a department' })
-  remove(@Param('name') name: string) {
-    return this.departmentService.remove(name);
   }
 }
