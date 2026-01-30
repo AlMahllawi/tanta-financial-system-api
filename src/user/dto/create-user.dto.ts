@@ -7,6 +7,9 @@ export class CreateUserDto {
   @IsName()
   name: string;
 
+  @IsName()
+  departmentName: string;
+
   @IsStrongPassword()
   password: string;
 

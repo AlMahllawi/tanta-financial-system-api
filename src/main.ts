@@ -12,6 +12,7 @@ async function bootstrap() {
     .setDescription('The API documentation for the graduation project')
     .setVersion(packageJson.version)
     .addTag('Entry')
+    .addTag('Departments', 'Manage departments')
     .addTag('Users', 'Operations related to user management and profiles')
     .addTag('Documents', 'Archiving for later use')
     .addTag('Transaction Types', 'Manage types of transactions')
