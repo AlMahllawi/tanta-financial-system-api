@@ -1,5 +1,6 @@
 .env
-.env.backup
+.env.*
+!.env.example
 .pnpm-store/
 dist/
 documents/
