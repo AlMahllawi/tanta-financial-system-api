@@ -8,6 +8,7 @@ import { DocumentModule } from './document/document.module';
 import { TransactionTypeModule } from './transaction-type/transaction-type.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { TransactionForwardModule } from './transaction-forward/transaction-forward.module';
+import { LookupModule } from './common/lookup/lookup.module';
 import Joi from 'joi';
 
 @Module({
@@ -36,6 +37,7 @@ import Joi from 'joi';
     TransactionTypeModule,
     TransactionModule,
     TransactionForwardModule,
+    LookupModule,
   ],
   controllers: [AppController],
   providers: [AppService],

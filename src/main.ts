@@ -54,6 +54,7 @@ async function bootstrap() {
     .addTag('Transaction Types', 'Manage types of transactions')
     .addTag('Transactions', 'Manage transactions')
     .addTag('Transaction Forwards', 'Manage transaction forwards')
+    .addTag('Lookups', 'System constants and dropdown values')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
