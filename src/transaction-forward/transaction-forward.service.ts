@@ -5,8 +5,8 @@ import { TransactionForward } from './entities/transaction-forward.entity';
 import { TransactionForwardStatus } from 'prisma/generated/enums';
 
 const transactionForward = new TransactionForward();
-transactionForward.receiver = 'Yusuf';
-transactionForward.sender = 'AlMahllawi';
+transactionForward.receiverName = 'Yusuf';
+transactionForward.senderName = 'AlMahllawi';
 transactionForward.status = TransactionForwardStatus.WAITING;
 transactionForward.comment = 'Please review';
 transactionForward.seen = false;
@@ -22,7 +22,7 @@ export class TransactionForwardService {
   ) {
     transactionForward.id = 1;
     transactionForward.status = TransactionForwardStatus.WAITING;
-    transactionForward.receiver = createTransactionForwardDto.receiverName;
+    transactionForward.receiverName = createTransactionForwardDto.receiverName;
     transactionForward.comment = null;
     transactionForward.transactionId = transactionId;
     return transactionForward;

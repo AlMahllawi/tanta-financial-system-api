@@ -3,7 +3,7 @@ import { Document } from './entities/document.entity';
 
 const document = new Document();
 document.title = 'Transaction.pdf';
-document.uploader = 'AlMahllawi';
+document.uploaderName = 'AlMahllawi';
 document.uploadedAt = new Date();
 
 @Injectable()

@@ -4,7 +4,7 @@ import { TransactionType } from './entities/transaction-type.entity';
 
 const transactionType = new TransactionType();
 transactionType.name = 'Financial';
-transactionType.creator = 'AlMahllawi';
+transactionType.creatorName = 'AlMahllawi';
 
 @Injectable()
 export class TransactionTypeService {

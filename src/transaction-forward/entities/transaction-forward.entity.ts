@@ -7,8 +7,8 @@ export class TransactionForward implements TransactionForwardModel {
   @ApiProperty({ enum: TransactionForwardStatus })
   status: TransactionForwardStatus;
   comment: string | null;
-  sender: string;
-  receiver: string;
+  senderName: string;
+  receiverName: string;
   seen: boolean;
   forwardedAt: Date;
   updatedAt: Date;

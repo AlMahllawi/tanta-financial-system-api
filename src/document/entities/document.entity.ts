@@ -9,5 +9,5 @@ export class Document implements DocumentModel {
   @ApiHideProperty()
   content: Uint8Array<ArrayBuffer>;
   uploadedAt: Date;
-  uploader: string;
+  uploaderName: string;
 }

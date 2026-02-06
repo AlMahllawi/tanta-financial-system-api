@@ -1,5 +1,5 @@
 import { UserModel } from 'prisma/generated/models';
-import { UserGroups } from 'prisma/generated/enums';
+import { UserRole } from 'prisma/generated/enums';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 
@@ -10,8 +10,8 @@ export class User implements UserModel {
   hashedPassword: string;
   createdAt: Date;
   active: boolean;
-  @ApiProperty({ enum: UserGroups })
-  role: UserGroups;
+  @ApiProperty({ enum: UserRole })
+  role: UserRole;
   lastLogin: Date | null;
   departmentName: string;
 }

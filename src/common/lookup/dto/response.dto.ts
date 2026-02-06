@@ -2,12 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   TransactionForwardStatus,
   TransactionPriority,
-  UserGroups,
+  UserRole,
 } from 'prisma/generated/enums';
 
 export class LookupResponseDto {
-  @ApiProperty({ enum: UserGroups, isArray: true })
-  UserGroups: UserGroups[];
+  @ApiProperty({ enum: UserRole, isArray: true })
+  UserRole: UserRole[];
 
   @ApiProperty({ enum: TransactionPriority, isArray: true })
   TransactionPriority: TransactionPriority[];

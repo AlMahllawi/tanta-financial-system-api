@@ -6,10 +6,10 @@ export class Transaction implements TransactionModel {
   id: number;
   title: string;
   description: string;
-  type: string;
+  typeName: string;
   fulfilled: boolean;
   @ApiProperty({ enum: TransactionPriority })
   priority: TransactionPriority;
-  creator: string;
+  creatorName: string;
   createdAt: Date;
 }

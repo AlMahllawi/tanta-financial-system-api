@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   TransactionForwardStatus,
   TransactionPriority,
-  UserGroups,
+  UserRole,
 } from 'prisma/generated/enums';
 import { LookupResponseDto } from './dto/response.dto';
 
@@ -10,7 +10,7 @@ import { LookupResponseDto } from './dto/response.dto';
 export class LookupService {
   findAll(): LookupResponseDto {
     return {
-      UserGroups: Object.values(UserGroups),
+      UserRole: Object.values(UserRole),
       TransactionPriority: Object.values(TransactionPriority),
       TransactionForwardStatus: Object.values(TransactionForwardStatus),
     };

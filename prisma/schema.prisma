@@ -8,25 +8,24 @@ datasource db {
 }
 
 model User {
-  name           String   @id
+  name           String    @id
   hashedPassword String
-  createdAt      DateTime @default(now())
-  active         Boolean  @default(true)
-  role           UserGroups @default(USER)
+  departmentName String
+  active         Boolean   @default(true)
+  role           UserRole  @default(USER)
+  createdAt      DateTime  @default(now())
   lastLogin      DateTime?
 
-  departmentName String
-  department     Department @relation("BelongsTo", fields: [departmentName], references: [name])
-  managedDept    Department? @relation("Manages")
-
-  createdTypes   TransactionType[]
-  uploadedDocs   Document[]
-  createdTrans   Transaction[]
-  sentForwards   TransactionForward[] @relation("SentForwards")
-  receivedForwards TransactionForward[] @relation("ReceivedForwards")
+  department          Department           @relation("BelongsTo", fields: [departmentName], references: [name])
+  managedDepartment   Department?          @relation("Manages")
+  createdTypes        TransactionType[]
+  createdTransactions Transaction[]
+  uploadedDocuments   Document[]
+  sentForwards        TransactionForward[] @relation("SentForwards")
+  receivedForwards    TransactionForward[] @relation("ReceivedForwards")
 }
 
-enum UserGroups {
+enum UserRole {
   ADMIN
   USER
 }
@@ -35,35 +34,35 @@ model Department {
   name        String @id
   managerName String @unique
 
-  members     User[] @relation("BelongsTo")
-  managedBy   User   @relation("Manages", fields: [managerName], references: [name])
+  manager User   @relation("Manages", fields: [managerName], references: [name])
+  members User[] @relation("BelongsTo")
 }
 
 model Document {
-  id         Int      @id @default(autoincrement())
-  title      String
-  content    Bytes
-  uploadedAt DateTime @default(now())
-  uploader   String
+  id           Int      @id @default(autoincrement())
+  title        String
+  content      Bytes
+  uploaderName String
+  uploadedAt   DateTime @default(now())
 
-  user         User        @relation(fields: [uploader], references: [name])
+  uploader     User          @relation(fields: [uploaderName], references: [name])
   transactions Transaction[] @relation("AttachedTo")
 }
 
 model Transaction {
-  id          Int      @id @default(autoincrement())
+  id          Int                 @id @default(autoincrement())
   title       String
   description String
-  type        String
-  fulfilled   Boolean  @default(false)
-  priority    TransactionPriority      @default(LOW)
-  creator     String
-  createdAt   DateTime @default(now())
+  typeName    String
+  fulfilled   Boolean             @default(false)
+  priority    TransactionPriority @default(LOW)
+  creatorName String
+  createdAt   DateTime            @default(now())
 
-  transactionType TransactionType @relation(fields: [type], references: [name])
-  user            User            @relation(fields: [creator], references: [name])
-  documents       Document[]      @relation("AttachedTo")
-  forwards        TransactionForward[]
+  type      TransactionType      @relation(fields: [typeName], references: [name])
+  creator   User                 @relation(fields: [creatorName], references: [name])
+  documents Document[]           @relation("AttachedTo")
+  forwards  TransactionForward[]
 }
 
 enum TransactionPriority {
@@ -73,27 +72,27 @@ enum TransactionPriority {
 }
 
 model TransactionType {
-  name    String @id
-  creator String
+  name        String @id
+  creatorName String
 
-  user    User   @relation(fields: [creator], references: [name])
+  creator      User          @relation(fields: [creatorName], references: [name])
   transactions Transaction[]
 }
 
 model TransactionForward {
-  id            Int      @id @default(autoincrement())
+  id            Int                      @id @default(autoincrement())
   status        TransactionForwardStatus @default(WAITING)
   comment       String?
-  sender        String
-  receiver      String
-  seen          Boolean  @default(false)
-  forwardedAt   DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  senderName    String
+  receiverName  String
+  seen          Boolean                  @default(false)
+  forwardedAt   DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
   transactionId Int
 
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
-  senderUser    User        @relation("SentForwards", fields: [sender], references: [name])
-  receiverUser  User        @relation("ReceivedForwards", fields: [receiver], references: [name])
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+  sender      User        @relation("SentForwards", fields: [senderName], references: [name])
+  receiver    User        @relation("ReceivedForwards", fields: [receiverName], references: [name])
 }
 
 enum TransactionForwardStatus {
@@ -102,4 +101,3 @@ enum TransactionForwardStatus {
   REJECTED
   APPROVED
 }
-
