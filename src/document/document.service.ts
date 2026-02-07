@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Document } from './entities/document.entity';
 
 const document = new Document();
-document.title = 'Transaction.pdf';
+document.title = 'Transaction.txt';
+document.content = new Uint8Array(Buffer.from('Dummy Text Content'));
 document.uploaderName = 'AlMahllawi';
 document.uploadedAt = new Date();
 
@@ -19,7 +20,8 @@ export class DocumentService {
 
   findOne(id: number) {
     document.id = id;
-    return document;
+    document.downloadURI = `/documents/${id}/download`;
+    return Promise.resolve(document);
   }
 
   remove(id: number) {

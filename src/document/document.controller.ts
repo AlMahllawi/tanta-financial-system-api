@@ -9,7 +9,12 @@ import {
   MaxFileSizeValidator,
   FileTypeValidator,
   UseInterceptors,
+  StreamableFile,
+  Res,
+  NotFoundException,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import { contentType } from 'mime-types';
 import { DocumentService } from './document.service';
 import {
   ApiBody,
@@ -67,6 +72,26 @@ export class DocumentController {
   @ApiResponse({ status: 200, type: Document })
   findOne(@Param('id') id: string) {
     return this.documentService.findOne(+id);
+  }
+
+  @Get(':id/download')
+  @ApiOperation({ summary: 'Download a document' })
+  async download(
+    @Param('id') id: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<StreamableFile> {
+    const document = await this.documentService.findOne(+id);
+
+    if (!document) {
+      throw new NotFoundException('Document not found');
+    }
+
+    res.set({
+      'Content-Type': contentType(document.title) || 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="${document.title}"`,
+    });
+
+    return new StreamableFile(Buffer.from(document.content));
   }
 
   @Delete(':id')
