@@ -23,3 +23,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replaced documentURI with documentId.
 - User group renamed to user role.
 - Soft delete (document, transaction, forward, type).
+- User "change password" endpoint replaced with "update" endpoint.

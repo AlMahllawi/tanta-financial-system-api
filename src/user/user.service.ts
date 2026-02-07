@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserRole } from 'prisma/generated/enums';
 
@@ -37,8 +37,14 @@ export class UserService {
     return user;
   }
 
-  changePassword(name: string, changePasswordDto: ChangePasswordDto) {
-    user.hashedPassword = `#${changePasswordDto.password}`;
+  update(name: string, updateUserDto: UpdateUserDto) {
+    user.name = updateUserDto.name ?? name;
+    if (updateUserDto.password)
+      user.hashedPassword = `#${updateUserDto.password}`;
+    if (updateUserDto.active) user.active = updateUserDto.active;
+    if (updateUserDto.role) user.role = updateUserDto.role;
+    if (updateUserDto.departmentName)
+      user.departmentName = updateUserDto.departmentName;
     return user;
   }
 

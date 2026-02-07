@@ -10,7 +10,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
 @ApiTags('Users')
@@ -40,13 +40,10 @@ export class UserController {
   }
 
   @Patch(':name')
-  @ApiOperation({ summary: "Changes a user's password" })
+  @ApiOperation({ summary: 'Update a user' })
   @ApiResponse({ status: 200, type: User })
-  changePassword(
-    @Param('name') name: string,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ) {
-    return this.userService.changePassword(name, changePasswordDto);
+  update(@Param('name') name: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(name, updateUserDto);
   }
 
   @Delete(':name')
