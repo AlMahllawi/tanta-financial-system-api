@@ -8,7 +8,6 @@ const transactionForward = new TransactionForward();
 transactionForward.receiverName = 'Yusuf';
 transactionForward.senderName = 'AlMahllawi';
 transactionForward.status = TransactionForwardStatus.WAITING;
-transactionForward.comment = 'Please review';
 transactionForward.seen = false;
 transactionForward.forwardedAt = new Date();
 transactionForward.updatedAt = new Date();
@@ -23,7 +22,8 @@ export class TransactionForwardService {
     transactionForward.id = 1;
     transactionForward.status = TransactionForwardStatus.WAITING;
     transactionForward.receiverName = createTransactionForwardDto.receiverName;
-    transactionForward.comment = null;
+    transactionForward.senderComment =
+      createTransactionForwardDto.comment ?? null;
     transactionForward.transactionId = transactionId;
     return transactionForward;
   }
@@ -40,7 +40,8 @@ export class TransactionForwardService {
   ) {
     transactionForward.id = id;
     transactionForward.status = updateTransactionForwardDto.status;
-    transactionForward.comment = updateTransactionForwardDto.comment;
+    transactionForward.receiverComment =
+      updateTransactionForwardDto.comment ?? null;
     transactionForward.seen = true;
     transactionForward.updatedAt = new Date();
     transactionForward.transactionId = transactionId;

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString, NotEquals } from 'class-validator';
+import { IsEnum, IsString, NotEquals, IsOptional } from 'class-validator';
 import { TransactionForwardStatus } from 'prisma/generated/enums';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -13,5 +13,6 @@ export class UpdateTransactionForwardDto {
   status: TransactionForwardStatus;
 
   @IsString()
-  comment: string;
+  @IsOptional()
+  comment?: string;
 }

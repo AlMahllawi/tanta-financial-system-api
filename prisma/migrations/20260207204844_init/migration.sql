@@ -65,7 +65,8 @@ CREATE TABLE "TransactionType" (
 CREATE TABLE "TransactionForward" (
     "id" SERIAL NOT NULL,
     "status" "TransactionForwardStatus" NOT NULL DEFAULT 'WAITING',
-    "comment" TEXT,
+    "senderComment" TEXT,
+    "receiverComment" TEXT,
     "senderName" TEXT NOT NULL,
     "receiverName" TEXT NOT NULL,
     "seen" BOOLEAN NOT NULL DEFAULT false,

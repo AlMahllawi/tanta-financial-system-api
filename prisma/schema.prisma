@@ -80,15 +80,16 @@ model TransactionType {
 }
 
 model TransactionForward {
-  id            Int                      @id @default(autoincrement())
-  status        TransactionForwardStatus @default(WAITING)
-  comment       String?
-  senderName    String
-  receiverName  String
-  seen          Boolean                  @default(false)
-  forwardedAt   DateTime                 @default(now())
-  updatedAt     DateTime                 @updatedAt
-  transactionId Int
+  id              Int                      @id @default(autoincrement())
+  status          TransactionForwardStatus @default(WAITING)
+  senderComment   String?
+  receiverComment String?
+  senderName      String
+  receiverName    String
+  seen            Boolean                  @default(false)
+  forwardedAt     DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+  transactionId   Int
 
   transaction Transaction @relation(fields: [transactionId], references: [id])
   sender      User        @relation("SentForwards", fields: [senderName], references: [name])
