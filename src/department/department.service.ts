@@ -25,8 +25,8 @@ export class DepartmentService {
   }
 
   update(name: string, updateDepartmentDto: UpdateDepartmentDto) {
-    department.name = name;
-    department.managerName = updateDepartmentDto.managerName || 'AlMahllawi';
+    department.name = updateDepartmentDto.name ?? name;
+    department.managerName = updateDepartmentDto.managerName ?? 'AlMahllawi';
     return department;
   }
 
