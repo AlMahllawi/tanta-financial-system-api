@@ -40,7 +40,7 @@ export class DepartmentController {
   }
 
   @Patch(':name')
-  @ApiOperation({ summary: "Change a department's manager" })
+  @ApiOperation({ summary: 'Update a department' })
   @ApiResponse({ status: 200, type: Department })
   update(
     @Param('name') name: string,

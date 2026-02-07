@@ -10,5 +10,5 @@ export class Document implements DocumentModel {
   content: Uint8Array<ArrayBuffer>;
   uploadedAt: Date;
   uploaderName: string;
-  downloadURI: string;
+  downloadURI: string; // TODO: replace with downloadURL for separated storage rather than database
 }

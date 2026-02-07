@@ -17,11 +17,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Last login.
 - Uploaded documents endpoint.
 - Trasaction type creator.
-- Transfer annotations (comments).
+- Transaction forward attributes
+  - Seen.
+  - Sender Comment.
+  - Receiver Comment.
+- Lookup endpoint.
 
 ### Changed
 
 - Replaced documentURI with documentId.
 - User group renamed to user role.
-- Soft delete (document, transaction, forward, type).
 - User "change password" endpoint replaced with "update" endpoint.
+- Soft delete resources.
+
+### Removed
+
+- `WAITING` from `UpdateTransactionForwardDto.status`
