@@ -41,4 +41,9 @@ export class UserService {
     user.hashedPassword = `#${changePasswordDto.password}`;
     return user;
   }
+
+  remove(name: string) {
+    user.name = name;
+    return user;
+  }
 }
