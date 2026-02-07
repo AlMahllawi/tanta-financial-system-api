@@ -17,4 +17,5 @@ export class CreateTransactionDto {
   @IsOptional()
   @IsEnum(TransactionPriority)
   priority: TransactionPriority = TransactionPriority.LOW;
+  documentsIds?: number[];
 }
