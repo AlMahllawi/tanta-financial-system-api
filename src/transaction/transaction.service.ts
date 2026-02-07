@@ -3,70 +3,77 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { Transaction } from './entities/transaction.entity';
 import { TransactionPriority } from 'prisma/generated/enums';
+import { DocumentService } from '../document/document.service';
+import { instanceToInstance } from 'class-transformer';
 
-const transaction = new Transaction();
-transaction.title = 'Declarative Heading';
-transaction.description = 'Descriptive sentence.';
-transaction.typeName = 'Financial';
-transaction.creatorName = 'AlMahllawi';
-transaction.createdAt = new Date();
-transaction.fulfilled = false;
-transaction.priority = TransactionPriority.MEDIUM;
+const dummyTransaction = new Transaction();
+dummyTransaction.title = 'Declarative Heading';
+dummyTransaction.description = 'Descriptive sentence.';
+dummyTransaction.typeName = 'Financial';
+dummyTransaction.creatorName = 'AlMahllawi';
+dummyTransaction.createdAt = new Date();
+dummyTransaction.fulfilled = false;
+dummyTransaction.priority = TransactionPriority.MEDIUM;
+dummyTransaction.documents = [];
 
 @Injectable()
 export class TransactionService {
+  constructor(private readonly documentService: DocumentService) {}
+
   create(createTransactionDto: CreateTransactionDto) {
-    transaction.id = 1;
-    transaction.title = createTransactionDto.title;
-    transaction.description = createTransactionDto.description;
-    transaction.typeName = createTransactionDto.typeName;
-    transaction.priority =
+    dummyTransaction.id = 1;
+    dummyTransaction.title = createTransactionDto.title;
+    dummyTransaction.description = createTransactionDto.description;
+    dummyTransaction.typeName = createTransactionDto.typeName;
+    dummyTransaction.priority =
       createTransactionDto.priority || TransactionPriority.LOW;
-    transaction.createdAt = new Date();
-    return transaction;
+    dummyTransaction.createdAt = new Date();
+    dummyTransaction.documents = this.documentService.findAll();
+    return dummyTransaction;
   }
 
   findAll() {
     // TODO: query parameters
-    return [transaction];
+    return [dummyTransaction];
   }
 
   findOne(id: number) {
+    const transaction = instanceToInstance(dummyTransaction);
     transaction.id = id;
     return transaction;
   }
 
   update(id: number, updateTransactionDto: UpdateTransactionDto) {
+    dummyTransaction.id = id;
     if (updateTransactionDto.title)
-      transaction.title = updateTransactionDto.title;
+      dummyTransaction.title = updateTransactionDto.title;
     if (updateTransactionDto.description)
-      transaction.description = updateTransactionDto.description;
+      dummyTransaction.description = updateTransactionDto.description;
     if (updateTransactionDto.typeName)
-      transaction.typeName = updateTransactionDto.typeName;
+      dummyTransaction.typeName = updateTransactionDto.typeName;
     if (updateTransactionDto.priority)
-      transaction.priority = updateTransactionDto.priority;
+      dummyTransaction.priority = updateTransactionDto.priority;
     if (updateTransactionDto.fulfilled)
-      transaction.fulfilled = updateTransactionDto.fulfilled;
-    return transaction;
+      dummyTransaction.fulfilled = updateTransactionDto.fulfilled;
+    return dummyTransaction;
   }
 
   remove(id: number) {
-    transaction.id = id;
-    return transaction;
+    dummyTransaction.id = id;
+    return dummyTransaction;
   }
 
   attachDocument(transactionId: number, documentId: number) {
-    transaction.id = transactionId;
-    transaction.description += `\nAttached Document #${documentId}`;
-    return transaction;
+    dummyTransaction.id = transactionId;
+    dummyTransaction.documents.push(this.documentService.findOne(documentId));
+    return dummyTransaction;
   }
 
   detachDocument(transactionId: number, documentId: number) {
-    transaction.id = transactionId;
-    transaction.description = transaction.description.replace(
-      `\nAttached Document #${documentId}`,
-      '',
+    dummyTransaction.id = transactionId;
+    dummyTransaction.documents = dummyTransaction.documents.filter(
+      (document) => document.id !== documentId,
     );
-    return transaction;
+    return dummyTransaction;
   }
 }

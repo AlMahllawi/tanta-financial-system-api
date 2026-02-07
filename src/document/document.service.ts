@@ -1,31 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { Document } from './entities/document.entity';
+import { instanceToInstance } from 'class-transformer';
 
-const document = new Document();
-document.title = 'Transaction.txt';
-document.content = new Uint8Array(Buffer.from('Dummy Text Content'));
-document.uploaderName = 'AlMahllawi';
-document.uploadedAt = new Date();
+const dummyDocument = new Document();
+dummyDocument.title = 'Transaction.txt';
+dummyDocument.content = new Uint8Array(Buffer.from('Dummy Text Content'));
+dummyDocument.uploaderName = 'AlMahllawi';
+dummyDocument.uploadedAt = new Date();
 
 @Injectable()
 export class DocumentService {
   create(file: Express.Multer.File) {
-    document.title = file.originalname;
-    return document;
+    dummyDocument.title = file.originalname;
+    dummyDocument.content = new Uint8Array(file.buffer);
+    dummyDocument.uploaderName = 'AlMahllawi';
+    dummyDocument.uploadedAt = new Date();
+    return dummyDocument;
   }
 
   findAll() {
-    return [document];
+    return [dummyDocument];
   }
 
   findOne(id: number) {
+    const document = instanceToInstance(dummyDocument);
     document.id = id;
     document.downloadURI = `/documents/${id}/download`;
-    return Promise.resolve(document);
+    return document;
   }
 
   remove(id: number) {
-    document.id = id;
-    return document;
+    dummyDocument.id = id;
+    return dummyDocument;
   }
 }

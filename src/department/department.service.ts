@@ -2,36 +2,39 @@ import { Injectable } from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { Department } from './entities/department.entity';
+import { instanceToInstance } from 'class-transformer';
 
-const department = new Department();
-department.name = 'Computer Science';
-department.managerName = 'AlMahllawi';
+const dummyDepartment = new Department();
+dummyDepartment.name = 'Computer Science';
+dummyDepartment.managerName = 'AlMahllawi';
 
 @Injectable()
 export class DepartmentService {
   create(createDepartmentDto: CreateDepartmentDto) {
-    department.name = createDepartmentDto.name;
-    department.managerName = createDepartmentDto.managerName;
-    return department;
+    dummyDepartment.name = createDepartmentDto.name;
+    dummyDepartment.managerName = createDepartmentDto.managerName;
+    return dummyDepartment;
   }
 
   findAll() {
-    return [department];
+    return [dummyDepartment];
   }
 
   findOne(name: string) {
+    const department = instanceToInstance(dummyDepartment);
     department.name = name;
     return department;
   }
 
   update(name: string, updateDepartmentDto: UpdateDepartmentDto) {
-    department.name = updateDepartmentDto.name ?? name;
-    department.managerName = updateDepartmentDto.managerName ?? 'AlMahllawi';
-    return department;
+    dummyDepartment.name = updateDepartmentDto.name ?? name;
+    dummyDepartment.managerName =
+      updateDepartmentDto.managerName ?? 'AlMahllawi';
+    return dummyDepartment;
   }
 
   remove(name: string) {
-    department.name = name;
-    return department;
+    dummyDepartment.name = name;
+    return dummyDepartment;
   }
 }

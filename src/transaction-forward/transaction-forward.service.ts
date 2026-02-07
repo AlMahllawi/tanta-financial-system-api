@@ -3,10 +3,9 @@ import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dt
 import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto';
 import { TransactionForward } from './entities/transaction-forward.entity';
 import { TransactionForwardStatus } from 'prisma/generated/enums';
+import { UserService } from '../user/user.service';
 
 const transactionForward = new TransactionForward();
-transactionForward.receiverName = 'Yusuf';
-transactionForward.senderName = 'AlMahllawi';
 transactionForward.status = TransactionForwardStatus.WAITING;
 transactionForward.seen = false;
 transactionForward.forwardedAt = new Date();
@@ -15,6 +14,8 @@ transactionForward.transactionId = 1;
 
 @Injectable()
 export class TransactionForwardService {
+  constructor(private readonly userService: UserService) {}
+
   create(
     transactionId: number,
     createTransactionForwardDto: CreateTransactionForwardDto,
@@ -25,6 +26,14 @@ export class TransactionForwardService {
     transactionForward.senderComment =
       createTransactionForwardDto.comment ?? null;
     transactionForward.transactionId = transactionId;
+    transactionForward.sender = this.userService.findOne(
+      createTransactionForwardDto.receiverName != 'AlMahllawi'
+        ? 'AlMahllawi'
+        : 'Yusuf',
+    );
+    transactionForward.receiver = this.userService.findOne(
+      createTransactionForwardDto.receiverName,
+    );
     return transactionForward;
   }
 

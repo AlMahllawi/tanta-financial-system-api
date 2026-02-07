@@ -3,20 +3,21 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserRole } from 'prisma/generated/enums';
+import { instanceToInstance } from 'class-transformer';
 
-const user = new User();
-user.name = 'AlMahllawi';
-user.active = true;
-user.role = UserRole.ADMIN;
-user.createdAt = new Date();
-user.lastLogin = new Date();
-user.hashedPassword = '#password';
-user.departmentName = 'Financial';
+const dummyUser = new User();
+dummyUser.name = 'AlMahllawi';
+dummyUser.active = true;
+dummyUser.role = UserRole.ADMIN;
+dummyUser.createdAt = new Date();
+dummyUser.lastLogin = new Date();
+dummyUser.hashedPassword = '#password';
+dummyUser.departmentName = 'Financial';
 
 @Injectable()
 export class UserService {
   create(createUserDto: CreateUserDto) {
-    const user = new User();
+    const user = instanceToInstance(dummyUser);
     user.name = createUserDto.name;
     user.departmentName = createUserDto.departmentName;
     user.role = createUserDto.role ?? UserRole.USER;
@@ -29,27 +30,28 @@ export class UserService {
 
   // TODO: paginate
   findAll() {
-    return [user];
+    return [dummyUser];
   }
 
   findOne(name: string) {
+    const user = instanceToInstance(dummyUser);
     user.name = name;
     return user;
   }
 
   update(name: string, updateUserDto: UpdateUserDto) {
-    user.name = updateUserDto.name ?? name;
+    dummyUser.name = updateUserDto.name ?? name;
     if (updateUserDto.password)
-      user.hashedPassword = `#${updateUserDto.password}`;
-    if (updateUserDto.active) user.active = updateUserDto.active;
-    if (updateUserDto.role) user.role = updateUserDto.role;
+      dummyUser.hashedPassword = `#${updateUserDto.password}`;
+    if (updateUserDto.active) dummyUser.active = updateUserDto.active;
+    if (updateUserDto.role) dummyUser.role = updateUserDto.role;
     if (updateUserDto.departmentName)
-      user.departmentName = updateUserDto.departmentName;
-    return user;
+      dummyUser.departmentName = updateUserDto.departmentName;
+    return dummyUser;
   }
 
   remove(name: string) {
-    user.name = name;
-    return user;
+    dummyUser.name = name;
+    return dummyUser;
   }
 }
