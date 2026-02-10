@@ -16,13 +16,14 @@ model User {
   createdAt      DateTime  @default(now())
   lastLogin      DateTime?
 
-  department          Department           @relation("BelongsTo", fields: [departmentName], references: [name])
-  managedDepartment   Department?          @relation("Manages")
+  department          Department            @relation("BelongsTo", fields: [departmentName], references: [name])
+  managedDepartment   Department?           @relation("Manages")
   createdTypes        TransactionType[]
   createdTransactions Transaction[]
   uploadedDocuments   Document[]
-  sentForwards        TransactionForward[] @relation("SentForwards")
-  receivedForwards    TransactionForward[] @relation("ReceivedForwards")
+  attachedDocuments   TransactionDocument[]
+  sentForwards        TransactionForward[]  @relation("SentForwards")
+  receivedForwards    TransactionForward[]  @relation("ReceivedForwards")
 }
 
 enum UserRole {
@@ -45,8 +46,8 @@ model Document {
   uploaderName String
   uploadedAt   DateTime @default(now())
 
-  uploader     User          @relation(fields: [uploaderName], references: [name])
-  transactions Transaction[] @relation("AttachedTo")
+  uploader     User                  @relation(fields: [uploaderName], references: [name])
+  transactions TransactionDocument[]
 }
 
 model Transaction {
@@ -59,9 +60,9 @@ model Transaction {
   creatorName String
   createdAt   DateTime            @default(now())
 
-  type      TransactionType      @relation(fields: [typeName], references: [name])
-  creator   User                 @relation(fields: [creatorName], references: [name])
-  documents Document[]           @relation("AttachedTo")
+  type      TransactionType       @relation(fields: [typeName], references: [name])
+  creator   User                  @relation(fields: [creatorName], references: [name])
+  documents TransactionDocument[]
   forwards  TransactionForward[]
 }
 
@@ -101,4 +102,17 @@ enum TransactionForwardStatus {
   NEEDS_EDITING
   REJECTED
   APPROVED
+}
+
+model TransactionDocument {
+  transactionId Int
+  documentId    Int
+  attachedBy    String
+  attachedAt    DateTime @default(now())
+
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  document    Document    @relation(fields: [documentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  attacher    User        @relation(fields: [attachedBy], references: [name], onDelete: Restrict, onUpdate: Cascade)
+
+  @@id([transactionId, documentId])
 }

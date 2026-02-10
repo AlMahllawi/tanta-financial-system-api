@@ -78,18 +78,17 @@ CREATE TABLE "TransactionForward" (
 );
 
 -- CreateTable
-CREATE TABLE "_AttachedTo" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL,
+CREATE TABLE "TransactionDocument" (
+    "transactionId" INTEGER NOT NULL,
+    "documentId" INTEGER NOT NULL,
+    "attachedBy" TEXT NOT NULL,
+    "attachedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "_AttachedTo_AB_pkey" PRIMARY KEY ("A","B")
+    CONSTRAINT "TransactionDocument_pkey" PRIMARY KEY ("transactionId","documentId")
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Department_managerName_key" ON "Department"("managerName");
-
--- CreateIndex
-CREATE INDEX "_AttachedTo_B_index" ON "_AttachedTo"("B");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_departmentName_fkey" FOREIGN KEY ("departmentName") REFERENCES "Department"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -119,7 +118,10 @@ ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_senderName_f
 ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_receiverName_fkey" FOREIGN KEY ("receiverName") REFERENCES "User"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_AttachedTo" ADD CONSTRAINT "_AttachedTo_A_fkey" FOREIGN KEY ("A") REFERENCES "Document"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_transactionId_fkey" FOREIGN KEY ("transactionId") REFERENCES "Transaction"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_AttachedTo" ADD CONSTRAINT "_AttachedTo_B_fkey" FOREIGN KEY ("B") REFERENCES "Transaction"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_documentId_fkey" FOREIGN KEY ("documentId") REFERENCES "Document"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_attachedBy_fkey" FOREIGN KEY ("attachedBy") REFERENCES "User"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
