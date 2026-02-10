@@ -16,7 +16,7 @@ model User {
   createdAt      DateTime  @default(now())
   lastLogin      DateTime?
 
-  department          Department            @relation("BelongsTo", fields: [departmentName], references: [name])
+  department          Department            @relation("BelongsTo", fields: [departmentName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   managedDepartment   Department?           @relation("Manages")
   createdTypes        TransactionType[]
   createdTransactions Transaction[]
@@ -35,7 +35,7 @@ model Department {
   name        String @id
   managerName String @unique
 
-  manager User   @relation("Manages", fields: [managerName], references: [name])
+  manager User   @relation("Manages", fields: [managerName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   members User[] @relation("BelongsTo")
 }
 
@@ -46,7 +46,7 @@ model Document {
   uploaderName String
   uploadedAt   DateTime @default(now())
 
-  uploader     User                  @relation(fields: [uploaderName], references: [name])
+  uploader     User                  @relation(fields: [uploaderName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   transactions TransactionDocument[]
 }
 
@@ -60,8 +60,8 @@ model Transaction {
   creatorName String
   createdAt   DateTime            @default(now())
 
-  type      TransactionType       @relation(fields: [typeName], references: [name])
-  creator   User                  @relation(fields: [creatorName], references: [name])
+  type      TransactionType       @relation(fields: [typeName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  creator   User                  @relation(fields: [creatorName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   documents TransactionDocument[]
   forwards  TransactionForward[]
 }
@@ -76,7 +76,7 @@ model TransactionType {
   name        String @id
   creatorName String
 
-  creator      User          @relation(fields: [creatorName], references: [name])
+  creator      User          @relation(fields: [creatorName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   transactions Transaction[]
 }
 
@@ -92,9 +92,9 @@ model TransactionForward {
   updatedAt       DateTime                 @updatedAt
   transactionId   Int
 
-  transaction Transaction @relation(fields: [transactionId], references: [id])
-  sender      User        @relation("SentForwards", fields: [senderName], references: [name])
-  receiver    User        @relation("ReceivedForwards", fields: [receiverName], references: [name])
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  sender      User        @relation("SentForwards", fields: [senderName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  receiver    User        @relation("ReceivedForwards", fields: [receiverName], references: [name], onDelete: Restrict, onUpdate: Cascade)
 }
 
 enum TransactionForwardStatus {
