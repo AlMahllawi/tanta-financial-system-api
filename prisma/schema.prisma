@@ -13,8 +13,8 @@ model User {
   departmentName String
   active         Boolean   @default(true)
   role           UserRole  @default(USER)
-  createdAt      DateTime  @default(now())
-  lastLogin      DateTime?
+  createdAt      DateTime  @default(now()) @db.Timestamptz
+  lastLogin      DateTime? @db.Timestamptz
 
   department          Department            @relation("BelongsTo", fields: [departmentName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   managedDepartment   Department?           @relation("Manages")
@@ -44,7 +44,7 @@ model Document {
   title        String
   content      Bytes
   uploaderName String
-  uploadedAt   DateTime @default(now())
+  uploadedAt   DateTime @default(now()) @db.Timestamptz
 
   uploader     User                  @relation(fields: [uploaderName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   transactions TransactionDocument[]
@@ -58,7 +58,7 @@ model Transaction {
   fulfilled   Boolean             @default(false)
   priority    TransactionPriority @default(LOW)
   creatorName String
-  createdAt   DateTime            @default(now())
+  createdAt   DateTime            @default(now()) @db.Timestamptz
 
   type      TransactionType       @relation(fields: [typeName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   creator   User                  @relation(fields: [creatorName], references: [name], onDelete: Restrict, onUpdate: Cascade)
@@ -88,8 +88,8 @@ model TransactionForward {
   senderName      String
   receiverName    String
   seen            Boolean                  @default(false)
-  forwardedAt     DateTime                 @default(now())
-  updatedAt       DateTime                 @updatedAt
+  forwardedAt     DateTime                 @default(now()) @db.Timestamptz
+  updatedAt       DateTime                 @updatedAt @db.Timestamptz
   transactionId   Int
 
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -108,7 +108,7 @@ model TransactionDocument {
   transactionId Int
   documentId    Int
   attachedBy    String
-  attachedAt    DateTime @default(now())
+  attachedAt    DateTime @default(now()) @db.Timestamptz
 
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   document    Document    @relation(fields: [documentId], references: [id], onDelete: Restrict, onUpdate: Cascade)

@@ -14,8 +14,8 @@ CREATE TABLE "User" (
     "departmentName" TEXT NOT NULL,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "role" "UserRole" NOT NULL DEFAULT 'USER',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "lastLogin" TIMESTAMP(3),
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastLogin" TIMESTAMPTZ,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("name")
 );
@@ -34,7 +34,7 @@ CREATE TABLE "Document" (
     "title" TEXT NOT NULL,
     "content" BYTEA NOT NULL,
     "uploaderName" TEXT NOT NULL,
-    "uploadedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "uploadedAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Document_pkey" PRIMARY KEY ("id")
 );
@@ -48,7 +48,7 @@ CREATE TABLE "Transaction" (
     "fulfilled" BOOLEAN NOT NULL DEFAULT false,
     "priority" "TransactionPriority" NOT NULL DEFAULT 'LOW',
     "creatorName" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Transaction_pkey" PRIMARY KEY ("id")
 );
@@ -70,8 +70,8 @@ CREATE TABLE "TransactionForward" (
     "senderName" TEXT NOT NULL,
     "receiverName" TEXT NOT NULL,
     "seen" BOOLEAN NOT NULL DEFAULT false,
-    "forwardedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "forwardedAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMPTZ NOT NULL,
     "transactionId" INTEGER NOT NULL,
 
     CONSTRAINT "TransactionForward_pkey" PRIMARY KEY ("id")
@@ -82,7 +82,7 @@ CREATE TABLE "TransactionDocument" (
     "transactionId" INTEGER NOT NULL,
     "documentId" INTEGER NOT NULL,
     "attachedBy" TEXT NOT NULL,
-    "attachedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "attachedAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "TransactionDocument_pkey" PRIMARY KEY ("transactionId","documentId")
 );
