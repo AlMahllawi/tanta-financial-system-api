@@ -76,11 +76,11 @@ export class DocumentController {
 
   @Get(':id/download')
   @ApiOperation({ summary: 'Download a document' })
-  async download(
+  download(
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
-    const document = await this.documentService.findOne(+id);
+  ): StreamableFile {
+    const document = this.documentService.findOne(+id);
 
     if (!document) {
       throw new NotFoundException('Document not found');
