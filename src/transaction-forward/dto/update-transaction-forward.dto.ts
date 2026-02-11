@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsString, NotEquals, IsOptional } from 'class-validator';
 import { TransactionForwardStatus } from '../../../prisma/generated/enums.js';
 
@@ -12,6 +12,7 @@ export class UpdateTransactionForwardDto {
   @NotEquals(TransactionForwardStatus.WAITING)
   status: TransactionForwardStatus;
 
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   comment?: string;
