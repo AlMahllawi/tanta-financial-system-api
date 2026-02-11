@@ -3,7 +3,7 @@ import {
   TransactionForwardStatus,
   TransactionPriority,
   UserRole,
-} from 'prisma/generated/enums';
+} from '../../../../prisma/generated/enums.js';
 
 export class LookupResponseDto {
   @ApiProperty({ enum: UserRole, isArray: true })

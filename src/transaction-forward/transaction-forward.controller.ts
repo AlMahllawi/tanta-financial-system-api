@@ -7,11 +7,11 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { TransactionForwardService } from './transaction-forward.service';
-import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto';
-import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto';
+import { TransactionForwardService } from './transaction-forward.service.js';
+import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
+import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto.js';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { TransactionForward } from './entities/transaction-forward.entity';
+import { TransactionForward } from './entities/transaction-forward.entity.js';
 
 @ApiTags('Transaction Forwards')
 @Controller('transaction/:transactionId/forward')

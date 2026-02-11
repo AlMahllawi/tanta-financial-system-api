@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto';
-import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto';
-import { TransactionForward } from './entities/transaction-forward.entity';
-import { TransactionForwardStatus } from 'prisma/generated/enums';
-import { UserService } from '../user/user.service';
+import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
+import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto.js';
+import { TransactionForward } from './entities/transaction-forward.entity.js';
+import { TransactionForwardStatus } from '../../prisma/generated/enums.js';
+import { UserService } from '../user/user.service.js';
 
 const transactionForward = new TransactionForward();
 transactionForward.status = TransactionForwardStatus.WAITING;

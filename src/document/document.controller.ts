@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { contentType } from 'mime-types';
-import { DocumentService } from './document.service';
+import { DocumentService } from './document.service.js';
 import {
   ApiBody,
   ApiConsumes,
@@ -24,7 +24,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Document } from './entities/document.entity';
+import { Document } from './entities/document.entity.js';
 
 @ApiTags('Documents')
 @Controller('documents')

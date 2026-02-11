@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import * as packageJson from '../package.json';
-import { ApiMetadata, HealthStatus } from './common/dto/app.dto';
-import { HealthState } from './common/enums/app.enum';
-import { SWAGGER_PATH } from './common/constants/app.constants';
+import packageJson from '../package.json' with { type: 'json' };
+import { ApiMetadata, HealthStatus } from './common/dto/app.dto.js';
+import { HealthState } from './common/enums/app.enum.js';
+import { SWAGGER_PATH } from './common/constants/app.constants.js';
 
 @Injectable()
 export class AppService {

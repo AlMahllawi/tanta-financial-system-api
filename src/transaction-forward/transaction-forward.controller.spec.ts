@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TransactionForwardController } from './transaction-forward.controller';
-import { TransactionForwardService } from './transaction-forward.service';
+import { TransactionForwardController } from './transaction-forward.controller.js';
+import { TransactionForwardService } from './transaction-forward.service.js';
 
 describe('TransactionForwardController', () => {
   let controller: TransactionForwardController;

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserRole } from 'prisma/generated/enums';
+import { UserRole } from '../../../prisma/generated/enums.js';
 
 export class ViewUserDto {
   name: string;

@@ -3,8 +3,8 @@ import {
   TransactionForwardStatus,
   TransactionPriority,
   UserRole,
-} from 'prisma/generated/enums';
-import { LookupResponseDto } from './dto/response.dto';
+} from '../../../prisma/generated/enums.js';
+import { LookupResponseDto } from './dto/response.dto.js';
 
 @Injectable()
 export class LookupService {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateDepartmentDto } from './dto/create-department.dto';
-import { UpdateDepartmentDto } from './dto/update-department.dto';
-import { Department } from './entities/department.entity';
+import { CreateDepartmentDto } from './dto/create-department.dto.js';
+import { UpdateDepartmentDto } from './dto/update-department.dto.js';
+import { Department } from './entities/department.entity.js';
 import { instanceToInstance } from 'class-transformer';
 
 const dummyDepartment = new Department();

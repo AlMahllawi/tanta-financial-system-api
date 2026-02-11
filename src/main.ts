@@ -1,7 +1,7 @@
-import * as packageJson from '../package.json';
-import { AppModule } from './app.module';
+import packageJson from '../package.json' with { type: 'json' };
+import { AppModule } from './app.module.js';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { SWAGGER_PATH } from './common/constants/app.constants';
+import { SWAGGER_PATH } from './common/constants/app.constants.js';
 import {
   Logger,
   VersioningType,

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Document } from './entities/document.entity';
+import { Document } from './entities/document.entity.js';
 import { instanceToInstance } from 'class-transformer';
 
 const dummyDocument = new Document();

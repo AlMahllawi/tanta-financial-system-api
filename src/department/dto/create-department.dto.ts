@@ -1,4 +1,4 @@
-import { IsName } from 'src/common/decorators/is-name';
+import { IsName } from '../../common/decorators/is-name.js';
 
 export class CreateDepartmentDto {
   @IsName()

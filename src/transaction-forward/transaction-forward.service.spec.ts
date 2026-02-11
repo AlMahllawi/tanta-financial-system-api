@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from '../user/user.service';
-import { TransactionForwardService } from './transaction-forward.service';
+import { UserService } from '../user/user.service.js';
+import { TransactionForwardService } from './transaction-forward.service.js';
 
 describe('TransactionForwardService', () => {
   let service: TransactionForwardService;

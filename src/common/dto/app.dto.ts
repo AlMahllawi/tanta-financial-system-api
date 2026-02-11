@@ -1,4 +1,4 @@
-import { HealthState } from '../enums/app.enum';
+import { HealthState } from '../enums/app.enum.js';
 
 export class HealthStatus {
   status: HealthState;

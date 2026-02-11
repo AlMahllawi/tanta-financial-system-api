@@ -1,8 +1,8 @@
-import { TransactionForwardStatus } from 'prisma/generated/enums';
-import { TransactionForwardModel } from 'prisma/generated/models';
+import { TransactionForwardStatus } from '../../../prisma/generated/enums.js';
+import { TransactionForwardModel } from '../../../prisma/generated/models.js';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { User } from '../../user/entities/user.entity';
+import { User } from '../../user/entities/user.entity.js';
 
 export class TransactionForward implements TransactionForwardModel {
   id: number;

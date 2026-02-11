@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString, NotEquals, IsOptional } from 'class-validator';
-import { TransactionForwardStatus } from 'prisma/generated/enums';
+import { TransactionForwardStatus } from '../../../prisma/generated/enums.js';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { WAITING: _ignored, ...TransactionForwardStatusUpdate } =

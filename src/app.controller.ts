@@ -1,7 +1,7 @@
 import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
-import { AppService } from './app.service';
+import { AppService } from './app.service.js';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { SystemStatusResponse } from './common/dto/app.dto';
+import { SystemStatusResponse } from './common/dto/app.dto.js';
 
 @ApiTags('Entry')
 @Controller({ version: VERSION_NEUTRAL })

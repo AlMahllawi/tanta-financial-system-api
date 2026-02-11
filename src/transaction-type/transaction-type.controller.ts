@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { TransactionTypeService } from './transaction-type.service';
-import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto';
+import { TransactionTypeService } from './transaction-type.service.js';
+import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { TransactionType } from './entities/transaction-type.entity';
+import { TransactionType } from './entities/transaction-type.entity.js';
 
 @ApiTags('Transaction Types')
 @Controller('transactions/types')

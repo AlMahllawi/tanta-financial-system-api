@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { TransactionPriority } from 'prisma/generated/enums';
-import { IsName } from 'src/common/decorators/is-name';
+import { TransactionPriority } from '../../../prisma/generated/enums.js';
+import { IsName } from '../../common/decorators/is-name.js';
 
 export class CreateTransactionDto {
   @IsName()

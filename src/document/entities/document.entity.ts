@@ -1,6 +1,6 @@
 import { ApiHideProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { DocumentModel } from 'prisma/generated/models';
+import { DocumentModel } from '../../../prisma/generated/models.js';
 
 export class Document implements DocumentModel {
   id: number;

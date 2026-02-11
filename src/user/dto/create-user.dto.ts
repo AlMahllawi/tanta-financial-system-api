@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsStrongPassword } from 'class-validator';
-import { UserRole } from 'prisma/generated/enums';
-import { IsName } from 'src/common/decorators/is-name';
+import { UserRole } from '../../../prisma/generated/enums.js';
+import { IsName } from '../../common/decorators/is-name.js';
 
 export class CreateUserDto {
   @IsName()

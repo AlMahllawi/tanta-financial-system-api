@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
 import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from './prisma/prisma.module';
-import { DepartmentModule } from './department/department.module';
-import { UserModule } from './user/user.module';
-import { DocumentModule } from './document/document.module';
-import { TransactionTypeModule } from './transaction-type/transaction-type.module';
-import { TransactionModule } from './transaction/transaction.module';
-import { TransactionForwardModule } from './transaction-forward/transaction-forward.module';
-import { LookupModule } from './common/lookup/lookup.module';
+import { PrismaModule } from './prisma/prisma.module.js';
+import { DepartmentModule } from './department/department.module.js';
+import { UserModule } from './user/user.module.js';
+import { DocumentModule } from './document/document.module.js';
+import { TransactionTypeModule } from './transaction-type/transaction-type.module.js';
+import { TransactionModule } from './transaction/transaction.module.js';
+import { TransactionForwardModule } from './transaction-forward/transaction-forward.module.js';
+import { LookupModule } from './common/lookup/lookup.module.js';
 import Joi from 'joi';
 
 @Module({

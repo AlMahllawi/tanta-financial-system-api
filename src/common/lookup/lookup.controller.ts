@@ -1,7 +1,7 @@
 import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
-import { LookupService } from './lookup.service';
+import { LookupService } from './lookup.service.js';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { LookupResponseDto } from './dto/response.dto';
+import { LookupResponseDto } from './dto/response.dto.js';
 
 @ApiTags('Lookups')
 @Controller({

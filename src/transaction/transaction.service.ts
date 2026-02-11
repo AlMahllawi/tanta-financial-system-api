@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
-import { Transaction } from './entities/transaction.entity';
-import { TransactionPriority } from 'prisma/generated/enums';
-import { DocumentService } from '../document/document.service';
+import { CreateTransactionDto } from './dto/create-transaction.dto.js';
+import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
+import { Transaction } from './entities/transaction.entity.js';
+import { TransactionPriority } from '../../prisma/generated/enums.js';
+import { DocumentService } from '../document/document.service.js';
 import { instanceToInstance } from 'class-transformer';
 
 const dummyTransaction = new Transaction();

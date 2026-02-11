@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from '../user/user.module';
-import { TransactionForwardService } from './transaction-forward.service';
-import { TransactionForwardController } from './transaction-forward.controller';
+import { UserModule } from '../user/user.module.js';
+import { TransactionForwardService } from './transaction-forward.service.js';
+import { TransactionForwardController } from './transaction-forward.controller.js';
 
 @Module({
   imports: [UserModule],

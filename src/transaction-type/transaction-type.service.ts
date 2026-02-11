@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto';
-import { TransactionType } from './entities/transaction-type.entity';
+import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
+import { TransactionType } from './entities/transaction-type.entity.js';
 
 const transactionType = new TransactionType();
 transactionType.name = 'Financial';

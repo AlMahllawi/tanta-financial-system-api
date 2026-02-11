@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TransactionPriority } from 'prisma/generated/enums';
-import { TransactionModel } from 'prisma/generated/models';
-import { Document } from '../../document/entities/document.entity';
+import { TransactionPriority } from '../../../prisma/generated/enums.js';
+import { TransactionModel } from '../../../prisma/generated/models.js';
+import { Document } from '../../document/entities/document.entity.js';
 
 export class Transaction implements TransactionModel {
   id: number;

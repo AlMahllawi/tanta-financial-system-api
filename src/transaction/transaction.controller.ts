@@ -9,11 +9,11 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { TransactionService } from './transaction.service';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
+import { TransactionService } from './transaction.service.js';
+import { CreateTransactionDto } from './dto/create-transaction.dto.js';
+import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Transaction } from './entities/transaction.entity';
+import { Transaction } from './entities/transaction.entity.js';
 
 @ApiTags('Transactions')
 @Controller('transactions')

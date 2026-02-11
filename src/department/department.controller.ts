@@ -7,11 +7,11 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { DepartmentService } from './department.service';
-import { CreateDepartmentDto } from './dto/create-department.dto';
-import { UpdateDepartmentDto } from './dto/update-department.dto';
+import { DepartmentService } from './department.service.js';
+import { CreateDepartmentDto } from './dto/create-department.dto.js';
+import { UpdateDepartmentDto } from './dto/update-department.dto.js';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Department } from './entities/department.entity';
+import { Department } from './entities/department.entity.js';
 
 @ApiTags('Departments')
 @Controller('departments')
