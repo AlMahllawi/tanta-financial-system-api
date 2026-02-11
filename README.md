@@ -1,35 +1,122 @@
 # Tanta Financial System API
 
-Track financial and administrative transactions progress, submission and review.
+[![NestJS](https://img.shields.io/badge/framework-NestJS-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![Prisma](https://img.shields.io/badge/orm-Prisma-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/database-PostgreSQL-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![pnpm](https://img.shields.io/badge/package--manager-pnpm-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
 
-## Project Setup
+Backend API for tracking financial and administrative transactions progress, submission and review.
+
+---
+
+## Features
+
+- **Transaction Tracking**: Real-time progress monitoring of financial requests.
+- **Workflow Management**: Efficient submission and review cycles.
+- **Role-based Access**: Secure handling of administrative tasks.
+- **Document Management**: Integration for handling transaction-related documents.
+
+---
+
+## Tech Stack
+
+- **Framework**: [NestJS](https://nestjs.com/) (TypeScript)
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
+- **Package Manager**: [pnpm](https://pnpm.io/)
+- **Validation**: [Joi](https://joi.dev/) & [Class-Validator](https://github.com/typestack/class-validator)
+- **Documentation**: [Swagger (OpenAPI)](https://swagger.io/)
+
+---
+
+## Getting Started
+
+Follow these steps to get your local development environment up and running.
+
+### Prerequisites
+
+Ensure you have the following installed:
+
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [pnpm](https://pnpm.io/installation)
+- [PostgreSQL](https://www.postgresql.org/download/)
+
+### Installation
+
+Clone the repository and install dependencies:
 
 ```bash
-$ pnpm install
+git clone https://github.com/AlMahllawi/tanta-financial-system-api.git
+cd tanta-financial-system-api
+pnpm install
 ```
 
-## Compile and Run
+### Environment Configuration
+
+Copy the example environment file and update the values to match your local setup:
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+cp .env.example .env
 ```
 
-## Run Tests
+Edit the `.env` file and provide your database credentials:
+
+```env
+# Example DATABASE_URL
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/TantaFinancial?schema=public"
+```
+
+### Database Setup & Prisma (Crucial Steps)
+
+These steps are often forgotten but are essential for the app to function.
+
+> [!TIP]
+> **Prisma Client Generation**: The `postinstall` script runs `prisma generate` automatically after `pnpm install`, but you should run it manually if you make changes to `schema.prisma`.
 
 ```bash
-# unit tests
-$ pnpm run test
+# Generate the Prisma Client (outputting to prisma/generated)
+npx prisma generate
 
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+# Apply migrations to your database
+npx prisma migrate dev
 ```
+
+---
+
+## Running the Application
+
+```bash
+# Development mode (with watch mode)
+pnpm run start:dev
+
+# Production mode
+pnpm run build
+pnpm run start:prod
+```
+
+The API will be available at `http://localhost:3000` (or the port specified in your `.env`).
+
+---
+
+## Testing
+
+```bash
+# Run unit tests
+pnpm run test
+
+# Run end-to-end tests
+pnpm run test:e2e
+
+# Get test coverage
+pnpm run test:cov
+```
+
+---
+
+## Development Notes
+
+### Swagger Documentation
+
+When generating new resources using the Nest CLI (`nest generate resource`), the automatically created DTOs and entities will **not** appear in the Swagger documentation by default.  
+Add the `@ApiProperty()` decorator to each property in DTO and Entity classes.  
+`@nestjs/swagger` plugin in `nest-cli.json` is not used due to a compatibility issue with ESM.
