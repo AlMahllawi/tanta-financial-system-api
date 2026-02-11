@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module';
 import { DepartmentModule } from './department/department.module';
 import { UserModule } from './user/user.module';
 import { DocumentModule } from './document/document.module';
@@ -31,6 +32,7 @@ import Joi from 'joi';
         abortEarly: false,
       },
     }),
+    PrismaModule,
     DepartmentModule,
     UserModule,
     DocumentModule,
