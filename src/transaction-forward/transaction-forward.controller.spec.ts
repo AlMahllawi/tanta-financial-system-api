@@ -8,7 +8,12 @@ describe('TransactionForwardController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TransactionForwardController],
-      providers: [TransactionForwardService],
+      providers: [
+        {
+          provide: TransactionForwardService,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<TransactionForwardController>(
