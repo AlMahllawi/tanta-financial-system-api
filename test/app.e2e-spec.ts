@@ -21,7 +21,6 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect((res) => {
         expect(res.body).toEqual({
-          /* eslint-disable @typescript-eslint/no-unsafe-assignment */
           name: expect.any(String),
           version: expect.any(String),
           description: expect.any(String),
@@ -32,7 +31,6 @@ describe('AppController (e2e)', () => {
             uptime: expect.any(Number),
             memoryUsage: expect.any(Number),
           },
-          /* eslint-enable @typescript-eslint/no-unsafe-assignment */
         });
       });
   });
