@@ -81,6 +81,14 @@ export class UserService {
     return plainToInstance(User, user);
   }
 
+  async findUserForAuth(name: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { name },
+    });
+
+    return user;
+  }
+
   async update(name: string, updateUserDto: UpdateUserDto) {
     const { password, ...data } = updateUserDto;
     const updateData = {

@@ -6,8 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
@@ -21,8 +23,11 @@ import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiExceptionResponse } from '../common/dto/http-exception.dto.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Users')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}

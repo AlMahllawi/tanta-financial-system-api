@@ -6,14 +6,23 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TransactionForwardService } from './transaction-forward.service.js';
 import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
 import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto.js';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { TransactionForward } from './entities/transaction-forward.entity.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Transaction Forwards')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('transaction/:transactionId/forward')
 export class TransactionForwardController {
   constructor(

@@ -26,7 +26,7 @@ async function bootstrap() {
   app.enableCors({
     origin: ALLOWED_ORIGINS,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    // credentials: true, // TODO
+    credentials: true,
   });
 
   app.setGlobalPrefix('api', {
@@ -47,7 +47,9 @@ async function bootstrap() {
     .setTitle('Tanta Financial System API')
     .setDescription('The API documentation for the graduation project')
     .setVersion(packageJson.version)
+    .addBearerAuth()
     .addTag('Entry')
+    .addTag('Authentication', 'Operations related to authentication')
     .addTag('Departments', 'Manage departments')
     .addTag('Users', 'Operations related to user management and profiles')
     .addTag('Documents', 'Archiving for later use')

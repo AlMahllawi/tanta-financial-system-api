@@ -8,14 +8,23 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Transaction } from './entities/transaction.entity.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Transactions')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('transactions')
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}

@@ -1,10 +1,26 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { TransactionTypeService } from './transaction-type.service.js';
 import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { TransactionType } from './entities/transaction-type.entity.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Transaction Types')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('transactions/types')
 export class TransactionTypeController {
   constructor(

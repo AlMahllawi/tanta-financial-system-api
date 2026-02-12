@@ -6,14 +6,23 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service.js';
 import { CreateDepartmentDto } from './dto/create-department.dto.js';
 import { UpdateDepartmentDto } from './dto/update-department.dto.js';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Department } from './entities/department.entity.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Departments')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('departments')
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}

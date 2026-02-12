@@ -12,11 +12,13 @@ import {
   StreamableFile,
   Res,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { contentType } from 'mime-types';
 import { DocumentService } from './document.service.js';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiOperation,
@@ -25,8 +27,11 @@ import {
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Document } from './entities/document.entity.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Documents')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('documents')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
