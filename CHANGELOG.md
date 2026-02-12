@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Activation.
   - Last login.
 - Uploaded documents endpoint.
-- Trasaction type creator.
+- Transaction type creator.
 - Transaction forward attributes
   - Seen.
   - Sender Comment.

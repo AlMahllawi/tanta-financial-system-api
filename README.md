@@ -31,11 +31,11 @@ Backend API for tracking financial and administrative transactions progress, sub
 
 ## Getting Started
 
-Follow these steps to get your local development environment up and running.
+Follow these steps to get a local development environment up and running.
 
 ### Prerequisites
 
-Ensure you have the following installed:
+Ensure the following are installed:
 
 - [Node.js](https://nodejs.org/) (v18 or higher)
 - [pnpm](https://pnpm.io/installation)
@@ -53,13 +53,15 @@ pnpm install
 
 ### Environment Configuration
 
-Copy the example environment file and update the values to match your local setup:
+Copy the example environment file and update the values to match the local setup:
 
 ```bash
 cp .env.example .env
 ```
 
-Edit the `.env` file and provide your database credentials:
+#### Edit the `.env` file
+
+- provide the database credentials:
 
 ```env
 # Example DATABASE_URL
@@ -71,13 +73,13 @@ DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/TantaFinancial?schema=pu
 These steps are often forgotten but are essential for the app to function.
 
 > [!TIP]
-> **Prisma Client Generation**: The `postinstall` script runs `prisma generate` automatically after `pnpm install`, but you should run it manually if you make changes to `schema.prisma`.
+> **Prisma Client Generation**: The `postinstall` script runs `prisma generate` automatically after `pnpm install`, but it should be run manually if changes are made to `schema.prisma`.
 
 ```bash
 # Generate the Prisma Client (outputting to prisma/generated)
 npx prisma generate
 
-# Apply migrations to your database
+# Apply migrations to the database
 npx prisma migrate dev
 
 # Seed the database
@@ -97,7 +99,7 @@ pnpm run build
 pnpm run start:prod
 ```
 
-The API will be available at `http://localhost:3000` (or the port specified in your `.env`).
+The API will be available at `http://localhost:3000` (or the port specified in the `.env` file).
 
 ---
 
@@ -124,7 +126,7 @@ When generating new resources using the Nest CLI (`nest generate resource`), the
 Add the `@ApiProperty()` decorator to each property in DTO and Entity classes.  
 `@nestjs/swagger` plugin in `nest-cli.json` is not used due to a compatibility issue with ESM.
 
-### Dummy
+### TODO
 
-- Department `Computer Science` for users
-- Users `AlMahllawi` & `Yusuf` for transaction forwards
+- Replace `ApiResponse` with `ApiOkResponse`, `ApiCreatedResponse`, etc... in controllers.
+- Fix `ApiExceptionResponse` redundancy.
