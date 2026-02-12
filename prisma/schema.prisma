@@ -32,10 +32,10 @@ enum UserRole {
 }
 
 model Department {
-  name        String @id
-  managerName String @unique
+  name        String  @id
+  managerName String? @unique
 
-  manager User   @relation("Manages", fields: [managerName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  manager User?  @relation("Manages", fields: [managerName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   members User[] @relation("BelongsTo")
 }
 

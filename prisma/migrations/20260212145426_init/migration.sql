@@ -23,7 +23,7 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Department" (
     "name" TEXT NOT NULL,
-    "managerName" TEXT NOT NULL,
+    "managerName" TEXT,
 
     CONSTRAINT "Department_pkey" PRIMARY KEY ("name")
 );
