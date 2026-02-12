@@ -10,14 +10,9 @@ import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RefreshTokenDto } from './dto/refresh-token.dto.js';
 import { TokenResponseDto } from './dto/token-response.dto.js';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiOkResponse,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiExceptionResponse } from '../common/dto/http-exception.dto.js';
+import { ApiResponses } from '../common/decorators/http.js';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -27,18 +22,18 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @ApiOperation({ summary: 'User login' })
-  @ApiOkResponse({
-    type: TokenResponseDto,
-    description: 'Return JWT access and refresh tokens',
-  })
-  @ApiUnauthorizedResponse({
-    type: ApiExceptionResponse(
-      401,
-      'Invalid credentials',
-      ErrorCode.INVALID_CREDENTIALS,
-    ),
-    description: 'Invalid credentials',
-  })
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: TokenResponseDto,
+      description: 'Return JWT access token',
+    },
+    {
+      status: HttpStatus.UNAUTHORIZED,
+      description: 'Invalid credentials',
+      errorCode: ErrorCode.INVALID_CREDENTIALS,
+    },
+  )
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(
       loginDto.name,
@@ -46,7 +41,7 @@ export class AuthController {
     );
     if (!user)
       throw new UnauthorizedException({
-        statusCode: 401,
+        statusCode: HttpStatus.UNAUTHORIZED,
         message: { key: ErrorCode.INVALID_CREDENTIALS },
         error: 'Invalid credentials',
       });
@@ -56,18 +51,18 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access token' })
-  @ApiOkResponse({
-    type: TokenResponseDto,
-    description: 'Return new JWT access and refresh tokens',
-  })
-  @ApiUnauthorizedResponse({
-    type: ApiExceptionResponse(
-      401,
-      'Invalid or expired refresh token',
-      ErrorCode.INVALID_REFRESH_TOKEN,
-    ),
-    description: 'Invalid or expired refresh token',
-  })
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: TokenResponseDto,
+      description: 'Return new JWT access and refresh tokens',
+    },
+    {
+      status: HttpStatus.UNAUTHORIZED,
+      description: 'Invalid credentials',
+      errorCode: ErrorCode.INVALID_CREDENTIALS,
+    },
+  )
   refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refresh(refreshTokenDto.refreshToken);
   }

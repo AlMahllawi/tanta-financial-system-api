@@ -6,23 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  HttpStatus,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiConflictResponse,
-  ApiCreatedResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiExceptionResponse } from '../common/dto/http-exception.dto.js';
+import { ApiResponses } from '../common/decorators/http.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Users')
@@ -34,68 +27,93 @@ export class UserController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiCreatedResponse({ type: User, description: 'User created successfully' })
-  @ApiConflictResponse({
-    type: ApiExceptionResponse(409, 'Conflict', ErrorCode.USER_ALREADY_EXISTS, {
-      name: 'John Doe',
-    }),
-    description: 'A user already exists with the same name',
-  })
+  @ApiResponses(
+    {
+      status: HttpStatus.CREATED,
+      type: User,
+      description: 'User created successfully',
+    },
+    {
+      status: HttpStatus.CONFLICT,
+      description: 'A user already exists with the same name',
+      errorCode: ErrorCode.USER_ALREADY_EXISTS,
+      args: { name: 'John Doe' },
+    },
+  )
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all users' })
-  @ApiOkResponse({ type: [User], description: 'Users retrieved successfully' })
+  @ApiResponses({
+    status: HttpStatus.OK,
+    type: [User],
+    description: 'Users retrieved successfully',
+  })
   findAll() {
     return this.userService.findAll();
   }
 
   @Get(':name')
   @ApiOperation({ summary: 'Retrieve a user' })
-  @ApiOkResponse({ type: User, description: 'User retrieved successfully' })
-  @ApiNotFoundResponse({
-    type: ApiExceptionResponse(404, 'Not Found', ErrorCode.USER_NOT_FOUND, {
-      name: 'John Doe',
-    }),
-    description: 'No user was found with such name',
-  })
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: User,
+      description: 'User retrieved successfully',
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No user was found with such name',
+      errorCode: ErrorCode.USER_NOT_FOUND,
+      args: { name: 'John Doe' },
+    },
+  )
   findOne(@Param('name') name: string) {
     return this.userService.findOne(name);
   }
 
   @Patch(':name')
   @ApiOperation({ summary: 'Update a user' })
-  @ApiOkResponse({
-    type: User,
-    description: 'User updated successfully',
-  })
-  @ApiConflictResponse({
-    type: ApiExceptionResponse(409, 'Conflict', ErrorCode.USER_ALREADY_EXISTS, {
-      name: 'John Doe',
-    }),
-    description: 'A user already exists with the same name',
-  })
-  @ApiNotFoundResponse({
-    type: ApiExceptionResponse(404, 'Not Found', ErrorCode.USER_NOT_FOUND, {
-      name: 'John Doe',
-    }),
-    description: 'No user was found with such name',
-  })
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: User,
+      description: 'User updated successfully',
+    },
+    {
+      status: HttpStatus.CONFLICT,
+      description: 'A user already exists with the same name',
+      errorCode: ErrorCode.USER_ALREADY_EXISTS,
+      args: { name: 'John Doe' },
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No user was found with such name',
+      errorCode: ErrorCode.USER_NOT_FOUND,
+      args: { name: 'John Doe' },
+    },
+  )
   update(@Param('name') name: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(name, updateUserDto);
   }
 
   @Delete(':name')
   @ApiOperation({ summary: 'Delete a user' })
-  @ApiOkResponse({ type: User, description: 'User deleted successfully' })
-  @ApiNotFoundResponse({
-    type: ApiExceptionResponse(404, 'Not Found', ErrorCode.USER_NOT_FOUND, {
-      name: 'John Doe',
-    }),
-    description: 'No user was found with such name',
-  })
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: User,
+      description: 'User deleted successfully',
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No user was found with such name',
+      errorCode: ErrorCode.USER_NOT_FOUND,
+      args: { name: 'John Doe' },
+    },
+  )
   remove(@Param('name') name: string) {
     return this.userService.remove(name);
   }

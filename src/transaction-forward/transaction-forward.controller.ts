@@ -6,18 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  HttpStatus,
   UseGuards,
 } from '@nestjs/common';
 import { TransactionForwardService } from './transaction-forward.service.js';
 import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
 import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto.js';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { TransactionForward } from './entities/transaction-forward.entity.js';
+import { ApiResponses } from '../common/decorators/http.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Transaction Forwards')
@@ -31,7 +28,11 @@ export class TransactionForwardController {
 
   @Post()
   @ApiOperation({ summary: 'Forward a transaction' })
-  @ApiResponse({ status: 201, type: TransactionForward })
+  @ApiResponses({
+    status: HttpStatus.CREATED,
+    type: TransactionForward,
+    description: 'Transaction forwarded successfully',
+  })
   create(
     @Param('transactionId') transactionId: string,
     @Body() createTransactionForwardDto: CreateTransactionForwardDto,
@@ -44,14 +45,22 @@ export class TransactionForwardController {
 
   @Get()
   @ApiOperation({ summary: "Get all transaction's forwards" })
-  @ApiResponse({ status: 200, type: [TransactionForward] })
+  @ApiResponses({
+    status: HttpStatus.OK,
+    type: [TransactionForward],
+    description: 'Transaction forwards retrieved successfully',
+  })
   findAll(@Param('transactionId') transactionId: string) {
     return this.transactionForwardService.findAll(+transactionId);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: "Respond to a transaction's forward" })
-  @ApiResponse({ status: 200, type: TransactionForward })
+  @ApiResponses({
+    status: HttpStatus.OK,
+    type: TransactionForward,
+    description: 'Transaction forward updated successfully',
+  })
   update(
     @Param('transactionId') transactionId: string,
     @Param('id') id: string,
@@ -66,7 +75,11 @@ export class TransactionForwardController {
 
   @Delete(':id')
   @ApiOperation({ summary: "Undo a transaction's forward" })
-  @ApiResponse({ status: 200, type: TransactionForward })
+  @ApiResponses({
+    status: HttpStatus.OK,
+    type: TransactionForward,
+    description: 'Transaction forward removed successfully',
+  })
   remove(
     @Param('transactionId') transactionId: string,
     @Param('id') id: string,

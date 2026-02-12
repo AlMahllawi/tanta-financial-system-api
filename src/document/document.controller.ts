@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   StreamableFile,
   Res,
+  HttpStatus,
   NotFoundException,
   UseGuards,
 } from '@nestjs/common';
@@ -22,11 +23,11 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Document } from './entities/document.entity.js';
+import { ApiResponses } from '../common/decorators/http.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Documents')
@@ -48,7 +49,11 @@ export class DocumentController {
       },
     },
   })
-  @ApiResponse({ status: 201, type: Document })
+  @ApiResponses({
+    status: HttpStatus.CREATED,
+    type: Document,
+    description: 'Document uploaded successfully',
+  })
   @UseInterceptors(FileInterceptor('file'))
   create(
     @UploadedFile(
@@ -67,14 +72,22 @@ export class DocumentController {
 
   @Get('uploaded')
   @ApiOperation({ summary: 'Retrieve all documents uploaded by the user' })
-  @ApiResponse({ status: 200, type: [Document] })
+  @ApiResponses({
+    status: HttpStatus.OK,
+    type: [Document],
+    description: 'Documents retrieved successfully',
+  })
   findAll() {
     return this.documentService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a document by ID' })
-  @ApiResponse({ status: 200, type: Document })
+  @ApiResponses({
+    status: HttpStatus.OK,
+    type: Document,
+    description: 'Document retrieved successfully',
+  })
   findOne(@Param('id') id: string) {
     return this.documentService.findOne(+id);
   }
@@ -101,7 +114,11 @@ export class DocumentController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a document by ID' })
-  @ApiResponse({ status: 200, type: Document })
+  @ApiResponses({
+    status: HttpStatus.OK,
+    type: Document,
+    description: 'Document deleted successfully',
+  })
   remove(@Param('id') id: string) {
     return this.documentService.remove(+id);
   }
