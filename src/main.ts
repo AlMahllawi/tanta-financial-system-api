@@ -60,7 +60,9 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup(SWAGGER_PATH, app, document);
+  SwaggerModule.setup(SWAGGER_PATH, app, document, {
+    jsonDocumentUrl: `${SWAGGER_PATH}/json`,
+  });
 
   await app.listen(PORT);
 
