@@ -7,11 +7,20 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserService } from './user.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiExceptionResponse } from '../common/dto/http-exception.dto.js';
 
 @ApiTags('Users')
 @Controller('users')
@@ -20,35 +29,68 @@ export class UserController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: 201, type: User })
+  @ApiCreatedResponse({ type: User, description: 'User created successfully' })
+  @ApiConflictResponse({
+    type: ApiExceptionResponse(409, 'Conflict', ErrorCode.USER_ALREADY_EXISTS, {
+      name: 'John Doe',
+    }),
+    description: 'A user already exists with the same name',
+  })
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all users' })
-  @ApiResponse({ status: 200, type: [User] })
+  @ApiOkResponse({ type: [User], description: 'Users retrieved successfully' })
   findAll() {
     return this.userService.findAll();
   }
 
   @Get(':name')
   @ApiOperation({ summary: 'Retrieve a user' })
-  @ApiResponse({ status: 200, type: User })
+  @ApiOkResponse({ type: User, description: 'User retrieved successfully' })
+  @ApiNotFoundResponse({
+    type: ApiExceptionResponse(404, 'Not Found', ErrorCode.USER_NOT_FOUND, {
+      name: 'John Doe',
+    }),
+    description: 'No user was found with such name',
+  })
   findOne(@Param('name') name: string) {
     return this.userService.findOne(name);
   }
 
   @Patch(':name')
   @ApiOperation({ summary: 'Update a user' })
-  @ApiResponse({ status: 200, type: User })
+  @ApiOkResponse({
+    type: User,
+    description: 'User updated successfully',
+  })
+  @ApiConflictResponse({
+    type: ApiExceptionResponse(409, 'Conflict', ErrorCode.USER_ALREADY_EXISTS, {
+      name: 'John Doe',
+    }),
+    description: 'A user already exists with the same name',
+  })
+  @ApiNotFoundResponse({
+    type: ApiExceptionResponse(404, 'Not Found', ErrorCode.USER_NOT_FOUND, {
+      name: 'John Doe',
+    }),
+    description: 'No user was found with such name',
+  })
   update(@Param('name') name: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(name, updateUserDto);
   }
 
   @Delete(':name')
   @ApiOperation({ summary: 'Delete a user' })
-  @ApiResponse({ status: 200, type: User })
+  @ApiOkResponse({ type: User, description: 'User deleted successfully' })
+  @ApiNotFoundResponse({
+    type: ApiExceptionResponse(404, 'Not Found', ErrorCode.USER_NOT_FOUND, {
+      name: 'John Doe',
+    }),
+    description: 'No user was found with such name',
+  })
   remove(@Param('name') name: string) {
     return this.userService.remove(name);
   }

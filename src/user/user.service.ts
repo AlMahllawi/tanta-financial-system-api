@@ -1,57 +1,152 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.js';
 import { UserRole } from '../../prisma/generated/enums.js';
-import { instanceToInstance } from 'class-transformer';
-
-const dummyUser = new User();
-dummyUser.name = 'AlMahllawi';
-dummyUser.active = true;
-dummyUser.role = UserRole.ADMIN;
-dummyUser.createdAt = new Date();
-dummyUser.lastLogin = new Date();
-dummyUser.hashedPassword = '#password';
-dummyUser.departmentName = 'Financial';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { Prisma } from '@prisma/client';
+import { plainToInstance } from 'class-transformer';
+import { hash } from 'argon2';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    const user = instanceToInstance(dummyUser);
-    user.name = createUserDto.name;
-    user.departmentName = createUserDto.departmentName;
-    user.role = createUserDto.role ?? UserRole.USER;
-    user.active = true;
-    user.createdAt = new Date();
-    user.lastLogin = null;
-    user.hashedPassword = `#${createUserDto.password}`;
-    return user;
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          name: createUserDto.name,
+          departmentName: createUserDto.departmentName,
+          hashedPassword: await hash(createUserDto.password),
+          role: createUserDto.role ?? UserRole.USER,
+        },
+      });
+
+      return plainToInstance(User, user);
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
+      if (
+        error.code === 'P2002' &&
+        (error.meta?.target as string[]).includes('name')
+      )
+        throw new ConflictException({
+          message: {
+            key: ErrorCode.USER_ALREADY_EXISTS,
+            args: { name: createUserDto.name },
+          },
+          statusCode: 409,
+          error: 'Conflict',
+        });
+      if (
+        error.code === 'P2003' &&
+        (error.meta?.field_name as string).includes('departmentName')
+      )
+        throw new NotFoundException({
+          message: {
+            key: ErrorCode.DEPARTMENT_NOT_FOUND,
+            args: { departmentName: createUserDto.departmentName },
+          },
+          statusCode: 404,
+          error: 'Not Found',
+        });
+      throw error;
+    }
   }
 
   // TODO: paginate
-  findAll() {
-    return [dummyUser];
+  async findAll() {
+    const users = await this.prisma.user.findMany();
+
+    return plainToInstance(User, users);
   }
 
-  findOne(name: string) {
-    const user = instanceToInstance(dummyUser);
-    user.name = name;
-    return user;
+  async findOne(name: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { name },
+    });
+
+    if (!user)
+      throw new NotFoundException({
+        message: { key: ErrorCode.USER_NOT_FOUND, args: { name } },
+        statusCode: 404,
+        error: 'Not Found',
+      });
+
+    return plainToInstance(User, user);
   }
 
-  update(name: string, updateUserDto: UpdateUserDto) {
-    dummyUser.name = updateUserDto.name ?? name;
-    if (updateUserDto.password)
-      dummyUser.hashedPassword = `#${updateUserDto.password}`;
-    if (updateUserDto.active) dummyUser.active = updateUserDto.active;
-    if (updateUserDto.role) dummyUser.role = updateUserDto.role;
-    if (updateUserDto.departmentName)
-      dummyUser.departmentName = updateUserDto.departmentName;
-    return dummyUser;
+  async update(name: string, updateUserDto: UpdateUserDto) {
+    const { password, ...data } = updateUserDto;
+    const updateData = {
+      ...data,
+      ...(password && { hashedPassword: await hash(password) }),
+    };
+
+    try {
+      const user = await this.prisma.user.update({
+        where: { name },
+        data: updateData,
+      });
+
+      return plainToInstance(User, user);
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
+      if (
+        error.code === 'P2002' &&
+        (error.meta?.target as string[]).includes('name')
+      )
+        throw new ConflictException({
+          message: {
+            key: ErrorCode.USER_ALREADY_EXISTS,
+            args: { name: updateUserDto.name },
+          },
+          statusCode: 409,
+          error: 'Conflict',
+        });
+      if (error.code === 'P2025')
+        throw new NotFoundException({
+          message: { key: ErrorCode.USER_NOT_FOUND, args: { name } },
+          statusCode: 404,
+          error: 'Not Found',
+        });
+      if (
+        error.code === 'P2003' &&
+        (error.meta?.field_name as string).includes('departmentName')
+      )
+        throw new NotFoundException({
+          message: {
+            key: ErrorCode.DEPARTMENT_NOT_FOUND,
+            args: { departmentName: updateUserDto.departmentName },
+          },
+          statusCode: 404,
+          error: 'Not Found',
+        });
+      throw error;
+    }
   }
 
-  remove(name: string) {
-    dummyUser.name = name;
-    return dummyUser;
+  async remove(name: string) {
+    try {
+      const user = await this.prisma.user.delete({
+        where: { name },
+      });
+
+      return plainToInstance(User, user);
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
+      if (error.code === 'P2025')
+        throw new NotFoundException({
+          message: { key: ErrorCode.USER_NOT_FOUND, args: { name } },
+          statusCode: 404,
+          error: 'Not Found',
+        });
+      throw error;
+    }
   }
 }

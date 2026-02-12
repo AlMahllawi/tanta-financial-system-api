@@ -16,7 +16,7 @@ transactionForward.transactionId = 1;
 export class TransactionForwardService {
   constructor(private readonly userService: UserService) {}
 
-  create(
+  async create(
     transactionId: number,
     createTransactionForwardDto: CreateTransactionForwardDto,
   ) {
@@ -26,12 +26,12 @@ export class TransactionForwardService {
     transactionForward.senderComment =
       createTransactionForwardDto.comment ?? null;
     transactionForward.transactionId = transactionId;
-    transactionForward.sender = this.userService.findOne(
+    transactionForward.sender = await this.userService.findOne(
       createTransactionForwardDto.receiverName != 'AlMahllawi'
         ? 'AlMahllawi'
         : 'Yusuf',
     );
-    transactionForward.receiver = this.userService.findOne(
+    transactionForward.receiver = await this.userService.findOne(
       createTransactionForwardDto.receiverName,
     );
     return transactionForward;
