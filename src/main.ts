@@ -17,11 +17,11 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const ALLOWED_ORIGINS = configService
-    .get<string>('ALLOWED_ORIGINS', '*')
+    .getOrThrow<string>('ALLOWED_ORIGINS')
     .split(',');
-  const PORT = configService.get<number>('PORT', 3000);
-  const ENV = configService.get<string>('NODE_ENV', 'development');
-  const HOST = configService.get<string>('HOST', '0.0.0.0');
+  const PORT = configService.getOrThrow<number>('PORT');
+  const ENV = configService.getOrThrow<string>('NODE_ENV');
+  const HOST = configService.getOrThrow<string>('HOST');
 
   app.enableCors({
     origin: ALLOWED_ORIGINS,

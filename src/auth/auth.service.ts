@@ -69,10 +69,9 @@ export class AuthService {
   private generateRefreshToken(payload: JwtPayload): string {
     return this.jwtService.sign(payload, {
       secret: this.configService.getOrThrow<string>('REFRESH_TOKEN_SECRET'),
-      expiresIn:
-        this.configService.get<NonNullable<JwtSignOptions['expiresIn']>>(
-          'REFRESH_TOKEN_EXPIRATION',
-        ) ?? ('7d' as NonNullable<JwtSignOptions['expiresIn']>),
+      expiresIn: this.configService.getOrThrow<
+        NonNullable<JwtSignOptions['expiresIn']>
+      >('REFRESH_TOKEN_EXPIRATION'),
     });
   }
 }

@@ -14,12 +14,12 @@ import { AuthController } from './auth.controller.js';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService): JwtModuleOptions => ({
-        secret: configService.get<string>('JWT_SECRET'),
+        secret: configService.getOrThrow<string>('JWT_SECRET'),
         signOptions: {
           expiresIn:
-            configService.get<
+            configService.getOrThrow<
               NonNullable<JwtModuleOptions['signOptions']>['expiresIn']
-            >('JWT_EXPIRATION') ?? '1d',
+            >('JWT_EXPIRATION'),
         },
       }),
       inject: [ConfigService],
