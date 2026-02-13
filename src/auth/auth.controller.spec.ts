@@ -6,6 +6,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto.js';
 import { UserRole } from '../../prisma/generated/enums.js';
+import { User } from '../user/entities/user.entity.js';
+import { plainToInstance } from 'class-transformer';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -41,11 +43,15 @@ describe('AuthController', () => {
       password: 'password123',
     };
 
-    const authenticatedUser = {
+    const authenticatedUser = plainToInstance(User, {
       name: 'testuser',
       role: UserRole.USER,
       departmentName: 'Test Dept',
-    };
+      hashedPassword: 'hashed',
+      createdAt: new Date('2026-01-01'),
+      active: true,
+      lastLogin: null,
+    });
 
     it('should successfully login and return tokens', async () => {
       authServiceMock.validateUser.mockResolvedValue(authenticatedUser);
@@ -75,15 +81,24 @@ describe('AuthController', () => {
   });
 
   describe('refresh', () => {
-    it('should return new tokens for valid refresh token', () => {
+    it('should return new tokens for valid refresh token', async () => {
+      const refreshUser = plainToInstance(User, {
+        name: 'testuser',
+        role: UserRole.USER,
+        departmentName: 'Test Dept',
+        hashedPassword: 'hashed',
+        createdAt: new Date('2026-01-01'),
+        active: true,
+        lastLogin: null,
+      });
       const tokens = {
         access_token: 'new-access-token',
         refresh_token: 'new-refresh-token',
-        user: { name: 'testuser', role: 'USER', departmentName: 'Test Dept' },
+        user: refreshUser,
       };
-      authServiceMock.refresh.mockReturnValue(tokens);
+      authServiceMock.refresh.mockResolvedValue(tokens);
 
-      const result = controller.refresh({
+      const result = await controller.refresh({
         refreshToken: 'valid-refresh-token',
       });
 

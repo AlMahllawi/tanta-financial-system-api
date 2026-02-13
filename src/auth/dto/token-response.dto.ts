@@ -1,15 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-class AuthUserDto {
-  @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  role: string;
-
-  @ApiProperty()
-  departmentName: string;
-}
+import { User } from '../../user/entities/user.entity.js';
 
 export class TokenResponseDto {
   @ApiProperty({ description: 'JWT access token' })
@@ -18,6 +8,6 @@ export class TokenResponseDto {
   @ApiProperty({ description: 'JWT refresh token' })
   refresh_token: string;
 
-  @ApiProperty({ description: 'Authenticated user info' })
-  user: AuthUserDto;
+  @ApiProperty({ description: 'Authenticated user info', type: User })
+  user: User;
 }

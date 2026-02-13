@@ -8,6 +8,8 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { hash } from 'argon2';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { UnauthorizedException } from '@nestjs/common';
+import { User } from '../user/entities/user.entity.js';
+import { plainToInstance } from 'class-transformer';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -109,11 +111,15 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should return access and refresh tokens', () => {
-      const user = {
+      const user = plainToInstance(User, {
         name: 'testuser',
         role: UserRole.USER,
         departmentName: 'Test Dept',
-      };
+        hashedPassword: 'hashed',
+        createdAt: new Date('2026-01-01'),
+        active: true,
+        lastLogin: null,
+      });
       const accessToken = 'signed-jwt-token';
       const refreshToken = 'signed-refresh-token';
       jwtServiceMock.sign
@@ -124,8 +130,6 @@ describe('AuthService', () => {
 
       expect(jwtServiceMock.sign).toHaveBeenCalledWith({
         name: user.name,
-        role: user.role,
-        department: user.departmentName,
       });
 
       expect(result).toEqual({
@@ -137,45 +141,50 @@ describe('AuthService', () => {
   });
 
   describe('refresh', () => {
-    it('should return new token pair for valid refresh token', () => {
+    it('should return new token pair for valid refresh token', async () => {
       const payload = {
         name: 'testuser',
-        role: UserRole.USER,
-        department: 'Test Dept',
         iat: 1234567890,
         exp: 1234567890,
       };
       const accessToken = 'new-access-token';
       const refreshToken = 'new-refresh-token';
+      const userFromDb = plainToInstance(User, {
+        name: 'testuser',
+        role: UserRole.USER,
+        departmentName: 'Test Dept',
+        hashedPassword: 'hashed',
+        createdAt: new Date('2026-01-01'),
+        active: true,
+        lastLogin: null,
+      });
 
       jwtServiceMock.verify.mockReturnValue(payload);
       jwtServiceMock.sign
         .mockReturnValueOnce(accessToken)
         .mockReturnValueOnce(refreshToken);
+      userServiceMock.findOne.mockResolvedValue(userFromDb);
 
-      const result = service.refresh('valid-refresh-token');
+      const result = await service.refresh('valid-refresh-token');
 
       expect(jwtServiceMock.verify).toHaveBeenCalledWith(
         'valid-refresh-token',
         { secret: 'refresh-secret' },
       );
+      expect(userServiceMock.findOne).toHaveBeenCalledWith('testuser');
       expect(result).toEqual({
         access_token: accessToken,
         refresh_token: refreshToken,
-        user: {
-          name: payload.name,
-          role: payload.role,
-          departmentName: payload.department,
-        },
+        user: userFromDb,
       });
     });
 
-    it('should throw UnauthorizedException for invalid refresh token', () => {
+    it('should throw UnauthorizedException for invalid refresh token', async () => {
       jwtServiceMock.verify.mockImplementation(() => {
         throw new Error('invalid token');
       });
 
-      expect(() => service.refresh('invalid-token')).toThrow(
+      await expect(service.refresh('invalid-token')).rejects.toThrow(
         UnauthorizedException,
       );
     });

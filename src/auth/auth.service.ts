@@ -3,8 +3,10 @@ import { UserService } from '../user/user.service.js';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { verify } from 'argon2';
-import { AuthenticatedUser, JwtPayload } from './interfaces/auth.interface.js';
+import { JwtPayload } from './interfaces/auth.interface.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { User } from '../user/entities/user.entity.js';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
@@ -14,16 +16,11 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async validateUser(
-    name: string,
-    pass: string,
-  ): Promise<AuthenticatedUser | null> {
+  async validateUser(name: string, pass: string): Promise<User | null> {
     try {
       const user = await this.userService.findUserForAuth(name);
       if (user && (await verify(user.hashedPassword, pass))) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { hashedPassword, ...result } = user;
-        return result as AuthenticatedUser;
+        return plainToInstance(User, user);
       }
       return null;
     } catch {
@@ -31,11 +28,9 @@ export class AuthService {
     }
   }
 
-  login(user: AuthenticatedUser) {
+  login(user: User) {
     const payload: JwtPayload = {
       name: user.name,
-      role: user.role,
-      department: user.departmentName,
     };
     return {
       access_token: this.jwtService.sign(payload),
@@ -44,7 +39,7 @@ export class AuthService {
     };
   }
 
-  refresh(refreshToken: string) {
+  async refresh(refreshToken: string) {
     try {
       const payload = this.jwtService.verify<JwtPayload>(refreshToken, {
         secret: this.configService.getOrThrow<string>('REFRESH_TOKEN_SECRET'),
@@ -52,20 +47,17 @@ export class AuthService {
 
       const newPayload: JwtPayload = {
         name: payload.name,
-        role: payload.role,
-        department: payload.department,
       };
+
+      const user = await this.userService.findOne(payload.name);
 
       return {
         access_token: this.jwtService.sign(newPayload),
         refresh_token: this.generateRefreshToken(newPayload),
-        user: {
-          name: payload.name,
-          role: payload.role,
-          departmentName: payload.department,
-        },
+        user,
       };
-    } catch {
+    } catch (error) {
+      if (error instanceof UnauthorizedException) throw error;
       throw new UnauthorizedException({
         statusCode: 401,
         message: { key: ErrorCode.INVALID_REFRESH_TOKEN },
