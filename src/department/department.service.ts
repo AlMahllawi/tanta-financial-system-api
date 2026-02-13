@@ -6,13 +6,13 @@ import { instanceToInstance } from 'class-transformer';
 
 const dummyDepartment = new Department();
 dummyDepartment.name = 'Computer Science';
-dummyDepartment.managerName = 'AlMahllawi';
+dummyDepartment.managerId = 1;
 
 @Injectable()
 export class DepartmentService {
   create(createDepartmentDto: CreateDepartmentDto) {
     dummyDepartment.name = createDepartmentDto.name;
-    dummyDepartment.managerName = createDepartmentDto.managerName;
+    dummyDepartment.managerId = createDepartmentDto.managerId ?? null;
     return dummyDepartment;
   }
 
@@ -28,8 +28,8 @@ export class DepartmentService {
 
   update(name: string, updateDepartmentDto: UpdateDepartmentDto) {
     dummyDepartment.name = updateDepartmentDto.name ?? name;
-    dummyDepartment.managerName =
-      updateDepartmentDto.managerName ?? 'AlMahllawi';
+    dummyDepartment.managerId =
+      updateDepartmentDto.managerId ?? dummyDepartment.managerId;
     return dummyDepartment;
   }
 

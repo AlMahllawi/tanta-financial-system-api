@@ -30,7 +30,7 @@ export class AuthService {
 
   login(user: User) {
     const payload: JwtPayload = {
-      name: user.name,
+      id: user.id,
     };
     return {
       access_token: this.jwtService.sign(payload),
@@ -46,10 +46,10 @@ export class AuthService {
       });
 
       const newPayload: JwtPayload = {
-        name: payload.name,
+        id: payload.id,
       };
 
-      const user = await this.userService.findOne(payload.name);
+      const user = await this.userService.findOne(payload.id);
 
       return {
         access_token: this.jwtService.sign(newPayload),

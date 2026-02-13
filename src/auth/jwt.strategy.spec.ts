@@ -47,8 +47,9 @@ describe('JwtStrategy', () => {
   });
 
   describe('validate', () => {
-    const payload: JwtPayload = { name: 'testuser' };
+    const payload: JwtPayload = { id: 1 };
     const user = plainToInstance(User, {
+      id: 1,
       name: 'testuser',
       role: UserRole.USER,
       departmentName: 'Test Dept',
@@ -60,7 +61,7 @@ describe('JwtStrategy', () => {
 
       const result = await strategy.validate(payload);
 
-      expect(userServiceMock.findOne).toHaveBeenCalledWith(payload.name);
+      expect(userServiceMock.findOne).toHaveBeenCalledWith(payload.id);
       expect(result).toEqual(user);
     });
 

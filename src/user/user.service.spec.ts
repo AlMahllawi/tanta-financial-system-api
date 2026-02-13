@@ -48,6 +48,7 @@ describe('UserService', () => {
 
     it('should successfully create a user', async () => {
       const createdUser = {
+        id: 1,
         ...createUserDto,
         hashedPassword: 'hashedPassword',
         active: true,
@@ -117,6 +118,7 @@ describe('UserService', () => {
     it('should return an array of users', async () => {
       const users = [
         {
+          id: 1,
           name: 'Test User',
           departmentName: 'Test Department',
           hashedPassword: 'hashedPassword',
@@ -146,11 +148,12 @@ describe('UserService', () => {
   });
 
   describe('findOne', () => {
-    const name = 'Test User';
+    const id = 1;
 
     it('should return a user if found', async () => {
       const user = {
-        name,
+        id,
+        name: 'Test User',
         departmentName: 'Test Department',
         hashedPassword: 'hashedPassword',
         active: true,
@@ -161,10 +164,10 @@ describe('UserService', () => {
 
       prismaMock.user.findUnique.mockResolvedValue(user);
 
-      const result = await service.findOne(name);
+      const result = await service.findOne(id);
 
       expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
-        where: { name },
+        where: { id },
       });
       expect(result).toBeInstanceOf(User);
       expect(result.hashedPassword).toBeUndefined();
@@ -173,19 +176,19 @@ describe('UserService', () => {
     it('should throw NotFoundException if user not found', async () => {
       prismaMock.user.findUnique.mockResolvedValue(null);
 
-      await expect(service.findOne(name)).rejects.toThrow(NotFoundException);
+      await expect(service.findOne(id)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw unknown errors', async () => {
       const error = new Error('Unknown error');
       prismaMock.user.findUnique.mockRejectedValue(error);
 
-      await expect(service.findOne(name)).rejects.toThrow(error);
+      await expect(service.findOne(id)).rejects.toThrow(error);
     });
   });
 
   describe('update', () => {
-    const name = 'Test User';
+    const id = 1;
     const updateUserDto: UpdateUserDto = {
       name: 'New Name',
       departmentName: 'New Department',
@@ -194,6 +197,7 @@ describe('UserService', () => {
 
     it('should successfully update a user', async () => {
       const updatedUser = {
+        id,
         name: updateUserDto.name as string,
         departmentName: updateUserDto.departmentName as string,
         hashedPassword: 'newHashedPassword',
@@ -205,7 +209,7 @@ describe('UserService', () => {
 
       prismaMock.user.update.mockResolvedValue(updatedUser);
 
-      const result = await service.update(name, updateUserDto);
+      const result = await service.update(id, updateUserDto);
 
       expect(prismaMock.user.update).toHaveBeenCalledTimes(1);
       const updateCallArgs = prismaMock.user.update.mock.calls[0][0];
@@ -230,7 +234,7 @@ describe('UserService', () => {
 
       prismaMock.user.update.mockRejectedValue(error);
 
-      await expect(service.update(name, updateUserDto)).rejects.toThrow(
+      await expect(service.update(id, updateUserDto)).rejects.toThrow(
         ConflictException,
       );
     });
@@ -246,7 +250,7 @@ describe('UserService', () => {
 
       prismaMock.user.update.mockRejectedValue(error);
 
-      await expect(service.update(name, updateUserDto)).rejects.toThrow(
+      await expect(service.update(id, updateUserDto)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -263,7 +267,7 @@ describe('UserService', () => {
 
       prismaMock.user.update.mockRejectedValue(error);
 
-      await expect(service.update(name, updateUserDto)).rejects.toThrow(
+      await expect(service.update(id, updateUserDto)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -272,16 +276,17 @@ describe('UserService', () => {
       const error = new Error('Unknown error');
       prismaMock.user.update.mockRejectedValue(error);
 
-      await expect(service.update(name, updateUserDto)).rejects.toThrow(error);
+      await expect(service.update(id, updateUserDto)).rejects.toThrow(error);
     });
   });
 
   describe('remove', () => {
-    const name = 'Test User';
+    const id = 1;
 
     it('should successfully remove a user', async () => {
       const deletedUser = {
-        name,
+        id,
+        name: 'Test User',
         departmentName: 'Test Department',
         hashedPassword: 'hashedPassword',
         active: true,
@@ -292,10 +297,10 @@ describe('UserService', () => {
 
       prismaMock.user.delete.mockResolvedValue(deletedUser);
 
-      const result = await service.remove(name);
+      const result = await service.remove(id);
 
       expect(prismaMock.user.delete).toHaveBeenCalledWith({
-        where: { name },
+        where: { id },
       });
       expect(result).toBeInstanceOf(User);
       expect(result.hashedPassword).toBeUndefined();
@@ -312,14 +317,14 @@ describe('UserService', () => {
 
       prismaMock.user.delete.mockRejectedValue(error);
 
-      await expect(service.remove(name)).rejects.toThrow(NotFoundException);
+      await expect(service.remove(id)).rejects.toThrow(NotFoundException);
     });
 
     it('should throw unknown errors', async () => {
       const error = new Error('Unknown error');
       prismaMock.user.delete.mockRejectedValue(error);
 
-      await expect(service.remove(name)).rejects.toThrow(error);
+      await expect(service.remove(id)).rejects.toThrow(error);
     });
   });
 });

@@ -23,7 +23,7 @@ export class Transaction implements TransactionModel {
   priority: TransactionPriority;
 
   @ApiProperty()
-  creatorName: string;
+  creatorId: number;
 
   @ApiProperty()
   createdAt: Date;

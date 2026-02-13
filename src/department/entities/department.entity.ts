@@ -5,6 +5,6 @@ export class Department implements DepartmentModel {
   @ApiProperty()
   name: string;
 
-  @ApiProperty()
-  managerName: string;
+  @ApiProperty({ nullable: true })
+  managerId: number | null;
 }

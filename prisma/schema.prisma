@@ -8,7 +8,8 @@ datasource db {
 }
 
 model User {
-  name           String    @id
+  id             Int       @id @default(autoincrement())
+  name           String    @unique
   hashedPassword String
   departmentName String
   active         Boolean   @default(true)
@@ -32,21 +33,21 @@ enum UserRole {
 }
 
 model Department {
-  name        String  @id
-  managerName String? @unique
+  name      String @id
+  managerId Int?   @unique
 
-  manager User?  @relation("Manages", fields: [managerName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  manager User?  @relation("Manages", fields: [managerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   members User[] @relation("BelongsTo")
 }
 
 model Document {
-  id           Int      @id @default(autoincrement())
-  title        String
-  content      Bytes
-  uploaderName String
-  uploadedAt   DateTime @default(now()) @db.Timestamptz
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    Bytes
+  uploaderId Int
+  uploadedAt DateTime @default(now()) @db.Timestamptz
 
-  uploader     User                  @relation(fields: [uploaderName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  uploader     User                  @relation(fields: [uploaderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   transactions TransactionDocument[]
 }
 
@@ -57,11 +58,11 @@ model Transaction {
   typeName    String
   fulfilled   Boolean             @default(false)
   priority    TransactionPriority @default(LOW)
-  creatorName String
+  creatorId   Int
   createdAt   DateTime            @default(now()) @db.Timestamptz
 
   type      TransactionType       @relation(fields: [typeName], references: [name], onDelete: Restrict, onUpdate: Cascade)
-  creator   User                  @relation(fields: [creatorName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  creator   User                  @relation(fields: [creatorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   documents TransactionDocument[]
   forwards  TransactionForward[]
 }
@@ -73,10 +74,10 @@ enum TransactionPriority {
 }
 
 model TransactionType {
-  name        String @id
-  creatorName String
+  name      String @id
+  creatorId Int
 
-  creator      User          @relation(fields: [creatorName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  creator      User          @relation(fields: [creatorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   transactions Transaction[]
 }
 
@@ -85,16 +86,17 @@ model TransactionForward {
   status          TransactionForwardStatus @default(WAITING)
   senderComment   String?
   receiverComment String?
-  senderName      String
-  receiverName    String
-  seen            Boolean                  @default(false)
+  senderId        Int
+  receiverId      Int
+  senderSeen      Boolean                  @default(true)
+  receiverSeen    Boolean                  @default(false)
   forwardedAt     DateTime                 @default(now()) @db.Timestamptz
   updatedAt       DateTime                 @updatedAt @db.Timestamptz
   transactionId   Int
 
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  sender      User        @relation("SentForwards", fields: [senderName], references: [name], onDelete: Restrict, onUpdate: Cascade)
-  receiver    User        @relation("ReceivedForwards", fields: [receiverName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  sender      User        @relation("SentForwards", fields: [senderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  receiver    User        @relation("ReceivedForwards", fields: [receiverId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 }
 
 enum TransactionForwardStatus {
@@ -107,12 +109,12 @@ enum TransactionForwardStatus {
 model TransactionDocument {
   transactionId Int
   documentId    Int
-  attachedBy    String
+  attachedBy    Int
   attachedAt    DateTime @default(now()) @db.Timestamptz
 
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   document    Document    @relation(fields: [documentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  attacher    User        @relation(fields: [attachedBy], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  attacher    User        @relation(fields: [attachedBy], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@id([transactionId, documentId])
 }

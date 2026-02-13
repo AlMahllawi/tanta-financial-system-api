@@ -72,7 +72,7 @@ async function main() {
 
   await prisma.department.update({
     where: { name: administrationDepartment.name },
-    data: { managerName: admin.name },
+    data: { managerId: admin.id },
   });
 
   console.log('Essential seed completed.');
@@ -123,15 +123,18 @@ async function main() {
           skipDuplicates: true,
         });
 
-        const manager = faker.helpers.arrayElement(users);
+        const managerName = faker.helpers.arrayElement(users).name;
+        const manager = await tx.user.findUnique({
+          where: { name: managerName },
+        });
 
         await tx.department.update({
           where: { name: department.name },
-          data: { managerName: manager.name },
+          data: { managerId: manager!.id },
         });
 
         console.log(
-          `Created department "${department.name}" with ${users.length} users (Manager: "${manager.name}")`,
+          `Created department "${department.name}" with ${users.length} users (Manager: "${managerName}")`,
         );
       });
     }),

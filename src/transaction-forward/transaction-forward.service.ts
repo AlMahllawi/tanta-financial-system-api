@@ -7,7 +7,8 @@ import { UserService } from '../user/user.service.js';
 
 const transactionForward = new TransactionForward();
 transactionForward.status = TransactionForwardStatus.WAITING;
-transactionForward.seen = false;
+transactionForward.senderSeen = true;
+transactionForward.receiverSeen = false;
 transactionForward.forwardedAt = new Date();
 transactionForward.updatedAt = new Date();
 transactionForward.transactionId = 1;
@@ -22,17 +23,15 @@ export class TransactionForwardService {
   ) {
     transactionForward.id = 1;
     transactionForward.status = TransactionForwardStatus.WAITING;
-    transactionForward.receiverName = createTransactionForwardDto.receiverName;
+    transactionForward.receiverId = createTransactionForwardDto.receiverId;
     transactionForward.senderComment =
       createTransactionForwardDto.comment ?? null;
     transactionForward.transactionId = transactionId;
     transactionForward.sender = await this.userService.findOne(
-      createTransactionForwardDto.receiverName != 'AlMahllawi'
-        ? 'AlMahllawi'
-        : 'Yusuf',
+      createTransactionForwardDto.receiverId !== 1 ? 1 : 2,
     );
     transactionForward.receiver = await this.userService.findOne(
-      createTransactionForwardDto.receiverName,
+      createTransactionForwardDto.receiverId,
     );
     return transactionForward;
   }
@@ -51,7 +50,7 @@ export class TransactionForwardService {
     transactionForward.status = updateTransactionForwardDto.status;
     transactionForward.receiverComment =
       updateTransactionForwardDto.comment ?? null;
-    transactionForward.seen = true;
+    transactionForward.receiverSeen = true;
     transactionForward.updatedAt = new Date();
     transactionForward.transactionId = transactionId;
     return transactionForward;

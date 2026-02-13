@@ -6,7 +6,7 @@ const dummyDocument = new Document();
 dummyDocument.id = 1;
 dummyDocument.title = 'Transaction.txt';
 dummyDocument.content = new Uint8Array(Buffer.from('Dummy Text Content'));
-dummyDocument.uploaderName = 'AlMahllawi';
+dummyDocument.uploaderId = 1;
 dummyDocument.uploadedAt = new Date();
 
 @Injectable()
@@ -15,7 +15,7 @@ export class DocumentService {
     ++dummyDocument.id;
     dummyDocument.title = file.originalname;
     dummyDocument.content = new Uint8Array(file.buffer);
-    dummyDocument.uploaderName = 'AlMahllawi';
+    dummyDocument.uploaderId = 1;
     dummyDocument.uploadedAt = new Date();
     return dummyDocument;
   }

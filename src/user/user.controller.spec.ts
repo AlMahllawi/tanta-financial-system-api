@@ -68,59 +68,59 @@ describe('UserController', () => {
   });
 
   describe('findOne', () => {
-    const name = 'Test User';
+    const id = 1;
 
     it('should return a user if found', async () => {
       userService.findOne.mockResolvedValue(new User());
-      await controller.findOne(name);
-      expect(userService.findOne).toHaveBeenCalledWith(name);
+      await controller.findOne(id);
+      expect(userService.findOne).toHaveBeenCalledWith(id);
     });
 
     it('should propagate NotFoundException if user not found', async () => {
       userService.findOne.mockRejectedValue(new NotFoundException());
-      await expect(controller.findOne(name)).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne(id)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('update', () => {
-    const name = 'Test User';
+    const id = 1;
     const updateUserDto: UpdateUserDto = {
       name: 'New Name',
     };
 
     it('should successfully update a user', async () => {
       userService.update.mockResolvedValue(new User());
-      await controller.update(name, updateUserDto);
-      expect(userService.update).toHaveBeenCalledWith(name, updateUserDto);
+      await controller.update(id, updateUserDto);
+      expect(userService.update).toHaveBeenCalledWith(id, updateUserDto);
     });
 
     it('should propagate ConflictException', async () => {
       userService.update.mockRejectedValue(new ConflictException());
-      await expect(controller.update(name, updateUserDto)).rejects.toThrow(
+      await expect(controller.update(id, updateUserDto)).rejects.toThrow(
         ConflictException,
       );
     });
 
     it('should propagate NotFoundException', async () => {
       userService.update.mockRejectedValue(new NotFoundException());
-      await expect(controller.update(name, updateUserDto)).rejects.toThrow(
+      await expect(controller.update(id, updateUserDto)).rejects.toThrow(
         NotFoundException,
       );
     });
   });
 
   describe('remove', () => {
-    const name = 'Test User';
+    const id = 1;
 
     it('should successfully remove a user', async () => {
       userService.remove.mockResolvedValue(new User());
-      await controller.remove(name);
-      expect(userService.remove).toHaveBeenCalledWith(name);
+      await controller.remove(id);
+      expect(userService.remove).toHaveBeenCalledWith(id);
     });
 
     it('should propagate NotFoundException', async () => {
       userService.remove.mockRejectedValue(new NotFoundException());
-      await expect(controller.remove(name)).rejects.toThrow(NotFoundException);
+      await expect(controller.remove(id)).rejects.toThrow(NotFoundException);
     });
   });
 });

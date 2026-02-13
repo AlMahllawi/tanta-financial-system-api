@@ -19,20 +19,23 @@ export class TransactionForward implements TransactionForwardModel {
 
   @Exclude()
   @ApiHideProperty()
-  senderName: string;
+  senderId: number;
 
   @ApiProperty({ type: () => User })
   sender: User;
 
   @Exclude()
   @ApiHideProperty()
-  receiverName: string;
+  receiverId: number;
 
   @ApiProperty({ type: () => User })
   receiver: User;
 
   @ApiProperty()
-  seen: boolean;
+  senderSeen: boolean;
+
+  @ApiProperty()
+  receiverSeen: boolean;
 
   @ApiProperty()
   forwardedAt: Date;

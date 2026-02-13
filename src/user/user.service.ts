@@ -66,14 +66,14 @@ export class UserService {
     return plainToInstance(User, users);
   }
 
-  async findOne(name: string) {
+  async findOne(id: number) {
     const user = await this.prisma.user.findUnique({
-      where: { name },
+      where: { id },
     });
 
     if (!user)
       throw new NotFoundException({
-        message: { key: ErrorCode.USER_NOT_FOUND, args: { name } },
+        message: { key: ErrorCode.USER_NOT_FOUND, args: { id } },
         statusCode: 404,
         error: 'Not Found',
       });
@@ -89,7 +89,7 @@ export class UserService {
     return user;
   }
 
-  async update(name: string, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto) {
     const { password, ...data } = updateUserDto;
     const updateData = {
       ...data,
@@ -98,7 +98,7 @@ export class UserService {
 
     try {
       const user = await this.prisma.user.update({
-        where: { name },
+        where: { id },
         data: updateData,
       });
 
@@ -119,7 +119,7 @@ export class UserService {
         });
       if (error.code === 'P2025')
         throw new NotFoundException({
-          message: { key: ErrorCode.USER_NOT_FOUND, args: { name } },
+          message: { key: ErrorCode.USER_NOT_FOUND, args: { id } },
           statusCode: 404,
           error: 'Not Found',
         });
@@ -139,10 +139,10 @@ export class UserService {
     }
   }
 
-  async remove(name: string) {
+  async remove(id: number) {
     try {
       const user = await this.prisma.user.delete({
-        where: { name },
+        where: { id },
       });
 
       return plainToInstance(User, user);
@@ -150,7 +150,7 @@ export class UserService {
       if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
       if (error.code === 'P2025')
         throw new NotFoundException({
-          message: { key: ErrorCode.USER_NOT_FOUND, args: { name } },
+          message: { key: ErrorCode.USER_NOT_FOUND, args: { id } },
           statusCode: 404,
           error: 'Not Found',
         });

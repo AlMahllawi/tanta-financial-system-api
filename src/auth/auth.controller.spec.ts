@@ -44,6 +44,7 @@ describe('AuthController', () => {
     };
 
     const authenticatedUser = plainToInstance(User, {
+      id: 1,
       name: 'testuser',
       role: UserRole.USER,
       departmentName: 'Test Dept',
@@ -83,6 +84,7 @@ describe('AuthController', () => {
   describe('refresh', () => {
     it('should return new tokens for valid refresh token', async () => {
       const refreshUser = plainToInstance(User, {
+        id: 1,
         name: 'testuser',
         role: UserRole.USER,
         departmentName: 'Test Dept',

@@ -58,6 +58,7 @@ describe('AuthService', () => {
     const name = 'testuser';
     const pass = 'password123';
     const userBase = {
+      id: 1,
       name,
       role: UserRole.USER,
       departmentName: 'Test Department',
@@ -112,6 +113,7 @@ describe('AuthService', () => {
   describe('login', () => {
     it('should return access and refresh tokens', () => {
       const user = plainToInstance(User, {
+        id: 1,
         name: 'testuser',
         role: UserRole.USER,
         departmentName: 'Test Dept',
@@ -129,7 +131,7 @@ describe('AuthService', () => {
       const result = service.login(user);
 
       expect(jwtServiceMock.sign).toHaveBeenCalledWith({
-        name: user.name,
+        id: user.id,
       });
 
       expect(result).toEqual({
@@ -143,13 +145,14 @@ describe('AuthService', () => {
   describe('refresh', () => {
     it('should return new token pair for valid refresh token', async () => {
       const payload = {
-        name: 'testuser',
+        id: 1,
         iat: 1234567890,
         exp: 1234567890,
       };
       const accessToken = 'new-access-token';
       const refreshToken = 'new-refresh-token';
       const userFromDb = plainToInstance(User, {
+        id: 1,
         name: 'testuser',
         role: UserRole.USER,
         departmentName: 'Test Dept',
@@ -171,7 +174,7 @@ describe('AuthService', () => {
         'valid-refresh-token',
         { secret: 'refresh-secret' },
       );
-      expect(userServiceMock.findOne).toHaveBeenCalledWith('testuser');
+      expect(userServiceMock.findOne).toHaveBeenCalledWith(1);
       expect(result).toEqual({
         access_token: accessToken,
         refresh_token: refreshToken,

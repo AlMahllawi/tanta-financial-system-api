@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class CreateTransactionForwardDto {
   @ApiProperty()
-  @IsString()
-  receiverName: string;
+  @IsInt()
+  receiverId: number;
 
   @ApiPropertyOptional()
   @IsString()

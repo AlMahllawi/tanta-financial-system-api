@@ -6,5 +6,5 @@ export class TransactionType implements TransactionTypeModel {
   name: string;
 
   @ApiProperty()
-  creatorName: string;
+  creatorId: number;
 }

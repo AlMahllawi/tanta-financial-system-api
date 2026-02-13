@@ -9,6 +9,7 @@ CREATE TYPE "TransactionForwardStatus" AS ENUM ('WAITING', 'NEEDS_EDITING', 'REJ
 
 -- CreateTable
 CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "hashedPassword" TEXT NOT NULL,
     "departmentName" TEXT NOT NULL,
@@ -17,13 +18,13 @@ CREATE TABLE "User" (
     "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "lastLogin" TIMESTAMPTZ,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("name")
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Department" (
     "name" TEXT NOT NULL,
-    "managerName" TEXT,
+    "managerId" INTEGER,
 
     CONSTRAINT "Department_pkey" PRIMARY KEY ("name")
 );
@@ -33,7 +34,7 @@ CREATE TABLE "Document" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "content" BYTEA NOT NULL,
-    "uploaderName" TEXT NOT NULL,
+    "uploaderId" INTEGER NOT NULL,
     "uploadedAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Document_pkey" PRIMARY KEY ("id")
@@ -47,7 +48,7 @@ CREATE TABLE "Transaction" (
     "typeName" TEXT NOT NULL,
     "fulfilled" BOOLEAN NOT NULL DEFAULT false,
     "priority" "TransactionPriority" NOT NULL DEFAULT 'LOW',
-    "creatorName" TEXT NOT NULL,
+    "creatorId" INTEGER NOT NULL,
     "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Transaction_pkey" PRIMARY KEY ("id")
@@ -56,7 +57,7 @@ CREATE TABLE "Transaction" (
 -- CreateTable
 CREATE TABLE "TransactionType" (
     "name" TEXT NOT NULL,
-    "creatorName" TEXT NOT NULL,
+    "creatorId" INTEGER NOT NULL,
 
     CONSTRAINT "TransactionType_pkey" PRIMARY KEY ("name")
 );
@@ -67,9 +68,10 @@ CREATE TABLE "TransactionForward" (
     "status" "TransactionForwardStatus" NOT NULL DEFAULT 'WAITING',
     "senderComment" TEXT,
     "receiverComment" TEXT,
-    "senderName" TEXT NOT NULL,
-    "receiverName" TEXT NOT NULL,
-    "seen" BOOLEAN NOT NULL DEFAULT false,
+    "senderId" INTEGER NOT NULL,
+    "receiverId" INTEGER NOT NULL,
+    "senderSeen" BOOLEAN NOT NULL DEFAULT true,
+    "receiverSeen" BOOLEAN NOT NULL DEFAULT false,
     "forwardedAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ NOT NULL,
     "transactionId" INTEGER NOT NULL,
@@ -81,41 +83,44 @@ CREATE TABLE "TransactionForward" (
 CREATE TABLE "TransactionDocument" (
     "transactionId" INTEGER NOT NULL,
     "documentId" INTEGER NOT NULL,
-    "attachedBy" TEXT NOT NULL,
+    "attachedBy" INTEGER NOT NULL,
     "attachedAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "TransactionDocument_pkey" PRIMARY KEY ("transactionId","documentId")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Department_managerName_key" ON "Department"("managerName");
+CREATE UNIQUE INDEX "User_name_key" ON "User"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Department_managerId_key" ON "Department"("managerId");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_departmentName_fkey" FOREIGN KEY ("departmentName") REFERENCES "Department"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Department" ADD CONSTRAINT "Department_managerName_fkey" FOREIGN KEY ("managerName") REFERENCES "User"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Department" ADD CONSTRAINT "Department_managerId_fkey" FOREIGN KEY ("managerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Document" ADD CONSTRAINT "Document_uploaderName_fkey" FOREIGN KEY ("uploaderName") REFERENCES "User"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Document" ADD CONSTRAINT "Document_uploaderId_fkey" FOREIGN KEY ("uploaderId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_typeName_fkey" FOREIGN KEY ("typeName") REFERENCES "TransactionType"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_creatorName_fkey" FOREIGN KEY ("creatorName") REFERENCES "User"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionType" ADD CONSTRAINT "TransactionType_creatorName_fkey" FOREIGN KEY ("creatorName") REFERENCES "User"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TransactionType" ADD CONSTRAINT "TransactionType_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_transactionId_fkey" FOREIGN KEY ("transactionId") REFERENCES "Transaction"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_senderName_fkey" FOREIGN KEY ("senderName") REFERENCES "User"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_receiverName_fkey" FOREIGN KEY ("receiverName") REFERENCES "User"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_transactionId_fkey" FOREIGN KEY ("transactionId") REFERENCES "Transaction"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -124,4 +129,4 @@ ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_transactio
 ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_documentId_fkey" FOREIGN KEY ("documentId") REFERENCES "Document"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_attachedBy_fkey" FOREIGN KEY ("attachedBy") REFERENCES "User"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_attachedBy_fkey" FOREIGN KEY ("attachedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

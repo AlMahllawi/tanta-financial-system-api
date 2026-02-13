@@ -8,6 +8,7 @@ import {
   Delete,
   HttpStatus,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service.js';
@@ -55,7 +56,7 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':name')
+  @Get(':id')
   @ApiOperation({ summary: 'Retrieve a user' })
   @ApiResponses(
     {
@@ -65,16 +66,16 @@ export class UserController {
     },
     {
       status: HttpStatus.NOT_FOUND,
-      description: 'No user was found with such name',
+      description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
-      args: { name: 'John Doe' },
+      args: { id: 1 },
     },
   )
-  findOne(@Param('name') name: string) {
-    return this.userService.findOne(name);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.findOne(id);
   }
 
-  @Patch(':name')
+  @Patch(':id')
   @ApiOperation({ summary: 'Update a user' })
   @ApiResponses(
     {
@@ -90,16 +91,19 @@ export class UserController {
     },
     {
       status: HttpStatus.NOT_FOUND,
-      description: 'No user was found with such name',
+      description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
-      args: { name: 'John Doe' },
+      args: { id: 1 },
     },
   )
-  update(@Param('name') name: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(name, updateUserDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.update(id, updateUserDto);
   }
 
-  @Delete(':name')
+  @Delete(':id')
   @ApiOperation({ summary: 'Delete a user' })
   @ApiResponses(
     {
@@ -109,12 +113,12 @@ export class UserController {
     },
     {
       status: HttpStatus.NOT_FOUND,
-      description: 'No user was found with such name',
+      description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
-      args: { name: 'John Doe' },
+      args: { id: 1 },
     },
   )
-  remove(@Param('name') name: string) {
-    return this.userService.remove(name);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.remove(id);
   }
 }

@@ -17,7 +17,7 @@ export class Document implements DocumentModel {
   uploadedAt: Date;
 
   @ApiProperty()
-  uploaderName: string;
+  uploaderId: number;
 
   @ApiProperty()
   downloadURI: string; // TODO: replace with downloadURL for separated storage rather than database
