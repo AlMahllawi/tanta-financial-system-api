@@ -48,33 +48,61 @@ function isErrorResponse(def: ApiResponseDef): def is ErrorResponseDef {
 export function ApiResponses(...responses: ApiResponseDef[]) {
   const hasErrors = responses.some(isErrorResponse);
 
-  const decorators = responses.map((response) => {
-    if (isErrorResponse(response)) {
-      return ApiResponse({
-        status: response.status,
-        description: response.description,
-        content: {
-          'application/json': {
-            schema: { $ref: getSchemaPath(HttpExceptionResponse) },
-            example: {
-              statusCode: response.status,
-              message: {
-                key: response.errorCode,
-                ...(response.args && { args: response.args }),
-              },
-              error: STATUS_CODES[response.status] ?? 'Unknown Error',
-            },
-          },
-        },
-      });
-    }
+  const errorsByStatus = new Map<number, ErrorResponseDef[]>();
+  const successResponses: SuccessResponseDef[] = [];
 
-    return ApiResponse({
+  for (const response of responses) {
+    if (isErrorResponse(response)) {
+      const group = errorsByStatus.get(response.status) ?? [];
+      group.push(response);
+      errorsByStatus.set(response.status, group);
+    } else {
+      successResponses.push(response);
+    }
+  }
+
+  const decorators = successResponses.map((response) =>
+    ApiResponse({
       status: response.status,
       type: response.type,
       description: response.description,
-    });
+    }),
+  );
+
+  const _example = (status: number, error: ErrorResponseDef) => ({
+    statusCode: status,
+    message: {
+      key: error.errorCode,
+      ...(error.args && { args: error.args }),
+    },
+    error: STATUS_CODES[status] ?? 'Unknown Error',
   });
+
+  for (const [status, errors] of errorsByStatus) {
+    const isSingle = errors.length === 1;
+
+    decorators.push(
+      ApiResponse({
+        status,
+        description: isSingle ? errors[0].description : undefined,
+        content: {
+          'application/json': {
+            schema: { $ref: getSchemaPath(HttpExceptionResponse) },
+            ...(isSingle
+              ? { example: _example(status, errors[0]) }
+              : {
+                  examples: Object.fromEntries(
+                    errors.map((e) => [
+                      e.errorCode,
+                      { summary: e.description, value: _example(status, e) },
+                    ]),
+                  ),
+                }),
+          },
+        },
+      }),
+    );
+  }
 
   if (hasErrors) {
     decorators.push(ApiExtraModels(HttpExceptionResponse));
