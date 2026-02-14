@@ -3,7 +3,7 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../../prisma/generated/client.js';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { CreateUserDto } from './dto/create-user.dto.js';

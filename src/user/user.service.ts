@@ -8,7 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.js';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../../prisma/generated/client.js';
 import { plainToInstance } from 'class-transformer';
 import { hash } from 'argon2';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
