@@ -1,7 +1,7 @@
 import { TransactionForwardStatus } from '../../../prisma/generated/enums.js';
 import { TransactionForwardModel } from '../../../prisma/generated/models.js';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import { User } from '../../user/entities/user.entity.js';
 
 export class TransactionForward implements TransactionForwardModel {
@@ -11,10 +11,10 @@ export class TransactionForward implements TransactionForwardModel {
   @ApiProperty({ enum: TransactionForwardStatus })
   status: TransactionForwardStatus;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ type: String, nullable: true })
   senderComment: string | null;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ type: String, nullable: true })
   receiverComment: string | null;
 
   @Exclude()
@@ -22,6 +22,7 @@ export class TransactionForward implements TransactionForwardModel {
   senderId: number;
 
   @ApiProperty({ type: () => User })
+  @Type(() => User)
   sender: User;
 
   @Exclude()
@@ -29,6 +30,7 @@ export class TransactionForward implements TransactionForwardModel {
   receiverId: number;
 
   @ApiProperty({ type: () => User })
+  @Type(() => User)
   receiver: User;
 
   @ApiProperty()
