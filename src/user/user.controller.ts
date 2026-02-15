@@ -18,21 +18,29 @@ import { User } from './entities/user.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiResponses } from '../common/decorators/http.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { Roles } from '../common/decorators/roles.decorator.js';
+import { UserRole } from '../../prisma/generated/enums.js';
 
 @ApiTags('Users')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponses(
     {
       status: HttpStatus.CREATED,
       type: User,
       description: 'User created successfully',
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Forbidden resource',
     },
     {
       status: HttpStatus.CONFLICT,
