@@ -23,7 +23,7 @@ export class User implements UserModel {
   @ApiProperty({ enum: UserRole })
   role: UserRole;
 
-  @ApiProperty({ nullable: true })
+  @ApiProperty({ type: Date, nullable: true })
   lastLogin: Date | null;
 
   @ApiProperty()
