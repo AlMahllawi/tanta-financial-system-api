@@ -250,4 +250,71 @@ export class TransactionService {
       throw error;
     }
   }
+
+  async attachDocument(
+    transactionId: number,
+    documentId: number,
+    userId: number,
+  ) {
+    try {
+      await this.prisma.transactionDocument.create({
+        data: {
+          transactionId,
+          documentId,
+          attachedBy: userId,
+        },
+      });
+
+      return this.findOne(transactionId);
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
+      if (
+        error.code === 'P2003' &&
+        JSON.stringify(error.meta).includes('transactionId')
+      )
+        throw new NotFoundException({
+          message: {
+            key: ErrorCode.TRANSACTION_NOT_FOUND,
+            args: { id: transactionId },
+          },
+          statusCode: 404,
+          error: 'Not Found',
+        });
+      if (
+        error.code === 'P2003' &&
+        JSON.stringify(error.meta).includes('documentId')
+      )
+        throw new NotFoundException({
+          message: {
+            key: ErrorCode.DOCUMENT_NOT_FOUND,
+            args: { id: documentId },
+          },
+          statusCode: 404,
+          error: 'Not Found',
+        });
+      // Ignore unique constraint violation (already attached)
+      if (error.code === 'P2002') return this.findOne(transactionId);
+      throw error;
+    }
+  }
+
+  async detachDocument(transactionId: number, documentId: number) {
+    try {
+      await this.prisma.transactionDocument.delete({
+        where: {
+          transactionId_documentId: {
+            transactionId,
+            documentId,
+          },
+        },
+      });
+
+      return this.findOne(transactionId);
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
+      // If the relationship doesn't exist, we can consider it detached and return the transaction
+      if (error.code === 'P2025') return this.findOne(transactionId);
+      throw error;
+    }
+  }
 }

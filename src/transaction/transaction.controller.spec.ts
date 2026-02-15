@@ -97,4 +97,34 @@ describe('TransactionController', () => {
       expect(transactionService.remove).toHaveBeenCalledWith(id);
     });
   });
+
+  describe('attachDocument', () => {
+    const transactionId = 1;
+    const documentId = 2;
+    const userId = 3;
+
+    it('should attach a document successfully', async () => {
+      transactionService.attachDocument.mockResolvedValue(new Transaction());
+      await controller.attachDocument(transactionId, documentId, userId);
+      expect(transactionService.attachDocument).toHaveBeenCalledWith(
+        transactionId,
+        documentId,
+        userId,
+      );
+    });
+  });
+
+  describe('detachDocument', () => {
+    const transactionId = 1;
+    const documentId = 2;
+
+    it('should detach a document successfully', async () => {
+      transactionService.detachDocument.mockResolvedValue(new Transaction());
+      await controller.detachDocument(transactionId, documentId);
+      expect(transactionService.detachDocument).toHaveBeenCalledWith(
+        transactionId,
+        documentId,
+      );
+    });
+  });
 });

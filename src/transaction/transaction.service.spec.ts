@@ -138,11 +138,15 @@ describe('TransactionService', () => {
         {
           code: 'P2003',
           clientVersion: '4.0.0',
-          meta: { field_name: 'transactionDocument_documentId_fkey' },
+          meta: { field_name: 'TransactionDocument_documentId_fkey' },
         },
       );
 
       prismaMock.transaction.create.mockRejectedValue(error);
+      prismaMock.document.findMany.mockResolvedValue([
+        { id: 1 },
+        { id: 2 },
+      ] as any);
 
       await expect(service.create(creatorId, dtoWithDocs)).rejects.toThrow(
         NotFoundException,
@@ -328,6 +332,130 @@ describe('TransactionService', () => {
       prismaMock.transaction.delete.mockRejectedValue(error);
 
       await expect(service.remove(id)).rejects.toThrow(error);
+    });
+  });
+
+  describe('attachDocument', () => {
+    const transactionId = 1;
+    const documentId = 2;
+    const userId = 3;
+
+    it('should attach a document successfully', async () => {
+      prismaMock.transactionDocument.create.mockResolvedValue({} as any);
+      prismaMock.transaction.findUnique.mockResolvedValue(
+        transactionWithDocs as any,
+      );
+
+      const result = await service.attachDocument(
+        transactionId,
+        documentId,
+        userId,
+      );
+
+      expect(prismaMock.transactionDocument.create).toHaveBeenCalledWith({
+        data: {
+          transactionId,
+          documentId,
+          attachedBy: userId,
+        },
+      });
+      expect(result).toBeInstanceOf(Transaction);
+    });
+
+    it('should throw NotFoundException if transaction not found', async () => {
+      const error = new Prisma.PrismaClientKnownRequestError(
+        'Foreign key constraint failed',
+        {
+          code: 'P2003',
+          clientVersion: '4.0.0',
+          meta: { field_name: 'transactionId' },
+        },
+      );
+      prismaMock.transactionDocument.create.mockRejectedValue(error);
+
+      await expect(
+        service.attachDocument(transactionId, documentId, userId),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw NotFoundException if document not found', async () => {
+      const error = new Prisma.PrismaClientKnownRequestError(
+        'Foreign key constraint failed',
+        {
+          code: 'P2003',
+          clientVersion: '4.0.0',
+          meta: { field_name: 'documentId' },
+        },
+      );
+      prismaMock.transactionDocument.create.mockRejectedValue(error);
+
+      await expect(
+        service.attachDocument(transactionId, documentId, userId),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should handle already attached documents gracefully', async () => {
+      const error = new Prisma.PrismaClientKnownRequestError(
+        'Unique constraint violation',
+        {
+          code: 'P2002',
+          clientVersion: '4.0.0',
+        },
+      );
+      prismaMock.transactionDocument.create.mockRejectedValue(error);
+      prismaMock.transaction.findUnique.mockResolvedValue(
+        transactionWithDocs as any,
+      );
+
+      const result = await service.attachDocument(
+        transactionId,
+        documentId,
+        userId,
+      );
+
+      expect(result).toBeInstanceOf(Transaction);
+    });
+  });
+
+  describe('detachDocument', () => {
+    const transactionId = 1;
+    const documentId = 2;
+
+    it('should detach a document successfully', async () => {
+      prismaMock.transactionDocument.delete.mockResolvedValue({} as any);
+      prismaMock.transaction.findUnique.mockResolvedValue(
+        transactionWithDocs as any,
+      );
+
+      const result = await service.detachDocument(transactionId, documentId);
+
+      expect(prismaMock.transactionDocument.delete).toHaveBeenCalledWith({
+        where: {
+          transactionId_documentId: {
+            transactionId,
+            documentId,
+          },
+        },
+      });
+      expect(result).toBeInstanceOf(Transaction);
+    });
+
+    it('should handle not attached documents gracefully', async () => {
+      const error = new Prisma.PrismaClientKnownRequestError(
+        'Record not found',
+        {
+          code: 'P2025',
+          clientVersion: '4.0.0',
+        },
+      );
+      prismaMock.transactionDocument.delete.mockRejectedValue(error);
+      prismaMock.transaction.findUnique.mockResolvedValue(
+        transactionWithDocs as any,
+      );
+
+      const result = await service.detachDocument(transactionId, documentId);
+
+      expect(result).toBeInstanceOf(Transaction);
     });
   });
 });

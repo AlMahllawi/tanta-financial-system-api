@@ -9,6 +9,7 @@ import {
   HttpStatus,
   UseGuards,
   ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
@@ -136,5 +137,48 @@ export class TransactionController {
   )
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.transactionService.remove(id);
+  }
+  @Post(':id/document/:documentId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Attach a document to a transaction' })
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: Transaction,
+      description: 'Document attached to transaction successfully',
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No transaction was found with such id',
+      errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
+      args: { id: 1 },
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No document was found with such id',
+      errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
+      args: { id: 1 },
+    },
+  )
+  attachDocument(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('documentId', ParseIntPipe) documentId: number,
+    @CurrentUser('id') userId: number,
+  ) {
+    return this.transactionService.attachDocument(id, documentId, userId);
+  }
+
+  @Delete(':id/document/:documentId')
+  @ApiOperation({ summary: 'Detach a document from a transaction' })
+  @ApiResponses({
+    status: HttpStatus.OK,
+    type: Transaction,
+    description: 'Document detached from transaction successfully',
+  })
+  detachDocument(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('documentId', ParseIntPipe) documentId: number,
+  ) {
+    return this.transactionService.detachDocument(id, documentId);
   }
 }
