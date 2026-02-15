@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { Prisma } from '../../prisma/generated/client.js';
 import { plainToInstance } from 'class-transformer';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { getDownloadURI } from '../common/utils/document.util.js';
 
 @Injectable()
 export class DocumentService {
@@ -21,7 +22,7 @@ export class DocumentService {
 
       return plainToInstance(Document, {
         ...document,
-        downloadURI: `/documents/${document.id}/download`,
+        downloadURI: getDownloadURI(document.id),
       });
     } catch (error) {
       if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
@@ -51,7 +52,7 @@ export class DocumentService {
       Document,
       documents.map((doc) => ({
         ...doc,
-        downloadURI: `/documents/${doc.id}/download`,
+        downloadURI: getDownloadURI(doc.id),
       })),
     );
   }
@@ -70,7 +71,7 @@ export class DocumentService {
 
     return plainToInstance(Document, {
       ...document,
-      downloadURI: `/documents/${document.id}/download`,
+      downloadURI: getDownloadURI(document.id),
     });
   }
 
@@ -82,7 +83,7 @@ export class DocumentService {
 
       return plainToInstance(Document, {
         ...document,
-        downloadURI: `/documents/${document.id}/download`,
+        downloadURI: getDownloadURI(document.id),
       });
     } catch (error) {
       if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;

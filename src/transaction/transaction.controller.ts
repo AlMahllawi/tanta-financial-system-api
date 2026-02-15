@@ -6,17 +6,19 @@ import {
   Patch,
   Param,
   Delete,
-  HttpCode,
   HttpStatus,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Transaction } from './entities/transaction.entity.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiResponses } from '../common/decorators/http.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { CurrentUser } from '../common/decorators/current-user.decorator.js';
 
 @ApiTags('Transactions')
 @ApiBearerAuth()
@@ -27,13 +29,36 @@ export class TransactionController {
 
   @Post()
   @ApiOperation({ summary: 'Create a transaction' })
-  @ApiResponses({
-    status: HttpStatus.CREATED,
-    type: Transaction,
-    description: 'Transaction created successfully',
-  })
-  create(@Body() createTransactionDto: CreateTransactionDto) {
-    return this.transactionService.create(createTransactionDto);
+  @ApiResponses(
+    {
+      status: HttpStatus.CREATED,
+      type: Transaction,
+      description: 'Transaction created successfully',
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'Transaction type not found',
+      errorCode: ErrorCode.TRANSACTION_TYPE_FK_NOT_FOUND,
+      args: { typeName: 'Unknown Type' },
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'Transaction creator not found',
+      errorCode: ErrorCode.TRANSACTION_CREATOR_NOT_FOUND,
+      args: { creatorId: 1 },
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'One or more documents not found',
+      errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
+      args: { id: '1, 2' },
+    },
+  )
+  create(
+    @Body() createTransactionDto: CreateTransactionDto,
+    @CurrentUser('id') creatorId: number,
+  ) {
+    return this.transactionService.create(creatorId, createTransactionDto);
   }
 
   @Get()
@@ -49,66 +74,67 @@ export class TransactionController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a transaction by ID' })
-  @ApiResponses({
-    status: HttpStatus.OK,
-    type: Transaction,
-    description: 'Transaction retrieved successfully',
-  })
-  findOne(@Param('id') id: string) {
-    return this.transactionService.findOne(+id);
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: Transaction,
+      description: 'Transaction retrieved successfully',
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No transaction was found with such id',
+      errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
+      args: { id: 1 },
+    },
+  )
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.transactionService.findOne(id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a transaction by ID' })
-  @ApiResponses({
-    status: HttpStatus.OK,
-    type: Transaction,
-    description: 'Transaction updated successfully',
-  })
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: Transaction,
+      description: 'Transaction updated successfully',
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No transaction was found with such id',
+      errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
+      args: { id: 1 },
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'Transaction type not found',
+      errorCode: ErrorCode.TRANSACTION_TYPE_FK_NOT_FOUND,
+      args: { typeName: 'Unknown Type' },
+    },
+  )
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
-    return this.transactionService.update(+id, updateTransactionDto);
+    return this.transactionService.update(id, updateTransactionDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a transaction by ID' })
-  @ApiResponses({
-    status: HttpStatus.OK,
-    type: Transaction,
-    description: 'Transaction deleted successfully',
-  })
-  remove(@Param('id') id: string) {
-    return this.transactionService.remove(+id);
-  }
-
-  @Post(':id/document/:documentId')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Attach a document to a transaction' })
-  @ApiResponses({
-    status: HttpStatus.OK,
-    type: Transaction,
-    description: 'Document attached to transaction successfully',
-  })
-  attachDocument(
-    @Param('id') id: string,
-    @Param('documentId') documentId: string,
-  ) {
-    return this.transactionService.attachDocument(+id, +documentId);
-  }
-
-  @Delete(':id/document/:documentId')
-  @ApiOperation({ summary: 'Detach a document from a transaction' })
-  @ApiResponses({
-    status: HttpStatus.OK,
-    type: Transaction,
-    description: 'Document detached from transaction successfully',
-  })
-  detachDocument(
-    @Param('id') id: string,
-    @Param('documentId') documentId: string,
-  ) {
-    return this.transactionService.detachDocument(+id, +documentId);
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: Transaction,
+      description: 'Transaction deleted successfully',
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No transaction was found with such id',
+      errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
+      args: { id: 1 },
+    },
+  )
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.transactionService.remove(id);
   }
 }
