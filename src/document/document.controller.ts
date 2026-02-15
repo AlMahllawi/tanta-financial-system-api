@@ -12,8 +12,8 @@ import {
   StreamableFile,
   Res,
   HttpStatus,
-  NotFoundException,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { contentType } from 'mime-types';
@@ -27,8 +27,10 @@ import {
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Document } from './entities/document.entity.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiResponses } from '../common/decorators/http.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { CurrentUser } from '../common/decorators/current-user.decorator.js';
 
 @ApiTags('Documents')
 @ApiBearerAuth()
@@ -66,8 +68,9 @@ export class DocumentController {
       }),
     )
     file: Express.Multer.File,
+    @CurrentUser('id') uploaderId: number,
   ) {
-    return this.documentService.create(file);
+    return this.documentService.create(uploaderId, file);
   }
 
   @Get('uploaded')
@@ -77,32 +80,48 @@ export class DocumentController {
     type: [Document],
     description: 'Documents retrieved successfully',
   })
-  findAll() {
-    return this.documentService.findAll();
+  findAll(@CurrentUser('id') uploaderId: number) {
+    return this.documentService.findAll(uploaderId);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a document by ID' })
-  @ApiResponses({
-    status: HttpStatus.OK,
-    type: Document,
-    description: 'Document retrieved successfully',
-  })
-  findOne(@Param('id') id: string) {
-    return this.documentService.findOne(+id);
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: Document,
+      description: 'Document retrieved successfully',
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No document was found with such id',
+      errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
+      args: { id: 1 },
+    },
+  )
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.documentService.findOne(id);
   }
 
   @Get(':id/download')
   @ApiOperation({ summary: 'Download a document' })
-  download(
-    @Param('id') id: string,
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      description: 'Document downloaded successfully',
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No document was found with such id',
+      errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
+      args: { id: 1 },
+    },
+  )
+  async download(
+    @Param('id', ParseIntPipe) id: number,
     @Res({ passthrough: true }) res: Response,
-  ): StreamableFile {
-    const document = this.documentService.findOne(+id);
-
-    if (!document) {
-      throw new NotFoundException('Document not found');
-    }
+  ): Promise<StreamableFile> {
+    const document = await this.documentService.findOne(id);
 
     res.set({
       'Content-Type': contentType(document.title) || 'application/octet-stream',
@@ -114,12 +133,20 @@ export class DocumentController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a document by ID' })
-  @ApiResponses({
-    status: HttpStatus.OK,
-    type: Document,
-    description: 'Document deleted successfully',
-  })
-  remove(@Param('id') id: string) {
-    return this.documentService.remove(+id);
+  @ApiResponses(
+    {
+      status: HttpStatus.OK,
+      type: Document,
+      description: 'Document deleted successfully',
+    },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No document was found with such id',
+      errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
+      args: { id: 1 },
+    },
+  )
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.documentService.remove(id);
   }
 }

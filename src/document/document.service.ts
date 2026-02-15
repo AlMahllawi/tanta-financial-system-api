@@ -1,39 +1,98 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Document } from './entities/document.entity.js';
-import { instanceToInstance } from 'class-transformer';
-
-const dummyDocument = new Document();
-dummyDocument.id = 1;
-dummyDocument.title = 'Transaction.txt';
-dummyDocument.content = new Uint8Array(Buffer.from('Dummy Text Content'));
-dummyDocument.uploaderId = 1;
-dummyDocument.uploadedAt = new Date();
+import { PrismaService } from '../prisma/prisma.service.js';
+import { Prisma } from '../../prisma/generated/client.js';
+import { plainToInstance } from 'class-transformer';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
 
 @Injectable()
 export class DocumentService {
-  create(file: Express.Multer.File) {
-    ++dummyDocument.id;
-    dummyDocument.title = file.originalname;
-    dummyDocument.content = new Uint8Array(file.buffer);
-    dummyDocument.uploaderId = 1;
-    dummyDocument.uploadedAt = new Date();
-    return dummyDocument;
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(uploaderId: number, file: Express.Multer.File) {
+    try {
+      const document = await this.prisma.document.create({
+        data: {
+          title: file.originalname,
+          content: Buffer.from(file.buffer),
+          uploaderId,
+        },
+      });
+
+      return plainToInstance(Document, {
+        ...document,
+        downloadURI: `/documents/${document.id}/download`,
+      });
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
+      if (
+        error.code === 'P2003' &&
+        (error.meta?.field_name as string).includes('uploaderId')
+      )
+        throw new NotFoundException({
+          message: {
+            key: ErrorCode.DOCUMENT_UPLOADER_NOT_FOUND,
+            args: { uploaderId },
+          },
+          statusCode: 404,
+          error: 'Not Found',
+        });
+      throw error;
+    }
   }
 
-  findAll() {
-    return [dummyDocument];
+  // TODO: paginate, filters
+  async findAll(uploaderId: number) {
+    const documents = await this.prisma.document.findMany({
+      where: { uploaderId },
+    });
+
+    return plainToInstance(
+      Document,
+      documents.map((doc) => ({
+        ...doc,
+        downloadURI: `/documents/${doc.id}/download`,
+      })),
+    );
   }
 
-  findOne(id: number) {
-    const document = instanceToInstance(dummyDocument);
-    document.content = dummyDocument.content;
-    document.id = id;
-    document.downloadURI = `/documents/${id}/download`;
-    return document;
+  async findOne(id: number) {
+    const document = await this.prisma.document.findUnique({
+      where: { id },
+    });
+
+    if (!document)
+      throw new NotFoundException({
+        message: { key: ErrorCode.DOCUMENT_NOT_FOUND, args: { id } },
+        statusCode: 404,
+        error: 'Not Found',
+      });
+
+    return plainToInstance(Document, {
+      ...document,
+      downloadURI: `/documents/${document.id}/download`,
+    });
   }
 
-  remove(id: number) {
-    dummyDocument.id = id;
-    return dummyDocument;
+  async remove(id: number) {
+    try {
+      const document = await this.prisma.document.delete({
+        where: { id },
+      });
+
+      return plainToInstance(Document, {
+        ...document,
+        downloadURI: `/documents/${document.id}/download`,
+      });
+    } catch (error) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
+      if (error.code === 'P2025')
+        throw new NotFoundException({
+          message: { key: ErrorCode.DOCUMENT_NOT_FOUND, args: { id } },
+          statusCode: 404,
+          error: 'Not Found',
+        });
+      throw error;
+    }
   }
 }
