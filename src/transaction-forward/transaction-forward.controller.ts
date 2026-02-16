@@ -78,9 +78,9 @@ export class TransactionForwardController {
     },
   )
   create(
+    @CurrentUser('id') senderId: number,
     @Param('transactionId', ParseIntPipe) transactionId: number,
     @Body() createTransactionForwardDto: CreateTransactionForwardDto,
-    @CurrentUser('id') senderId: number,
   ) {
     return this.transactionForwardService.create(
       senderId,

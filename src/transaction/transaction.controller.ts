@@ -77,8 +77,8 @@ export class TransactionController {
     },
   )
   create(
-    @Body() createTransactionDto: CreateTransactionDto,
     @CurrentUser('id') creatorId: number,
+    @Body() createTransactionDto: CreateTransactionDto,
   ) {
     return this.transactionService.create(creatorId, createTransactionDto);
   }
@@ -206,6 +206,7 @@ export class TransactionController {
     @Param('id', ParseIntPipe) id: number,
     @Param('documentId', ParseIntPipe) documentId: number,
   ) {
+    // TODO: deny if not attacher
     return this.transactionService.detachDocument(id, documentId);
   }
 }

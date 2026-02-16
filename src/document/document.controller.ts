@@ -73,6 +73,7 @@ export class DocumentController {
   })
   @UseInterceptors(FileInterceptor('file'))
   create(
+    @CurrentUser('id') uploaderId: number,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -83,7 +84,6 @@ export class DocumentController {
       }),
     )
     file: Express.Multer.File,
-    @CurrentUser('id') uploaderId: number,
   ) {
     return this.documentService.create(uploaderId, file);
   }

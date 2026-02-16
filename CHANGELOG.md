@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Migrate user identification from name to ID.
 - Replaced documentURI with documentId.
 - User group renamed to user role.
 - User "change password" endpoint replaced with "update" endpoint.

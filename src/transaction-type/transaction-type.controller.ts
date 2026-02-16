@@ -65,8 +65,8 @@ export class TransactionTypeController {
     },
   )
   create(
-    @Body() createTransactionTypeDto: CreateTransactionTypeDto,
     @CurrentUser('id') creatorId: number,
+    @Body() createTransactionTypeDto: CreateTransactionTypeDto,
   ) {
     return this.transactionTypeService.create(
       creatorId,
