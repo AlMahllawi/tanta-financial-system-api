@@ -1,8 +1,7 @@
-import { Controller, Get, HttpStatus, VERSION_NEUTRAL } from '@nestjs/common';
+import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 import { AppService } from './app.service.js';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SystemStatusResponse } from './common/dto/app.dto.js';
-import { ApiResponses } from './common/decorators/http.js';
 
 @ApiTags('Entry')
 @Controller({ version: VERSION_NEUTRAL })
@@ -14,8 +13,7 @@ export class AppController {
     summary: 'API Entry Point & Health Check',
     description: 'Returns API metadata and current system health status.',
   })
-  @ApiResponses({
-    status: HttpStatus.OK,
+  @ApiOkResponse({
     type: SystemStatusResponse,
     description: 'System status retrieved successfully',
   })

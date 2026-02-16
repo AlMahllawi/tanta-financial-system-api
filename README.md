@@ -128,5 +128,4 @@ Add the `@ApiProperty()` decorator to each property in DTO and Entity classes.
 
 ### TODO
 
-- Replace `ApiResponse` with `ApiOkResponse`, `ApiCreatedResponse`, etc... in controllers.
-- Fix `ApiExceptionResponse` redundancy.
+- TODOs comments

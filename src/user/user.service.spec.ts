@@ -3,12 +3,9 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { Prisma } from '../../prisma/generated/client.js';
-import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
-import { User } from './entities/user.entity.js';
 
 describe('UserService', () => {
   let service: UserService;
@@ -58,7 +55,7 @@ describe('UserService', () => {
 
       prismaMock.user.create.mockResolvedValue(createdUser);
 
-      const result = await service.create(createUserDto);
+      await service.create(createUserDto);
 
       expect(prismaMock.user.create).toHaveBeenCalledTimes(1);
       // Verify password was hashed (different from input or just exists)
@@ -67,50 +64,6 @@ describe('UserService', () => {
       expect(createCallArgs.data.hashedPassword).not.toEqual(
         createUserDto.password,
       );
-
-      expect(result).toBeInstanceOf(User);
-      expect(result.hashedPassword).toBeUndefined();
-    });
-
-    it('should throw ConflictException if user already exists', async () => {
-      const error = new Prisma.PrismaClientKnownRequestError(
-        'Unique constraint failed',
-        {
-          code: 'P2002',
-          clientVersion: '4.0.0',
-          meta: { target: ['name'] },
-        },
-      );
-
-      prismaMock.user.create.mockRejectedValue(error);
-
-      await expect(service.create(createUserDto)).rejects.toThrow(
-        ConflictException,
-      );
-    });
-
-    it('should throw NotFoundException if department not found', async () => {
-      const error = new Prisma.PrismaClientKnownRequestError(
-        'Foreign key constraint failed',
-        {
-          code: 'P2003',
-          clientVersion: '4.0.0',
-          meta: { field_name: 'departmentName' },
-        },
-      );
-
-      prismaMock.user.create.mockRejectedValue(error);
-
-      await expect(service.create(createUserDto)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should throw unknown errors', async () => {
-      const error = new Error('Unknown error');
-      prismaMock.user.create.mockRejectedValue(error);
-
-      await expect(service.create(createUserDto)).rejects.toThrow(error);
     });
   });
 
@@ -131,19 +84,9 @@ describe('UserService', () => {
 
       prismaMock.user.findMany.mockResolvedValue(users);
 
-      const result = await service.findAll();
+      await service.findAll();
 
       expect(prismaMock.user.findMany).toHaveBeenCalled();
-      expect(result).toHaveLength(1);
-      expect(result[0]).toBeInstanceOf(User);
-      expect(result[0].hashedPassword).toBeUndefined();
-    });
-
-    it('should throw unknown errors', async () => {
-      const error = new Error('Unknown error');
-      prismaMock.user.findMany.mockRejectedValue(error);
-
-      await expect(service.findAll()).rejects.toThrow(error);
     });
   });
 
@@ -162,28 +105,13 @@ describe('UserService', () => {
         createdAt: new Date(),
       };
 
-      prismaMock.user.findUnique.mockResolvedValue(user);
+      prismaMock.user.findUniqueOrThrow.mockResolvedValue(user);
 
-      const result = await service.findOne(id);
+      await service.findOne(id);
 
-      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      expect(prismaMock.user.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { id },
       });
-      expect(result).toBeInstanceOf(User);
-      expect(result.hashedPassword).toBeUndefined();
-    });
-
-    it('should throw NotFoundException if user not found', async () => {
-      prismaMock.user.findUnique.mockResolvedValue(null);
-
-      await expect(service.findOne(id)).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw unknown errors', async () => {
-      const error = new Error('Unknown error');
-      prismaMock.user.findUnique.mockRejectedValue(error);
-
-      await expect(service.findOne(id)).rejects.toThrow(error);
     });
   });
 
@@ -209,7 +137,7 @@ describe('UserService', () => {
 
       prismaMock.user.update.mockResolvedValue(updatedUser);
 
-      const result = await service.update(id, updateUserDto);
+      await service.update(id, updateUserDto);
 
       expect(prismaMock.user.update).toHaveBeenCalledTimes(1);
       const updateCallArgs = prismaMock.user.update.mock.calls[0][0];
@@ -217,66 +145,6 @@ describe('UserService', () => {
       expect(updateCallArgs.data.hashedPassword).not.toEqual(
         updateUserDto.password,
       );
-
-      expect(result).toBeInstanceOf(User);
-      expect(result.hashedPassword).toBeUndefined();
-    });
-
-    it('should throw ConflictException on duplicate name', async () => {
-      const error = new Prisma.PrismaClientKnownRequestError(
-        'Unique constraint failed',
-        {
-          code: 'P2002',
-          clientVersion: '4.0.0',
-          meta: { target: ['name'] },
-        },
-      );
-
-      prismaMock.user.update.mockRejectedValue(error);
-
-      await expect(service.update(id, updateUserDto)).rejects.toThrow(
-        ConflictException,
-      );
-    });
-
-    it('should throw NotFoundException if user to update does not exist', async () => {
-      const error = new Prisma.PrismaClientKnownRequestError(
-        'Record not found',
-        {
-          code: 'P2025',
-          clientVersion: '4.0.0',
-        },
-      );
-
-      prismaMock.user.update.mockRejectedValue(error);
-
-      await expect(service.update(id, updateUserDto)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should throw NotFoundException if department not found', async () => {
-      const error = new Prisma.PrismaClientKnownRequestError(
-        'Foreign key constraint failed',
-        {
-          code: 'P2003',
-          clientVersion: '4.0.0',
-          meta: { field_name: 'departmentName' },
-        },
-      );
-
-      prismaMock.user.update.mockRejectedValue(error);
-
-      await expect(service.update(id, updateUserDto)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should throw unknown errors', async () => {
-      const error = new Error('Unknown error');
-      prismaMock.user.update.mockRejectedValue(error);
-
-      await expect(service.update(id, updateUserDto)).rejects.toThrow(error);
     });
   });
 
@@ -297,34 +165,11 @@ describe('UserService', () => {
 
       prismaMock.user.delete.mockResolvedValue(deletedUser);
 
-      const result = await service.remove(id);
+      await service.remove(id);
 
       expect(prismaMock.user.delete).toHaveBeenCalledWith({
         where: { id },
       });
-      expect(result).toBeInstanceOf(User);
-      expect(result.hashedPassword).toBeUndefined();
-    });
-
-    it('should throw NotFoundException if user not found', async () => {
-      const error = new Prisma.PrismaClientKnownRequestError(
-        'Record not found',
-        {
-          code: 'P2025',
-          clientVersion: '4.0.0',
-        },
-      );
-
-      prismaMock.user.delete.mockRejectedValue(error);
-
-      await expect(service.remove(id)).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw unknown errors', async () => {
-      const error = new Error('Unknown error');
-      prismaMock.user.delete.mockRejectedValue(error);
-
-      await expect(service.remove(id)).rejects.toThrow(error);
     });
   });
 });

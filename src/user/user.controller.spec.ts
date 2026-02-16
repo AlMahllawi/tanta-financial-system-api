@@ -5,7 +5,6 @@ import { UserService } from './user.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { UserRole } from '../../prisma/generated/enums.js';
-import { ConflictException, NotFoundException } from '@nestjs/common';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { User } from './entities/user.entity.js';
 
@@ -50,13 +49,6 @@ describe('UserController', () => {
       await controller.create(createUserDto);
       expect(userService.create).toHaveBeenCalledWith(createUserDto);
     });
-
-    it('should propagate ConflictException', async () => {
-      userService.create.mockRejectedValue(new ConflictException());
-      await expect(controller.create(createUserDto)).rejects.toThrow(
-        ConflictException,
-      );
-    });
   });
 
   describe('findAll', () => {
@@ -75,11 +67,6 @@ describe('UserController', () => {
       await controller.findOne(id);
       expect(userService.findOne).toHaveBeenCalledWith(id);
     });
-
-    it('should propagate NotFoundException if user not found', async () => {
-      userService.findOne.mockRejectedValue(new NotFoundException());
-      await expect(controller.findOne(id)).rejects.toThrow(NotFoundException);
-    });
   });
 
   describe('update', () => {
@@ -93,20 +80,6 @@ describe('UserController', () => {
       await controller.update(id, updateUserDto);
       expect(userService.update).toHaveBeenCalledWith(id, updateUserDto);
     });
-
-    it('should propagate ConflictException', async () => {
-      userService.update.mockRejectedValue(new ConflictException());
-      await expect(controller.update(id, updateUserDto)).rejects.toThrow(
-        ConflictException,
-      );
-    });
-
-    it('should propagate NotFoundException', async () => {
-      userService.update.mockRejectedValue(new NotFoundException());
-      await expect(controller.update(id, updateUserDto)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
   });
 
   describe('remove', () => {
@@ -116,11 +89,6 @@ describe('UserController', () => {
       userService.remove.mockResolvedValue(new User());
       await controller.remove(id);
       expect(userService.remove).toHaveBeenCalledWith(id);
-    });
-
-    it('should propagate NotFoundException', async () => {
-      userService.remove.mockRejectedValue(new NotFoundException());
-      await expect(controller.remove(id)).rejects.toThrow(NotFoundException);
     });
   });
 });

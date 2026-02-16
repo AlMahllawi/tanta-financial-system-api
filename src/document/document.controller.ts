@@ -14,6 +14,7 @@ import {
   HttpStatus,
   UseGuards,
   ParseIntPipe,
+  UseFilters,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { contentType } from 'mime-types';
@@ -22,19 +23,24 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
+  ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Document } from './entities/document.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiResponses } from '../common/decorators/http.js';
+import { ApiErrorResponses } from '../common/decorators/error.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../common/decorators/current-user.decorator.js';
+import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
+import { PrismaError } from 'prisma-error-enum';
 
 @ApiTags('Documents')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@UseFilters(PrismaExceptionFilter)
 @Controller('documents')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
@@ -51,10 +57,19 @@ export class DocumentController {
       },
     },
   })
-  @ApiResponses({
-    status: HttpStatus.CREATED,
+  @ApiCreatedResponse({
     type: Document,
     description: 'Document uploaded successfully',
+  })
+  @ApiErrorResponses({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Uploader not found',
+    errorCode: ErrorCode.DOCUMENT_UPLOADER_NOT_FOUND,
+    args: { uploaderId: 1 },
+    prisma: {
+      error: PrismaError.ForeignConstraintViolation,
+      matcher: (meta) => meta.field === 'uploaderId',
+    },
   })
   @UseInterceptors(FileInterceptor('file'))
   create(
@@ -75,8 +90,7 @@ export class DocumentController {
 
   @Get('uploaded')
   @ApiOperation({ summary: 'Retrieve all documents uploaded by the user' })
-  @ApiResponses({
-    status: HttpStatus.OK,
+  @ApiOkResponse({
     type: [Document],
     description: 'Documents retrieved successfully',
   })
@@ -86,37 +100,33 @@ export class DocumentController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a document by ID' })
-  @ApiResponses(
-    {
-      status: HttpStatus.OK,
-      type: Document,
-      description: 'Document retrieved successfully',
-    },
-    {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No document was found with such id',
-      errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
-      args: { id: 1 },
-    },
-  )
+  @ApiOkResponse({
+    type: Document,
+    description: 'Document retrieved successfully',
+  })
+  @ApiErrorResponses({
+    status: HttpStatus.NOT_FOUND,
+    description: 'No document was found with such id',
+    errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
+    args: { id: 1 },
+    prisma: { error: PrismaError.RecordsNotFound },
+  })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.documentService.findOne(id);
   }
 
   @Get(':id/download')
   @ApiOperation({ summary: 'Download a document' })
-  @ApiResponses(
-    {
-      status: HttpStatus.OK,
-      description: 'Document downloaded successfully',
-    },
-    {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No document was found with such id',
-      errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
-      args: { id: 1 },
-    },
-  )
+  @ApiOkResponse({
+    description: 'Document downloaded successfully',
+  })
+  @ApiErrorResponses({
+    status: HttpStatus.NOT_FOUND,
+    description: 'No document was found with such id',
+    errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
+    args: { id: 1 },
+    prisma: { error: PrismaError.RecordsNotFound },
+  })
   async download(
     @Param('id', ParseIntPipe) id: number,
     @Res({ passthrough: true }) res: Response,
@@ -133,19 +143,17 @@ export class DocumentController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a document by ID' })
-  @ApiResponses(
-    {
-      status: HttpStatus.OK,
-      type: Document,
-      description: 'Document deleted successfully',
-    },
-    {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No document was found with such id',
-      errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
-      args: { id: 1 },
-    },
-  )
+  @ApiOkResponse({
+    type: Document,
+    description: 'Document deleted successfully',
+  })
+  @ApiErrorResponses({
+    status: HttpStatus.NOT_FOUND,
+    description: 'No document was found with such id',
+    errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
+    args: { id: 1 },
+    prisma: { error: PrismaError.RecordsNotFound },
+  })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.documentService.remove(id);
   }

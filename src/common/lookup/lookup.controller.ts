@@ -1,14 +1,12 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  VERSION_NEUTRAL,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, VERSION_NEUTRAL, UseGuards } from '@nestjs/common';
 import { LookupService } from './lookup.service.js';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { LookupResponseDto } from './dto/response.dto.js';
-import { ApiResponses } from '../decorators/http.js';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard.js';
 
 @ApiTags('Lookups')
@@ -23,8 +21,7 @@ export class LookupController {
 
   @Get()
   @ApiOperation({ summary: 'Get all system constants and dropdown values' })
-  @ApiResponses({
-    status: HttpStatus.OK,
+  @ApiOkResponse({
     type: LookupResponseDto,
     description: 'Lookup values retrieved successfully',
   })

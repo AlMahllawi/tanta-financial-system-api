@@ -19,9 +19,8 @@ export class AuthService {
   async validateUser(name: string, pass: string): Promise<User | null> {
     try {
       const user = await this.userService.findUserForAuth(name);
-      if (user && (await verify(user.hashedPassword, pass))) {
+      if (user && (await verify(user.hashedPassword, pass)))
         return plainToInstance(User, user);
-      }
       return null;
     } catch {
       return null;

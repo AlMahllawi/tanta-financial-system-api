@@ -65,6 +65,9 @@ importers:
       pg:
         specifier: ^8.18.0
         version: 8.18.0
+      prisma-error-enum:
+        specifier: ^0.1.3
+        version: 0.1.3
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -2985,6 +2988,10 @@ packages:
   pretty-format@30.2.0:
     resolution: {integrity: sha512-9uBdv/B4EefsuAL+pWqueZyZS2Ba+LxfFeQ9DN14HU4bN8bhaxKdkpjpB6fs9+pSjIBu+FXQHImEg8j/Lw0+vA==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
+  prisma-error-enum@0.1.3:
+    resolution: {integrity: sha512-Ybu1gnxsj4IMCdGjOqdQ7Jaf9XnDzrnnVK+LBOCQBG9OCUuBxUikgwUzBeJX3oKvZ0ni//lHqsTga0Qvh3ZfCQ==}
+    engines: {node: '>=10'}
 
   prisma@7.4.0:
     resolution: {integrity: sha512-n2xU9vSaH4uxZF/l2aKoGYtKtC7BL936jM9Q94Syk1zOD39t/5hjDUxMgaPkVRDX5wWEMsIqvzQxoebNIesOKw==}
@@ -6827,6 +6834,8 @@ snapshots:
       '@jest/schemas': 30.0.5
       ansi-styles: 5.2.0
       react-is: 18.3.1
+
+  prisma-error-enum@0.1.3: {}
 
   prisma@7.4.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3):
     dependencies:

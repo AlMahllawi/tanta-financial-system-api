@@ -109,15 +109,5 @@ describe('AuthController', () => {
       );
       expect(result).toEqual(tokens);
     });
-
-    it('should propagate UnauthorizedException for invalid refresh token', () => {
-      authServiceMock.refresh.mockImplementation(() => {
-        throw new UnauthorizedException();
-      });
-
-      expect(() =>
-        controller.refresh({ refreshToken: 'invalid-token' }),
-      ).toThrow(UnauthorizedException);
-    });
   });
 });

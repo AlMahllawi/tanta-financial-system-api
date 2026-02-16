@@ -9,20 +9,30 @@ import {
   HttpStatus,
   UseGuards,
   ParseIntPipe,
+  UseFilters,
 } from '@nestjs/common';
 import { TransactionForwardService } from './transaction-forward.service.js';
 import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
 import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto.js';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { TransactionForward } from './entities/transaction-forward.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiResponses } from '../common/decorators/http.js';
+import { ApiErrorResponses } from '../common/decorators/error.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../common/decorators/current-user.decorator.js';
+import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
+import { PrismaError } from 'prisma-error-enum';
 
 @ApiTags('Transaction Forwards')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@UseFilters(PrismaExceptionFilter)
 @Controller('transaction/:transactionId/forward')
 export class TransactionForwardController {
   constructor(
@@ -31,29 +41,40 @@ export class TransactionForwardController {
 
   @Post()
   @ApiOperation({ summary: 'Forward a transaction' })
-  @ApiResponses(
-    {
-      status: HttpStatus.CREATED,
-      type: TransactionForward,
-      description: 'Transaction forwarded successfully',
-    },
+  @ApiCreatedResponse({
+    type: TransactionForward,
+    description: 'Transaction forwarded successfully',
+  })
+  @ApiErrorResponses(
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Transaction not found',
       errorCode: ErrorCode.TRANSACTION_FORWARD_TRANSACTION_NOT_FOUND,
       args: { transactionId: 1 },
+      prisma: {
+        error: PrismaError.ForeignConstraintViolation,
+        matcher: (meta) => meta.field === 'transactionId',
+      },
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Sender not found',
       errorCode: ErrorCode.TRANSACTION_FORWARD_SENDER_NOT_FOUND,
       args: { senderId: 1 },
+      prisma: {
+        error: PrismaError.ForeignConstraintViolation,
+        matcher: (meta) => meta.field === 'senderId',
+      },
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Receiver not found',
       errorCode: ErrorCode.TRANSACTION_FORWARD_RECEIVER_NOT_FOUND,
       args: { receiverId: 1 },
+      prisma: {
+        error: PrismaError.ForeignConstraintViolation,
+        matcher: (meta) => meta.field === 'receiverId',
+      },
     },
   )
   create(
@@ -70,8 +91,7 @@ export class TransactionForwardController {
 
   @Get()
   @ApiOperation({ summary: "Get all transaction's forwards" })
-  @ApiResponses({
-    status: HttpStatus.OK,
+  @ApiOkResponse({
     type: [TransactionForward],
     description: 'Transaction forwards retrieved successfully',
   })
@@ -81,19 +101,17 @@ export class TransactionForwardController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific transaction forward' })
-  @ApiResponses(
-    {
-      status: HttpStatus.OK,
-      type: TransactionForward,
-      description: 'Transaction forward retrieved successfully',
-    },
-    {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Transaction forward not found',
-      errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-      args: { id: 1, transactionId: 1 },
-    },
-  )
+  @ApiOkResponse({
+    type: TransactionForward,
+    description: 'Transaction forward retrieved successfully',
+  })
+  @ApiErrorResponses({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Transaction forward not found',
+    errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
+    args: { id: 1, transactionId: 1 },
+    prisma: { error: PrismaError.RecordsNotFound },
+  })
   findOne(
     @Param('transactionId', ParseIntPipe) transactionId: number,
     @Param('id', ParseIntPipe) id: number,
@@ -103,19 +121,17 @@ export class TransactionForwardController {
 
   @Patch(':id')
   @ApiOperation({ summary: "Respond to a transaction's forward" })
-  @ApiResponses(
-    {
-      status: HttpStatus.OK,
-      type: TransactionForward,
-      description: 'Transaction forward updated successfully',
-    },
-    {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Transaction forward not found',
-      errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-      args: { id: 1, transactionId: 1 },
-    },
-  )
+  @ApiOkResponse({
+    type: TransactionForward,
+    description: 'Transaction forward updated successfully',
+  })
+  @ApiErrorResponses({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Transaction forward not found',
+    errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
+    args: { id: 1, transactionId: 1 },
+    prisma: { error: PrismaError.RecordsNotFound },
+  })
   update(
     @Param('transactionId', ParseIntPipe) transactionId: number,
     @Param('id', ParseIntPipe) id: number,
@@ -130,19 +146,17 @@ export class TransactionForwardController {
 
   @Delete(':id')
   @ApiOperation({ summary: "Undo a transaction's forward" })
-  @ApiResponses(
-    {
-      status: HttpStatus.OK,
-      type: TransactionForward,
-      description: 'Transaction forward removed successfully',
-    },
-    {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Transaction forward not found',
-      errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-      args: { id: 1, transactionId: 1 },
-    },
-  )
+  @ApiOkResponse({
+    type: TransactionForward,
+    description: 'Transaction forward removed successfully',
+  })
+  @ApiErrorResponses({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Transaction forward not found',
+    errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
+    args: { id: 1, transactionId: 1 },
+    prisma: { error: PrismaError.RecordsNotFound },
+  })
   remove(
     @Param('transactionId', ParseIntPipe) transactionId: number,
     @Param('id', ParseIntPipe) id: number,

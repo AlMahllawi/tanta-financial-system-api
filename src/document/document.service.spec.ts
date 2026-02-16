@@ -3,9 +3,6 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocumentService } from './document.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { Prisma } from '../../prisma/generated/client.js';
-import { NotFoundException } from '@nestjs/common';
-import { Document } from './entities/document.entity.js';
 
 describe('DocumentService', () => {
   let service: DocumentService;
@@ -56,32 +53,7 @@ describe('DocumentService', () => {
       const result = await service.create(uploaderId, mockFile);
 
       expect(prismaMock.document.create).toHaveBeenCalledTimes(1);
-      expect(result).toBeInstanceOf(Document);
       expect(result.downloadURI).toBe('/documents/1/download');
-    });
-
-    it('should throw NotFoundException if uploader not found', async () => {
-      const error = new Prisma.PrismaClientKnownRequestError(
-        'Foreign key constraint failed',
-        {
-          code: 'P2003',
-          clientVersion: '4.0.0',
-          meta: { field_name: 'uploaderId' },
-        },
-      );
-
-      prismaMock.document.create.mockRejectedValue(error);
-
-      await expect(service.create(uploaderId, mockFile)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should throw unknown errors', async () => {
-      const error = new Error('Unknown error');
-      prismaMock.document.create.mockRejectedValue(error);
-
-      await expect(service.create(uploaderId, mockFile)).rejects.toThrow(error);
     });
   });
 
@@ -107,14 +79,6 @@ describe('DocumentService', () => {
         where: { uploaderId },
       });
       expect(result).toHaveLength(1);
-      expect(result[0]).toBeInstanceOf(Document);
-    });
-
-    it('should throw unknown errors', async () => {
-      const error = new Error('Unknown error');
-      prismaMock.document.findMany.mockRejectedValue(error);
-
-      await expect(service.findAll(uploaderId)).rejects.toThrow(error);
     });
   });
 
@@ -130,28 +94,14 @@ describe('DocumentService', () => {
         uploadedAt: new Date(),
       };
 
-      prismaMock.document.findUnique.mockResolvedValue(document);
+      prismaMock.document.findUniqueOrThrow.mockResolvedValue(document);
 
       const result = await service.findOne(id);
 
-      expect(prismaMock.document.findUnique).toHaveBeenCalledWith({
+      expect(prismaMock.document.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { id },
       });
-      expect(result).toBeInstanceOf(Document);
       expect(result.downloadURI).toBe('/documents/1/download');
-    });
-
-    it('should throw NotFoundException if document not found', async () => {
-      prismaMock.document.findUnique.mockResolvedValue(null);
-
-      await expect(service.findOne(id)).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw unknown errors', async () => {
-      const error = new Error('Unknown error');
-      prismaMock.document.findUnique.mockRejectedValue(error);
-
-      await expect(service.findOne(id)).rejects.toThrow(error);
     });
   });
 
@@ -169,33 +119,11 @@ describe('DocumentService', () => {
 
       prismaMock.document.delete.mockResolvedValue(deletedDocument);
 
-      const result = await service.remove(id);
+      await service.remove(id);
 
       expect(prismaMock.document.delete).toHaveBeenCalledWith({
         where: { id },
       });
-      expect(result).toBeInstanceOf(Document);
-    });
-
-    it('should throw NotFoundException if document not found', async () => {
-      const error = new Prisma.PrismaClientKnownRequestError(
-        'Record not found',
-        {
-          code: 'P2025',
-          clientVersion: '4.0.0',
-        },
-      );
-
-      prismaMock.document.delete.mockRejectedValue(error);
-
-      await expect(service.remove(id)).rejects.toThrow(NotFoundException);
-    });
-
-    it('should throw unknown errors', async () => {
-      const error = new Error('Unknown error');
-      prismaMock.document.delete.mockRejectedValue(error);
-
-      await expect(service.remove(id)).rejects.toThrow(error);
     });
   });
 });
