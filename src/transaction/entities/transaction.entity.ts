@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { TransactionPriority } from '../../../prisma/generated/enums.js';
 import { TransactionModel } from '../../../prisma/generated/models.js';
 import { Document } from '../../document/entities/document.entity.js';
+import { TransactionForwardStatus } from '../../../prisma/generated/enums.js';
 
 export class Transaction implements TransactionModel {
   @ApiProperty()
@@ -21,6 +22,9 @@ export class Transaction implements TransactionModel {
 
   @ApiProperty({ enum: TransactionPriority })
   priority: TransactionPriority;
+
+  @ApiProperty({ enum: TransactionForwardStatus, required: false })
+  lastForwardStatus?: TransactionForwardStatus;
 
   @ApiProperty()
   creatorId: number;

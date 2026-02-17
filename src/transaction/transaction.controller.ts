@@ -11,6 +11,8 @@ import {
   ParseIntPipe,
   HttpCode,
   UseFilters,
+  Query,
+  ForbiddenException,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
@@ -29,6 +31,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../common/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
+import { TransactionQuery } from './enums/transaction-query.enum.js';
+import { ApiQuery } from '@nestjs/swagger';
+import { UserRole } from '../../prisma/generated/enums.js';
 
 @ApiTags('Transactions')
 @ApiBearerAuth()
@@ -84,13 +89,41 @@ export class TransactionController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all transactions' })
+  @ApiOperation({ summary: 'Get transactions' })
+  @ApiQuery({
+    name: 'query',
+    enum: TransactionQuery,
+    required: false,
+    description:
+      'Filter transactions by their status relative to the user.\n\n' +
+      '* `inbox`: Transactions currently held by the user (user is the latest receiver).\n' +
+      '* `outgoing`: Transactions passed on by the user (user is the latest sender).\n' +
+      '* `all`: Every transaction in the system (Admin only).\n\n' +
+      "If absent, returns 'archive' transactions (history of involvement).",
+  })
   @ApiOkResponse({
     type: [Transaction],
     description: 'Transactions retrieved successfully',
   })
-  findAll() {
-    return this.transactionService.findAll();
+  @ApiErrorResponses({
+    status: HttpStatus.FORBIDDEN,
+    description:
+      'User does not have the required role to access all transactions',
+    errorCode: ErrorCode.MISSING_ROLE,
+    args: { role: UserRole.ADMIN },
+  })
+  findAll(
+    @CurrentUser('id') userId: number,
+    @CurrentUser('role') role: UserRole,
+    @Query('query') query?: TransactionQuery,
+  ) {
+    if (query === TransactionQuery.ALL && role !== UserRole.ADMIN)
+      throw new ForbiddenException({
+        key: ErrorCode.MISSING_ROLE,
+        args: { role: UserRole.ADMIN },
+      });
+
+    return this.transactionService.findAll(userId, query);
   }
 
   @Get(':id')

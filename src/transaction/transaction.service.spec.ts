@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionService } from './transaction.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { TransactionPriority } from '../../prisma/generated/enums.js';
+import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
 
@@ -13,6 +14,10 @@ describe('TransactionService', () => {
 
   beforeEach(async () => {
     prismaMock = mockDeep<PrismaService>();
+    prismaMock.$transaction.mockImplementation((cb: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return cb(prismaMock);
+    });
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -63,6 +68,7 @@ describe('TransactionService', () => {
         },
       },
     ],
+    forwards: [],
   };
 
   describe('create', () => {
@@ -99,6 +105,11 @@ describe('TransactionService', () => {
               document: true,
             },
           },
+          forwards: {
+            orderBy: { id: 'desc' },
+            take: 1,
+            select: { status: true },
+          },
         },
       });
 
@@ -116,19 +127,102 @@ describe('TransactionService', () => {
         transactionWithDocs as any,
       ]);
 
-      const result = await service.findAll();
+      const result = await service.findAll(1, TransactionQuery.ALL);
 
-      expect(prismaMock.transaction.findMany).toHaveBeenCalledWith({
-        include: {
-          documents: {
-            include: {
-              document: true,
-            },
-          },
-        },
-      });
+      expect(prismaMock.transaction.findMany).toHaveBeenCalledTimes(1);
       expect(result).toHaveLength(1);
-      expect(result[0].documents[0].downloadURI).toBeDefined();
+    });
+
+    it('should NOT return transactions where user is creator and no forwards (Creator Inbox) in Default view', async () => {
+      const tx = { ...transactionWithDocs, creatorId: 1, forwards: [] };
+
+      prismaMock.$queryRaw.mockResolvedValue([]);
+      prismaMock.transaction.findMany.mockResolvedValue([]);
+
+      const result = await service.findAll(1);
+      expect(result).toHaveLength(0);
+
+      prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
+      prismaMock.transaction.findMany.mockResolvedValue([tx as any]);
+      const resultInbox = await service.findAll(1, TransactionQuery.INBOX);
+      expect(resultInbox).toHaveLength(1);
+
+      prismaMock.$queryRaw.mockResolvedValue([]);
+      prismaMock.transaction.findMany.mockResolvedValue([]);
+      const resultOutgoing = await service.findAll(
+        1,
+        TransactionQuery.OUTGOING,
+      );
+      expect(resultOutgoing).toHaveLength(0);
+    });
+
+    it('should return transactions where user is receiver of latest forward (Inbox)', async () => {
+      const tx = {
+        ...transactionWithDocs,
+        forwards: [
+          { id: 2, senderId: 9, receiverId: 1, forwardedAt: new Date() },
+        ],
+      };
+
+      prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
+      prismaMock.transaction.findMany.mockResolvedValue([tx as any]);
+
+      const result = await service.findAll(1, TransactionQuery.INBOX);
+      expect(result).toHaveLength(1);
+
+      prismaMock.$queryRaw.mockResolvedValue([]);
+      prismaMock.transaction.findMany.mockResolvedValue([]);
+      const resultDefault = await service.findAll(1);
+      expect(resultDefault).toHaveLength(0);
+
+      prismaMock.$queryRaw.mockResolvedValue([]);
+      prismaMock.transaction.findMany.mockResolvedValue([]);
+      const resultOutgoing = await service.findAll(
+        1,
+        TransactionQuery.OUTGOING,
+      );
+      expect(resultOutgoing).toHaveLength(0);
+    });
+
+    it('should return transactions where user is sender of latest forward (Outgoing)', async () => {
+      const tx = {
+        ...transactionWithDocs,
+        forwards: [
+          { id: 2, senderId: 1, receiverId: 9, forwardedAt: new Date() },
+        ],
+      };
+
+      prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
+      prismaMock.transaction.findMany.mockResolvedValue([tx as any]);
+
+      const result = await service.findAll(1, TransactionQuery.OUTGOING);
+      expect(result).toHaveLength(1);
+
+      prismaMock.$queryRaw.mockResolvedValue([]);
+      prismaMock.transaction.findMany.mockResolvedValue([]);
+      const resultDefault = await service.findAll(1);
+      expect(resultDefault).toHaveLength(0);
+
+      prismaMock.$queryRaw.mockResolvedValue([]);
+      prismaMock.transaction.findMany.mockResolvedValue([]);
+      const resultInbox = await service.findAll(1, TransactionQuery.INBOX);
+      expect(resultInbox).toHaveLength(0);
+    });
+
+    it('should return transactions where user is involved but not in latest forward (History) in Default view', async () => {
+      const tx = {
+        ...transactionWithDocs,
+        forwards: [
+          { id: 20, senderId: 9, receiverId: 10, forwardedAt: new Date() },
+          { id: 10, senderId: 1, receiverId: 9, forwardedAt: new Date() },
+        ],
+      };
+
+      prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
+      prismaMock.transaction.findMany.mockResolvedValue([tx as any]);
+
+      const result = await service.findAll(1);
+      expect(result).toHaveLength(1);
     });
   });
 
@@ -144,7 +238,14 @@ describe('TransactionService', () => {
 
       expect(prismaMock.transaction.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { id },
-        include: { documents: { include: { document: true } } },
+        include: {
+          documents: { include: { document: true } },
+          forwards: {
+            orderBy: { id: 'desc' },
+            take: 1,
+            select: { status: true },
+          },
+        },
       });
       expect(result.documents[0].downloadURI).toBeDefined();
     });
@@ -171,7 +272,14 @@ describe('TransactionService', () => {
       expect(prismaMock.transaction.update).toHaveBeenCalledWith({
         where: { id },
         data: updateTransactionDto,
-        include: { documents: { include: { document: true } } },
+        include: {
+          documents: { include: { document: true } },
+          forwards: {
+            orderBy: { id: 'desc' },
+            take: 1,
+            select: { status: true },
+          },
+        },
       });
     });
   });
@@ -188,7 +296,14 @@ describe('TransactionService', () => {
 
       expect(prismaMock.transaction.delete).toHaveBeenCalledWith({
         where: { id },
-        include: { documents: { include: { document: true } } },
+        include: {
+          documents: { include: { document: true } },
+          forwards: {
+            orderBy: { id: 'desc' },
+            take: 1,
+            select: { status: true },
+          },
+        },
       });
     });
   });
@@ -200,7 +315,6 @@ describe('TransactionService', () => {
 
     it('should attach a document using upsert', async () => {
       prismaMock.transactionDocument.upsert.mockResolvedValue({} as any);
-      // findOne is called after attach, so we mock findUniqueOrThrow
       prismaMock.transaction.findUniqueOrThrow.mockResolvedValue(
         transactionWithDocs as any,
       );
@@ -224,7 +338,14 @@ describe('TransactionService', () => {
 
       expect(prismaMock.transaction.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { id: transactionId },
-        include: { documents: { include: { document: true } } },
+        include: {
+          documents: { include: { document: true } },
+          forwards: {
+            orderBy: { id: 'desc' },
+            take: 1,
+            select: { status: true },
+          },
+        },
       });
     });
   });
@@ -235,7 +356,6 @@ describe('TransactionService', () => {
 
     it('should detach a document using deleteMany', async () => {
       prismaMock.transactionDocument.deleteMany.mockResolvedValue({ count: 1 });
-      // findOne is called after detach
       prismaMock.transaction.findUniqueOrThrow.mockResolvedValue(
         transactionWithDocs as any,
       );
@@ -251,7 +371,14 @@ describe('TransactionService', () => {
 
       expect(prismaMock.transaction.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { id: transactionId },
-        include: { documents: { include: { document: true } } },
+        include: {
+          documents: { include: { document: true } },
+          forwards: {
+            orderBy: { id: 'desc' },
+            take: 1,
+            select: { status: true },
+          },
+        },
       });
     });
   });

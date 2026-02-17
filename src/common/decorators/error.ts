@@ -89,7 +89,12 @@ export function ApiErrorResponses(...errors: ErrorResponseDef[]) {
   }
 
   decorators.push(ApiExtraModels(HttpExceptionResponse));
-  decorators.push(SetMetadata(PRISMA_ERROR_METADATA_KEY, errors));
+  decorators.push(
+    SetMetadata(
+      PRISMA_ERROR_METADATA_KEY,
+      errors.filter((e) => e.prisma),
+    ),
+  );
 
   return applyDecorators(...decorators);
 }

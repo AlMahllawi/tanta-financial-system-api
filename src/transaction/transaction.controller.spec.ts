@@ -1,12 +1,15 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ForbiddenException } from '@nestjs/common';
 import { TransactionController } from './transaction.controller.js';
 import { TransactionService } from './transaction.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { Transaction } from './entities/transaction.entity.js';
-import { TransactionPriority } from '../../prisma/generated/enums.js';
+import { TransactionPriority, UserRole } from '../../prisma/generated/enums.js';
+import { TransactionQuery } from './enums/transaction-query.enum.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
@@ -46,7 +49,7 @@ describe('TransactionController', () => {
 
     it('should successfully create a transaction', async () => {
       transactionService.create.mockResolvedValue(new Transaction());
-      await controller.create(createTransactionDto, 1);
+      await controller.create(1, createTransactionDto);
       expect(transactionService.create).toHaveBeenCalledWith(
         1,
         createTransactionDto,
@@ -57,8 +60,30 @@ describe('TransactionController', () => {
   describe('findAll', () => {
     it('should return an array of transactions', async () => {
       transactionService.findAll.mockResolvedValue([new Transaction()]);
-      await controller.findAll();
-      expect(transactionService.findAll).toHaveBeenCalled();
+      await controller.findAll(1, UserRole.USER);
+      expect(transactionService.findAll).toHaveBeenCalledWith(1, undefined);
+    });
+
+    it('should throw ForbiddenException if non-admin tries to access all transactions', async () => {
+      try {
+        await controller.findAll(1, UserRole.USER, TransactionQuery.ALL);
+        fail('Should have thrown ForbiddenException');
+      } catch (e: any) {
+        expect(e).toBeInstanceOf(ForbiddenException);
+        expect(e.getResponse()).toEqual({
+          key: ErrorCode.MISSING_ROLE,
+          args: { role: UserRole.ADMIN },
+        });
+      }
+    });
+
+    it('should allow admin to access all transactions', async () => {
+      transactionService.findAll.mockResolvedValue([new Transaction()]);
+      await controller.findAll(1, UserRole.ADMIN, TransactionQuery.ALL);
+      expect(transactionService.findAll).toHaveBeenCalledWith(
+        1,
+        TransactionQuery.ALL,
+      );
     });
   });
 
