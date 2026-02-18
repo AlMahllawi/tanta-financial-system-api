@@ -14,6 +14,7 @@ import {
 import { TransactionForwardService } from './transaction-forward.service.js';
 import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
 import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto.js';
+import { UpdateTransactionForwardSenderDto } from './dto/update-transaction-forward-sender.dto.js';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -120,7 +121,7 @@ export class TransactionForwardController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: "Respond to a transaction's forward" })
+  @ApiOperation({ summary: 'Update forward (sender comment)' })
   @ApiOkResponse({
     type: TransactionForward,
     description: 'Transaction forward updated successfully',
@@ -132,12 +133,63 @@ export class TransactionForwardController {
     args: { id: 1, transactionId: 1 },
     prisma: { error: PrismaError.RecordsNotFound },
   })
-  update(
+  updateSender(
+    @Param('transactionId', ParseIntPipe) transactionId: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Body()
+    updateTransactionForwardSenderDto: UpdateTransactionForwardSenderDto,
+  ) {
+    return this.transactionForwardService.updateSender(
+      transactionId,
+      id,
+      updateTransactionForwardSenderDto,
+    );
+  }
+
+  @Post(':id/response')
+  @ApiOperation({ summary: "Respond to a transaction's forward" })
+  @ApiOkResponse({
+    type: TransactionForward,
+    description: 'Transaction forward response created successfully',
+  })
+  @ApiErrorResponses({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Transaction forward not found',
+    errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
+    args: { id: 1, transactionId: 1 },
+    prisma: { error: PrismaError.RecordsNotFound },
+  })
+  respond(
     @Param('transactionId', ParseIntPipe) transactionId: number,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTransactionForwardDto: UpdateTransactionForwardDto,
   ) {
-    return this.transactionForwardService.update(
+    return this.transactionForwardService.updateResponse(
+      transactionId,
+      id,
+      updateTransactionForwardDto,
+    );
+  }
+
+  @Patch(':id/response')
+  @ApiOperation({ summary: 'Update transaction forward response' })
+  @ApiOkResponse({
+    type: TransactionForward,
+    description: 'Transaction forward response updated successfully',
+  })
+  @ApiErrorResponses({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Transaction forward not found',
+    errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
+    args: { id: 1, transactionId: 1 },
+    prisma: { error: PrismaError.RecordsNotFound },
+  })
+  updateResponse(
+    @Param('transactionId', ParseIntPipe) transactionId: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateTransactionForwardDto: UpdateTransactionForwardDto,
+  ) {
+    return this.transactionForwardService.updateResponse(
       transactionId,
       id,
       updateTransactionForwardDto,

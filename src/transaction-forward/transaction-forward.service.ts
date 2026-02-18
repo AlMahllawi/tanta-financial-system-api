@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
 import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto.js';
+import { UpdateTransactionForwardSenderDto } from './dto/update-transaction-forward-sender.dto.js';
 import { TransactionForward } from './entities/transaction-forward.entity.js';
 import { TransactionForwardStatus } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -57,17 +58,38 @@ export class TransactionForwardService {
     return plainToInstance(TransactionForward, forward);
   }
 
-  async update(
+  async updateResponse(
     transactionId: number,
     id: number,
     updateTransactionForwardDto: UpdateTransactionForwardDto,
   ) {
+    // TODO: deny if sender seen
     const forward = await this.prisma.transactionForward.update({
       where: { id, transactionId },
       data: {
         status: updateTransactionForwardDto.status,
         receiverComment: updateTransactionForwardDto.comment ?? null,
         receiverSeen: true,
+      },
+      include: {
+        sender: true,
+        receiver: true,
+      },
+    });
+
+    return plainToInstance(TransactionForward, forward);
+  }
+
+  async updateSender(
+    transactionId: number,
+    id: number,
+    updateTransactionForwardSenderDto: UpdateTransactionForwardSenderDto,
+  ) {
+    // TODO: deny if receiver responded
+    const forward = await this.prisma.transactionForward.update({
+      where: { id, transactionId },
+      data: {
+        senderComment: updateTransactionForwardSenderDto.comment ?? null,
       },
       include: {
         sender: true,
