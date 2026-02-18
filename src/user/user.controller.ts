@@ -10,6 +10,7 @@ import {
   UseGuards,
   ParseIntPipe,
   UseFilters,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -30,6 +31,11 @@ import { Roles } from '../common/decorators/roles.decorator.js';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
+import { AllowSelf } from '../common/decorators/allow-self.decorator.js';
+import { CurrentUser } from '../common/decorators/current-user.decorator.js';
+import { STATUS_CODES } from 'node:http';
+
+const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -47,11 +53,6 @@ export class UserController {
     description: 'User created successfully',
   })
   @ApiErrorResponses(
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Forbidden resource',
-      errorCode: ErrorCode.USER_NOT_FOUND,
-    },
     {
       status: HttpStatus.CONFLICT,
       description: 'A user already exists with the same name',
@@ -105,6 +106,8 @@ export class UserController {
   }
 
   @Patch(':id')
+  @Roles(UserRole.ADMIN)
+  @AllowSelf()
   @ApiOperation({ summary: 'Update a user' })
   @ApiOkResponse({
     type: User,
@@ -138,15 +141,40 @@ export class UserController {
         matcher: (meta) => meta.field === 'departmentName',
       },
     },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Some fields are restricted for non-admin users',
+      errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
+      args: { fields: 'role, active' },
+    },
   )
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() user: User,
   ) {
+    if (user.role !== UserRole.ADMIN) {
+      const updatingFields = Object.keys(updateUserDto);
+      const forbiddenFields = updatingFields.filter(
+        (field) => !ALLOWED_USER_UPDATE_FIELDS.includes(field),
+      );
+
+      if (forbiddenFields.length > 0) {
+        throw new ForbiddenException({
+          statusCode: HttpStatus.FORBIDDEN,
+          message: {
+            key: ErrorCode.RESTRICTED_FIELD_UPDATE,
+            args: { fields: forbiddenFields.join(', ') },
+          },
+          error: STATUS_CODES[HttpStatus.FORBIDDEN],
+        });
+      }
+    }
     return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete a user' })
   @ApiOkResponse({
     type: User,

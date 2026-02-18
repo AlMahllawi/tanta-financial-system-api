@@ -34,6 +34,7 @@ import { PrismaError } from 'prisma-error-enum';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { ApiQuery } from '@nestjs/swagger';
 import { UserRole } from '../../prisma/generated/enums.js';
+import { STATUS_CODES } from 'node:http';
 
 @ApiTags('Transactions')
 @ApiBearerAuth()
@@ -110,7 +111,7 @@ export class TransactionController {
     description:
       'User does not have the required role to access all transactions',
     errorCode: ErrorCode.MISSING_ROLE,
-    args: { role: UserRole.ADMIN },
+    args: { roles: UserRole.ADMIN },
   })
   findAll(
     @CurrentUser('id') userId: number,
@@ -119,8 +120,12 @@ export class TransactionController {
   ) {
     if (query === TransactionQuery.ALL && role !== UserRole.ADMIN)
       throw new ForbiddenException({
-        key: ErrorCode.MISSING_ROLE,
-        args: { role: UserRole.ADMIN },
+        statusCode: HttpStatus.FORBIDDEN,
+        message: {
+          key: ErrorCode.MISSING_ROLE,
+          args: { roles: UserRole.ADMIN },
+        },
+        error: STATUS_CODES[HttpStatus.FORBIDDEN],
       });
 
     return this.transactionService.findAll(userId, query);
