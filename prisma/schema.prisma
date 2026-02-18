@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "./generated"
+  provider        = "prisma-client"
+  output          = "./generated"
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -61,10 +62,25 @@ model Transaction {
   creatorId   Int
   createdAt   DateTime            @default(now()) @db.Timestamptz
 
-  type      TransactionType       @relation(fields: [typeName], references: [name], onDelete: Restrict, onUpdate: Cascade)
-  creator   User                  @relation(fields: [creatorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  documents TransactionDocument[]
-  forwards  TransactionForward[]
+  type          TransactionType           @relation(fields: [typeName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  creator       User                      @relation(fields: [creatorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  documents     TransactionDocument[]
+  forwards      TransactionForward[]
+  latestForward TransactionLatestForward?
+}
+
+// TODO: This view is manually created in the migration since `view` is a prisma preview feature atm
+view TransactionLatestForward {
+  id            Int                      @unique
+  status        TransactionForwardStatus
+  senderId      Int
+  receiverId    Int
+  transactionId Int
+
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+
+  // TODO: ORDER BY "transactionId", "id" DESC (not available in prisma atm)
+  @@unique([transactionId])
 }
 
 enum TransactionPriority {

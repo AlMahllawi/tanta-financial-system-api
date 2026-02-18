@@ -130,3 +130,14 @@ ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_documentId
 
 -- AddForeignKey
 ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_attachedBy_fkey" FOREIGN KEY ("attachedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddView
+CREATE OR REPLACE VIEW "TransactionLatestForward" AS
+SELECT DISTINCT ON ("transactionId")
+  "id",
+  "status",
+  "senderId",
+  "receiverId",
+  "transactionId"
+FROM "TransactionForward"
+ORDER BY "transactionId", "id" DESC;

@@ -81,80 +81,67 @@ export class TransactionService {
       return transactions.map((t) => this.mapToTransaction(t));
     }
 
-    // TODO: Handover Logic, replace raw query
-    const rawQuery = Prisma.sql`
-      SELECT t.id
-      FROM "Transaction" t
-      LEFT JOIN LATERAL (
-        SELECT * FROM "TransactionForward" tf
-        WHERE tf."transactionId" = t.id
-        ORDER BY tf.id DESC
-        LIMIT 1
-      ) latest_tf ON true
-      WHERE 
-        CASE 
-          WHEN ${query === TransactionQuery.INBOX} THEN 
-            (latest_tf.id IS NOT NULL AND latest_tf."receiverId" = ${userId}) OR 
-            (latest_tf.id IS NULL AND t."creatorId" = ${userId})
-            
-          WHEN ${query === TransactionQuery.OUTGOING} THEN 
-            (latest_tf.id IS NOT NULL AND latest_tf."senderId" = ${userId})
+    const where: Prisma.TransactionWhereInput = {};
+    const userViewedLatestForward: Prisma.TransactionForwardFindManyArgs = {
+      orderBy: { id: 'desc' },
+      take: 1,
+      select: { status: true },
+    };
 
-          ELSE 
-            (
-              latest_tf.id IS NOT NULL 
-              AND 
-              latest_tf."senderId" != ${userId} 
-              AND 
-              latest_tf."receiverId" != ${userId}
-              AND
-              (
-                t."creatorId" = ${userId}
-                OR
-                EXISTS (
-                  SELECT 1 FROM "TransactionForward" tf 
-                  WHERE tf."transactionId" = t.id 
-                  AND (tf."senderId" = ${userId} OR tf."receiverId" = ${userId})
-                )
-              )
-            )
-        END
-    `;
-
-    return await this.prisma.$transaction(async (tx) => {
-      const resultIds = await tx.$queryRaw<{ id: number }[]>(rawQuery);
-      const ids = resultIds.map((r) => r.id);
-
-      const useGlobalLatest =
-        query === TransactionQuery.INBOX ||
-        query === TransactionQuery.OUTGOING ||
-        query === TransactionQuery.ALL;
-
-      // TODO: retrieve in one query
-      const transactions = await tx.transaction.findMany({
-        where: {
-          id: { in: ids },
-        },
-        include: {
-          documents: {
-            include: { document: true },
+    if (query === TransactionQuery.INBOX) {
+      where.OR = [
+        {
+          latestForward: {
+            receiverId: userId,
           },
+        },
+        {
+          latestForward: null,
+          creatorId: userId,
+        },
+      ];
+    } else if (query === TransactionQuery.OUTGOING) {
+      where.latestForward = {
+        senderId: userId,
+      };
+    } else {
+      where.OR = [
+        {
+          creatorId: userId,
+          latestForward: {
+            senderId: { not: userId },
+            receiverId: { not: userId },
+          },
+        },
+        {
           forwards: {
-            where: useGlobalLatest
-              ? undefined
-              : { OR: [{ senderId: userId }, { receiverId: userId }] },
-            orderBy: { id: 'desc' },
-            take: 1,
-            select: { status: true },
+            some: {
+              OR: [{ senderId: userId }, { receiverId: userId }],
+            },
           },
         },
-        orderBy: { createdAt: 'desc' },
-      });
+      ];
+      userViewedLatestForward.where = {
+        OR: [{ senderId: userId }, { receiverId: userId }],
+      };
+    }
 
-      return transactions.map((t) =>
-        this.mapToTransaction(t as unknown as TransactionWithDocuments),
-      );
+    const transactions = await this.prisma.transaction.findMany({
+      where,
+      include: {
+        documents: {
+          include: {
+            document: true,
+          },
+        },
+        forwards: userViewedLatestForward,
+      },
+      orderBy: { createdAt: 'desc' },
     });
+
+    return transactions.map((t) =>
+      this.mapToTransaction(t as TransactionWithDocuments),
+    );
   }
 
   async findOne(id: number) {
@@ -262,6 +249,7 @@ export class TransactionService {
         }),
       ),
       lastForwardStatus: transaction.forwards?.[0]?.status,
+      forwards: undefined,
     };
 
     return plainToInstance(Transaction, result);
