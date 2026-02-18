@@ -26,10 +26,14 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    const metadata = this.reflector.get<ErrorResponseDef[]>(
-      PRISMA_ERROR_METADATA_KEY,
-      (host as unknown as ExecutionContext).getHandler(),
-    );
+    const handler = (host as unknown as ExecutionContext).getHandler();
+
+    const metadata = handler
+      ? this.reflector.get<ErrorResponseDef[]>(
+          PRISMA_ERROR_METADATA_KEY,
+          handler,
+        )
+      : undefined;
 
     const errorDef = metadata?.find((def) => {
       if (!def.prisma) return false;
