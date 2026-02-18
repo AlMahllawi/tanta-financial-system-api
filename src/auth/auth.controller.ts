@@ -35,17 +35,17 @@ export class AuthController {
     errorCode: ErrorCode.INVALID_CREDENTIALS,
   })
   async login(@Body() loginDto: LoginDto) {
-    const user = await this.authService.validateUser(
+    const userId = await this.authService.validateUser(
       loginDto.name,
       loginDto.password,
     );
-    if (!user)
+    if (!userId)
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: { key: ErrorCode.INVALID_CREDENTIALS },
         error: 'Invalid credentials',
       });
-    return this.authService.login(user);
+    return this.authService.login(userId);
   }
 
   @HttpCode(HttpStatus.OK)

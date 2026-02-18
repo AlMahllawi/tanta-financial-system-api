@@ -77,8 +77,7 @@ describe('AuthService', () => {
       const result = await service.validateUser(name, pass);
 
       expect(userServiceMock.findUserForAuth).toHaveBeenCalledWith(name);
-      expect(result).toEqual(userBase);
-      expect((result as any).hashedPassword).toBeUndefined();
+      expect(result).toBe(userBase.id);
     });
 
     it('should return null if user not found', async () => {
@@ -111,7 +110,7 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    it('should return access and refresh tokens', () => {
+    it('should return access and refresh tokens and update last login', async () => {
       const user = plainToInstance(User, {
         id: 1,
         name: 'testuser',
@@ -122,14 +121,18 @@ describe('AuthService', () => {
         active: true,
         lastLogin: null,
       });
+      const updatedUser = { ...user, lastLogin: new Date() };
       const accessToken = 'signed-jwt-token';
       const refreshToken = 'signed-refresh-token';
+
+      userServiceMock.updateLastLogin.mockResolvedValue(updatedUser);
       jwtServiceMock.sign
         .mockReturnValueOnce(accessToken)
         .mockReturnValueOnce(refreshToken);
 
-      const result = service.login(user);
+      const result = await service.login(user.id);
 
+      expect(userServiceMock.updateLastLogin).toHaveBeenCalledWith(user.id);
       expect(jwtServiceMock.sign).toHaveBeenCalledWith({
         id: user.id,
       });
@@ -137,7 +140,7 @@ describe('AuthService', () => {
       expect(result).toEqual({
         access_token: accessToken,
         refresh_token: refreshToken,
-        user,
+        user: updatedUser,
       });
     });
   });

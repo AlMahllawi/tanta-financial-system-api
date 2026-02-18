@@ -55,8 +55,8 @@ describe('AuthController', () => {
     });
 
     it('should successfully login and return tokens', async () => {
-      authServiceMock.validateUser.mockResolvedValue(authenticatedUser);
-      authServiceMock.login.mockReturnValue({
+      authServiceMock.validateUser.mockResolvedValue(authenticatedUser.id);
+      authServiceMock.login.mockResolvedValue({
         access_token: 'jwt-token',
         refresh_token: 'refresh-token',
         user: authenticatedUser,
@@ -68,7 +68,7 @@ describe('AuthController', () => {
         loginDto.name,
         loginDto.password,
       );
-      expect(authServiceMock.login).toHaveBeenCalledWith(authenticatedUser);
+      expect(authServiceMock.login).toHaveBeenCalledWith(authenticatedUser.id);
     });
 
     it('should throw UnauthorizedException for invalid credentials', async () => {

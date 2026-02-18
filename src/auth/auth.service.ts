@@ -5,8 +5,6 @@ import { ConfigService } from '@nestjs/config';
 import { verify } from 'argon2';
 import { JwtPayload } from './interfaces/auth.interface.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { User } from '../user/entities/user.entity.js';
-import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class AuthService {
@@ -16,21 +14,23 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async validateUser(name: string, pass: string): Promise<User | null> {
+  async validateUser(name: string, pass: string): Promise<number | null> {
     try {
       const user = await this.userService.findUserForAuth(name);
-      if (user && (await verify(user.hashedPassword, pass)))
-        return plainToInstance(User, user);
+      if (user && (await verify(user.hashedPassword, pass))) return user.id;
       return null;
     } catch {
       return null;
     }
   }
 
-  login(user: User) {
+  async login(userId: number) {
     const payload: JwtPayload = {
-      id: user.id,
+      id: userId,
     };
+
+    const user = await this.userService.updateLastLogin(userId);
+
     return {
       access_token: this.jwtService.sign(payload),
       refresh_token: this.generateRefreshToken(payload),

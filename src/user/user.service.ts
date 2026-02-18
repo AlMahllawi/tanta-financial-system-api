@@ -42,6 +42,7 @@ export class UserService {
   async findUserForAuth(name: string) {
     const user = await this.prisma.user.findUnique({
       where: { name },
+      select: { id: true, hashedPassword: true },
     });
 
     return user;
@@ -65,6 +66,15 @@ export class UserService {
   async remove(id: number) {
     const user = await this.prisma.user.delete({
       where: { id },
+    });
+
+    return plainToInstance(User, user);
+  }
+
+  async updateLastLogin(id: number) {
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: { lastLogin: new Date() },
     });
 
     return plainToInstance(User, user);
