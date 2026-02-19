@@ -5,7 +5,7 @@ import {
   ForbiddenException,
   HttpStatus,
 } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { Reflector, ModuleRef } from '@nestjs/core';
 import { UserRole } from '../../../prisma/generated/enums.js';
 import { ROLES_KEY } from '../../common/decorators/roles.decorator.js';
 import { User } from '../../user/entities/user.entity.js';
@@ -19,9 +19,12 @@ import {
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    private moduleRef: ModuleRef,
+  ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
@@ -42,7 +45,10 @@ export class RolesGuard implements CanActivate {
 
     if (hasRole) return true;
 
-    if (exceptionCondition && exceptionCondition(user, request, context)) {
+    if (
+      exceptionCondition &&
+      (await exceptionCondition(user, request, this.moduleRef, context))
+    ) {
       return true;
     }
 
