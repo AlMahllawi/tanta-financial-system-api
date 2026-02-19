@@ -258,12 +258,25 @@ export class TransactionController {
       },
     },
   )
-  attachDocument(
+  async attachDocument(
+    @CurrentUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Param('documentId', ParseIntPipe) documentId: number,
-    @CurrentUser('id') userId: number,
   ) {
-    return this.transactionService.attachDocument(id, documentId, userId);
+    if (
+      user.role !== UserRole.ADMIN &&
+      !(await this.transactionService.isParticipant(id, user.id))
+    )
+      throw new ForbiddenException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: {
+          key: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+          args: { transactionId: id },
+        },
+        error: STATUS_CODES[HttpStatus.FORBIDDEN],
+      });
+
+    return this.transactionService.attachDocument(id, documentId, user.id);
   }
 
   @Delete(':id/document/:documentId')
@@ -272,11 +285,33 @@ export class TransactionController {
     type: Transaction,
     description: 'Document detached from transaction successfully',
   })
-  detachDocument(
+  async detachDocument(
+    @CurrentUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Param('documentId', ParseIntPipe) documentId: number,
   ) {
-    // TODO: deny if not attacher
+    if (user.role !== UserRole.ADMIN) {
+      if (!(await this.transactionService.isParticipant(id, user.id)))
+        throw new ForbiddenException({
+          statusCode: HttpStatus.FORBIDDEN,
+          message: {
+            key: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+            args: { transactionId: id },
+          },
+          error: STATUS_CODES[HttpStatus.FORBIDDEN],
+        });
+
+      if (!(await this.transactionService.isAttacher(id, documentId, user.id)))
+        throw new ForbiddenException({
+          statusCode: HttpStatus.FORBIDDEN,
+          message: {
+            key: ErrorCode.NOT_DOCUMENT_ATTACHER,
+            args: { transactionId: id, documentId },
+          },
+          error: STATUS_CODES[HttpStatus.FORBIDDEN],
+        });
+    }
+
     return this.transactionService.detachDocument(id, documentId);
   }
 }

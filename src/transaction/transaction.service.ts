@@ -172,6 +172,43 @@ export class TransactionService {
     return userId == transaction?.creatorId;
   }
 
+  async isParticipant(id: number, userId: number) {
+    const transaction = await this.prisma.transaction.findUnique({
+      where: { id },
+      select: {
+        creatorId: true,
+        latestForward: {
+          select: {
+            senderId: true,
+            receiverId: true,
+          },
+        },
+      },
+    });
+
+    if (!transaction) return false;
+
+    return (
+      transaction.creatorId === userId ||
+      transaction.latestForward?.senderId === userId ||
+      transaction.latestForward?.receiverId === userId
+    );
+  }
+
+  async isAttacher(transactionId: number, documentId: number, userId: number) {
+    const attachment = await this.prisma.transactionDocument.findUnique({
+      where: {
+        transactionId_documentId: {
+          transactionId,
+          documentId,
+        },
+      },
+      select: { attachedBy: true },
+    });
+
+    return attachment?.attachedBy === userId;
+  }
+
   async update(id: number, updateTransactionDto: UpdateTransactionDto) {
     const transaction = await this.prisma.transaction.update({
       where: { id },
