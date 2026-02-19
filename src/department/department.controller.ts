@@ -22,9 +22,10 @@ import {
 } from '@nestjs/swagger';
 import { Department } from './entities/department.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/error.js';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
+import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
+import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 
 @ApiTags('Departments')
@@ -41,7 +42,7 @@ export class DepartmentController {
     type: Department,
     description: 'Department created successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.CONFLICT,
     description: 'A department already exists with the same name',
     errorCode: ErrorCode.DEPARTMENT_ALREADY_EXISTS,
@@ -71,7 +72,7 @@ export class DepartmentController {
     type: Department,
     description: 'Department retrieved successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No department was found with such name',
     errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
@@ -88,7 +89,7 @@ export class DepartmentController {
     type: Department,
     description: 'Department updated successfully',
   })
-  @ApiErrorResponses(
+  @ApiPrismaErrorResponses(
     {
       status: HttpStatus.CONFLICT,
       description: 'A department already exists with the same name',
@@ -110,12 +111,14 @@ export class DepartmentController {
         matcher: (meta) => meta.field === 'managerId',
       },
     },
-    {
-      status: HttpStatus.CONFLICT,
-      description: 'The specified manager does not belong to this department',
-      errorCode: ErrorCode.MANAGER_NOT_MEMBER_OF_DEPARTMENT,
-      args: { managerId: 1, departmentName: 'Engineering' },
-    },
+  )
+  @ApiErrorResponses({
+    status: HttpStatus.CONFLICT,
+    description: 'The specified manager does not belong to this department',
+    errorCode: ErrorCode.MANAGER_NOT_MEMBER_OF_DEPARTMENT,
+    args: { managerId: 1, departmentName: 'Engineering' },
+  })
+  @ApiPrismaErrorResponses(
     {
       status: HttpStatus.NOT_FOUND,
       description: 'No department was found with such name',
@@ -147,7 +150,7 @@ export class DepartmentController {
     type: Department,
     description: 'Department deleted successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No department was found with such name',
     errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,

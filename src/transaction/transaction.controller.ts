@@ -12,7 +12,6 @@ import {
   HttpCode,
   UseFilters,
   Query,
-  ForbiddenException,
 } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { TransactionService } from './transaction.service.js';
@@ -27,16 +26,17 @@ import {
 } from '@nestjs/swagger';
 import { Transaction } from './entities/transaction.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/error.js';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
+import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
+import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { ApiQuery } from '@nestjs/swagger';
 import { UserRole } from '../../prisma/generated/enums.js';
-import { STATUS_CODES } from 'node:http';
-import { User } from '../user/entities/user.entity.js';
+import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
 
 @ApiTags('Transactions')
 @ApiBearerAuth()
@@ -52,7 +52,7 @@ export class TransactionController {
     type: Transaction,
     description: 'Transaction created successfully',
   })
-  @ApiErrorResponses(
+  @ApiPrismaErrorResponses(
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Transaction type not found',
@@ -92,6 +92,8 @@ export class TransactionController {
   }
 
   @Get()
+  @Roles(UserRole.ADMIN)
+  @RolesException((_, request) => request.query.query !== TransactionQuery.ALL)
   @ApiOperation({ summary: 'Get transactions' })
   @ApiQuery({
     name: 'query',
@@ -117,19 +119,8 @@ export class TransactionController {
   })
   findAll(
     @CurrentUser('id') userId: number,
-    @CurrentUser('role') role: UserRole,
     @Query('query') query?: TransactionQuery,
   ) {
-    if (query === TransactionQuery.ALL && role !== UserRole.ADMIN)
-      throw new ForbiddenException({
-        statusCode: HttpStatus.FORBIDDEN,
-        message: {
-          key: ErrorCode.MISSING_ROLE,
-          args: { roles: UserRole.ADMIN },
-        },
-        error: STATUS_CODES[HttpStatus.FORBIDDEN],
-      });
-
     return this.transactionService.findAll(userId, query);
   }
 
@@ -139,7 +130,7 @@ export class TransactionController {
     type: Transaction,
     description: 'Transaction retrieved successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No transaction was found with such id',
     errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
@@ -156,7 +147,7 @@ export class TransactionController {
     type: Transaction,
     description: 'Transaction updated successfully',
   })
-  @ApiErrorResponses(
+  @ApiPrismaErrorResponses(
     {
       status: HttpStatus.NOT_FOUND,
       description: 'No transaction was found with such id',
@@ -176,22 +167,20 @@ export class TransactionController {
     },
   )
   async update(
-    @CurrentUser() user: User,
+    @CurrentUser('id') userId: number,
+    @CurrentUser('role') role: UserRole,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
     if (
-      user.role !== UserRole.ADMIN &&
-      !(await this.transactionService.isCreator(id, user.id))
+      role !== UserRole.ADMIN &&
+      !(await this.transactionService.isCreator(id, userId))
     )
-      throw new ForbiddenException({
-        statusCode: HttpStatus.FORBIDDEN,
-        message: {
-          key: ErrorCode.NOT_TRANSACTION_CREATOR,
-          args: { transactionId: id },
-        },
-        error: STATUS_CODES[HttpStatus.FORBIDDEN],
-      });
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.NOT_TRANSACTION_CREATOR,
+        { transactionId: id },
+      );
 
     return this.transactionService.update(id, updateTransactionDto);
   }
@@ -202,7 +191,7 @@ export class TransactionController {
     type: Transaction,
     description: 'Transaction deleted successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No transaction was found with such id',
     errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
@@ -210,21 +199,19 @@ export class TransactionController {
     prisma: { error: PrismaError.RecordsNotFound },
   })
   async remove(
-    @CurrentUser() user: User,
+    @CurrentUser('id') userId: number,
+    @CurrentUser('role') role: UserRole,
     @Param('id', ParseIntPipe) id: number,
   ) {
     if (
-      user.role !== UserRole.ADMIN &&
-      !(await this.transactionService.isCreator(id, user.id))
+      role !== UserRole.ADMIN &&
+      !(await this.transactionService.isCreator(id, userId))
     )
-      throw new ForbiddenException({
-        statusCode: HttpStatus.FORBIDDEN,
-        message: {
-          key: ErrorCode.NOT_TRANSACTION_CREATOR,
-          args: { transactionId: id },
-        },
-        error: STATUS_CODES[HttpStatus.FORBIDDEN],
-      });
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.NOT_TRANSACTION_CREATOR,
+        { transactionId: id },
+      );
 
     return this.transactionService.remove(id);
   }
@@ -236,7 +223,7 @@ export class TransactionController {
     type: Transaction,
     description: 'Document attached to transaction successfully',
   })
-  @ApiErrorResponses(
+  @ApiPrismaErrorResponses(
     {
       status: HttpStatus.NOT_FOUND,
       description: 'No transaction was found with such id',
@@ -259,24 +246,22 @@ export class TransactionController {
     },
   )
   async attachDocument(
-    @CurrentUser() user: User,
+    @CurrentUser('id') userId: number,
+    @CurrentUser('role') role: UserRole,
     @Param('id', ParseIntPipe) id: number,
     @Param('documentId', ParseIntPipe) documentId: number,
   ) {
     if (
-      user.role !== UserRole.ADMIN &&
-      !(await this.transactionService.isParticipant(id, user.id))
+      role !== UserRole.ADMIN &&
+      !(await this.transactionService.isParticipant(id, userId))
     )
-      throw new ForbiddenException({
-        statusCode: HttpStatus.FORBIDDEN,
-        message: {
-          key: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
-          args: { transactionId: id },
-        },
-        error: STATUS_CODES[HttpStatus.FORBIDDEN],
-      });
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+        { transactionId: id },
+      );
 
-    return this.transactionService.attachDocument(id, documentId, user.id);
+    return this.transactionService.attachDocument(id, documentId, userId);
   }
 
   @Delete(':id/document/:documentId')
@@ -286,30 +271,25 @@ export class TransactionController {
     description: 'Document detached from transaction successfully',
   })
   async detachDocument(
-    @CurrentUser() user: User,
+    @CurrentUser('id') userId: number,
+    @CurrentUser('role') role: UserRole,
     @Param('id', ParseIntPipe) id: number,
     @Param('documentId', ParseIntPipe) documentId: number,
   ) {
-    if (user.role !== UserRole.ADMIN) {
-      if (!(await this.transactionService.isParticipant(id, user.id)))
-        throw new ForbiddenException({
-          statusCode: HttpStatus.FORBIDDEN,
-          message: {
-            key: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
-            args: { transactionId: id },
-          },
-          error: STATUS_CODES[HttpStatus.FORBIDDEN],
-        });
+    if (role !== UserRole.ADMIN) {
+      if (!(await this.transactionService.isParticipant(id, userId)))
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+          { transactionId: id },
+        );
 
-      if (!(await this.transactionService.isAttacher(id, documentId, user.id)))
-        throw new ForbiddenException({
-          statusCode: HttpStatus.FORBIDDEN,
-          message: {
-            key: ErrorCode.NOT_DOCUMENT_ATTACHER,
-            args: { transactionId: id, documentId },
-          },
-          error: STATUS_CODES[HttpStatus.FORBIDDEN],
-        });
+      if (!(await this.transactionService.isAttacher(id, documentId, userId)))
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.NOT_DOCUMENT_ATTACHER,
+          { transactionId: id, documentId },
+        );
     }
 
     return this.transactionService.detachDocument(id, documentId);

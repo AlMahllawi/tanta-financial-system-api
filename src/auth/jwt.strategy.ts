@@ -1,9 +1,11 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './interfaces/auth.interface.js';
 import { UserService } from '../user/user.service.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -22,11 +24,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     try {
       const user = await this.userService.findOne(payload.id);
       if (!user || !user.active) {
-        throw new UnauthorizedException();
+        throw new ApiException(
+          HttpStatus.UNAUTHORIZED,
+          ErrorCode.INVALID_CREDENTIALS,
+        );
       }
       return user;
     } catch {
-      throw new UnauthorizedException();
+      throw new ApiException(
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.INVALID_CREDENTIALS,
+      );
     }
   }
 }

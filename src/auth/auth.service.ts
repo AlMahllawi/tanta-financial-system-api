@@ -1,10 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service.js';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { verify } from 'argon2';
 import { JwtPayload } from './interfaces/auth.interface.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 
 @Injectable()
 export class AuthService {
@@ -57,11 +58,10 @@ export class AuthService {
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) throw error;
-      throw new UnauthorizedException({
-        statusCode: 401,
-        message: { key: ErrorCode.INVALID_REFRESH_TOKEN },
-        error: 'Invalid or expired refresh token',
-      });
+      throw new ApiException(
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.INVALID_REFRESH_TOKEN,
+      );
     }
   }
 

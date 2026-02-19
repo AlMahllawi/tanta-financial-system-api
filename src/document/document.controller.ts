@@ -31,10 +31,10 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Document } from './entities/document.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/error.js';
+import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
+import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 
 @ApiTags('Documents')
@@ -61,7 +61,7 @@ export class DocumentController {
     type: Document,
     description: 'Document uploaded successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'Uploader not found',
     errorCode: ErrorCode.DOCUMENT_UPLOADER_NOT_FOUND,
@@ -104,7 +104,7 @@ export class DocumentController {
     type: Document,
     description: 'Document retrieved successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
@@ -120,7 +120,7 @@ export class DocumentController {
   @ApiOkResponse({
     description: 'Document downloaded successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
@@ -147,7 +147,7 @@ export class DocumentController {
     type: Document,
     description: 'Document deleted successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,

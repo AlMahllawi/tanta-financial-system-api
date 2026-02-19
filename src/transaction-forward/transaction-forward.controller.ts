@@ -24,10 +24,10 @@ import {
 } from '@nestjs/swagger';
 import { TransactionForward } from './entities/transaction-forward.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/error.js';
+import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
+import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 
 @ApiTags('Transaction Forwards')
@@ -46,7 +46,7 @@ export class TransactionForwardController {
     type: TransactionForward,
     description: 'Transaction forwarded successfully',
   })
-  @ApiErrorResponses(
+  @ApiPrismaErrorResponses(
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Transaction not found',
@@ -106,7 +106,7 @@ export class TransactionForwardController {
     type: TransactionForward,
     description: 'Transaction forward retrieved successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
@@ -126,7 +126,7 @@ export class TransactionForwardController {
     type: TransactionForward,
     description: 'Transaction forward updated successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
@@ -152,7 +152,7 @@ export class TransactionForwardController {
     type: TransactionForward,
     description: 'Transaction forward response created successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
@@ -177,7 +177,7 @@ export class TransactionForwardController {
     type: TransactionForward,
     description: 'Transaction forward response updated successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
@@ -202,7 +202,7 @@ export class TransactionForwardController {
     type: TransactionForward,
     description: 'Transaction forward removed successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,

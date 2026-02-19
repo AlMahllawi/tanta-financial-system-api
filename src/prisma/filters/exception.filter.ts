@@ -8,10 +8,11 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Prisma } from '../../../prisma/generated/client.js';
+import { HttpExceptionResponse } from '../../common/responses/http-exception.response.js';
 import {
-  ErrorResponseDef,
+  PrismaErrorResponseDef,
   PRISMA_ERROR_METADATA_KEY,
-} from '../decorators/error.js';
+} from '../decorators/exception.decorator.js';
 import { STATUS_CODES } from 'node:http';
 import type { Request, Response } from 'express';
 
@@ -29,7 +30,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     const handler = (host as unknown as ExecutionContext).getHandler();
 
     const metadata = handler
-      ? this.reflector.get<ErrorResponseDef[]>(
+      ? this.reflector.get<PrismaErrorResponseDef[]>(
           PRISMA_ERROR_METADATA_KEY,
           handler,
         )
@@ -63,14 +64,11 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         }
       }
 
-      return response.status(errorDef.status).json({
-        statusCode: errorDef.status,
-        message: {
-          key: errorDef.errorCode,
-          args,
-        },
-        error: STATUS_CODES[errorDef.status] ?? 'Unknown Error',
-      });
+      return response
+        .status(errorDef.status)
+        .json(
+          HttpExceptionResponse.body(errorDef.status, errorDef.errorCode, args),
+        );
     }
 
     this.logger.error(

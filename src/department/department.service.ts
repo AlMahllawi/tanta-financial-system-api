@@ -1,14 +1,11 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto.js';
 import { UpdateDepartmentDto } from './dto/update-department.dto.js';
 import { Department } from './entities/department.entity.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 
 @Injectable()
 export class DepartmentService {
@@ -46,28 +43,22 @@ export class DepartmentService {
       });
 
       if (!user) {
-        throw new NotFoundException({
-          message: {
-            key: ErrorCode.MANAGER_NOT_FOUND,
-            args: { managerId: updateDepartmentDto.managerId },
-          },
-          statusCode: 404,
-          error: 'Not Found',
-        });
+        throw new ApiException(
+          HttpStatus.NOT_FOUND,
+          ErrorCode.MANAGER_NOT_FOUND,
+          { managerId: updateDepartmentDto.managerId },
+        );
       }
 
       if (user.departmentName !== name) {
-        throw new ConflictException({
-          message: {
-            key: ErrorCode.MANAGER_NOT_MEMBER_OF_DEPARTMENT,
-            args: {
-              managerId: updateDepartmentDto.managerId,
-              departmentName: name,
-            },
+        throw new ApiException(
+          HttpStatus.CONFLICT,
+          ErrorCode.MANAGER_NOT_MEMBER_OF_DEPARTMENT,
+          {
+            managerId: updateDepartmentDto.managerId,
+            departmentName: name,
           },
-          statusCode: 409,
-          error: 'Conflict',
-        });
+        );
       }
     }
 

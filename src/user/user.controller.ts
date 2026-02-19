@@ -10,7 +10,6 @@ import {
   UseGuards,
   ParseIntPipe,
   UseFilters,
-  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -24,15 +23,16 @@ import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { User } from './entities/user.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/error.js';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
+import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
 import { UserRole } from '../../prisma/generated/enums.js';
-import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
+import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { STATUS_CODES } from 'node:http';
 const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
 
 @ApiTags('Users')
@@ -50,7 +50,7 @@ export class UserController {
     type: User,
     description: 'User created successfully',
   })
-  @ApiErrorResponses(
+  @ApiPrismaErrorResponses(
     {
       status: HttpStatus.CONFLICT,
       description: 'A user already exists with the same name',
@@ -92,7 +92,7 @@ export class UserController {
     type: User,
     description: 'User retrieved successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No user was found with such id',
     errorCode: ErrorCode.USER_NOT_FOUND,
@@ -111,7 +111,7 @@ export class UserController {
     type: User,
     description: 'User updated successfully',
   })
-  @ApiErrorResponses(
+  @ApiPrismaErrorResponses(
     {
       status: HttpStatus.CONFLICT,
       description: 'A user already exists with the same name',
@@ -139,19 +139,19 @@ export class UserController {
         matcher: (meta) => meta.field === 'departmentName',
       },
     },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Some fields are restricted for non-admin users',
-      errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
-      args: { fields: 'role, active' },
-    },
   )
+  @ApiErrorResponses({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Some fields are restricted for non-admin users',
+    errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
+    args: { fields: 'role, active' },
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
-    @CurrentUser() user: User,
+    @CurrentUser('role') role: UserRole,
   ) {
-    if (user.role !== UserRole.ADMIN) {
+    if (role !== UserRole.ADMIN) {
       const updatingFields = Object.keys(updateUserDto).filter(
         (key: keyof UpdateUserDto) => updateUserDto[key] !== undefined,
       );
@@ -160,14 +160,11 @@ export class UserController {
       );
 
       if (forbiddenFields.length > 0) {
-        throw new ForbiddenException({
-          statusCode: HttpStatus.FORBIDDEN,
-          message: {
-            key: ErrorCode.RESTRICTED_FIELD_UPDATE,
-            args: { fields: forbiddenFields.join(', ') },
-          },
-          error: STATUS_CODES[HttpStatus.FORBIDDEN],
-        });
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.RESTRICTED_FIELD_UPDATE,
+          { fields: forbiddenFields.join(', ') },
+        );
       }
     }
     return this.userService.update(id, updateUserDto);
@@ -180,7 +177,7 @@ export class UserController {
     type: User,
     description: 'User deleted successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No user was found with such id',
     errorCode: ErrorCode.USER_NOT_FOUND,

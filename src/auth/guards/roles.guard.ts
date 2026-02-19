@@ -2,7 +2,6 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   HttpStatus,
 } from '@nestjs/common';
 import { Reflector, ModuleRef } from '@nestjs/core';
@@ -15,7 +14,7 @@ import {
 import { User } from '../../user/entities/user.entity.js';
 import type { Request } from 'express';
 import { ErrorCode } from '../../common/enums/error-codes.enum.js';
-import { STATUS_CODES } from 'node:http';
+import { ApiException } from '../../common/exceptions/api.exception.js';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -52,13 +51,8 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    throw new ForbiddenException({
-      statusCode: HttpStatus.FORBIDDEN,
-      message: {
-        key: ErrorCode.MISSING_ROLE,
-        args: { roles: requiredRoles?.join(' | ') },
-      },
-      error: STATUS_CODES[HttpStatus.FORBIDDEN],
+    throw new ApiException(HttpStatus.FORBIDDEN, ErrorCode.MISSING_ROLE, {
+      roles: requiredRoles?.join(' | '),
     });
   }
 }

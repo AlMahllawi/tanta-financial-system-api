@@ -20,10 +20,10 @@ import {
 } from '@nestjs/swagger';
 import { TransactionType } from './entities/transaction-type.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/error.js';
+import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
+import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 
 @ApiTags('Transaction Types')
@@ -42,7 +42,7 @@ export class TransactionTypeController {
     type: TransactionType,
     description: 'Transaction type created successfully',
   })
-  @ApiErrorResponses(
+  @ApiPrismaErrorResponses(
     {
       status: HttpStatus.CONFLICT,
       description: 'A transaction type already exists with the same name',
@@ -90,7 +90,7 @@ export class TransactionTypeController {
     type: TransactionType,
     description: 'Transaction type retrieved successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No transaction type was found with such name',
     errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
@@ -107,7 +107,7 @@ export class TransactionTypeController {
     type: TransactionType,
     description: 'Transaction type deleted successfully',
   })
-  @ApiErrorResponses({
+  @ApiPrismaErrorResponses({
     status: HttpStatus.NOT_FOUND,
     description: 'No transaction type was found with such name',
     errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,

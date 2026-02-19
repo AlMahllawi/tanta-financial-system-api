@@ -4,7 +4,6 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  UnauthorizedException,
   UseFilters,
 } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
@@ -13,8 +12,9 @@ import { RefreshTokenDto } from './dto/refresh-token.dto.js';
 import { TokenResponseDto } from './dto/token-response.dto.js';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/error.js';
-import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
+import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 
 @ApiTags('Authentication')
 @UseFilters(PrismaExceptionFilter)
@@ -40,11 +40,10 @@ export class AuthController {
       loginDto.password,
     );
     if (!userId)
-      throw new UnauthorizedException({
-        statusCode: HttpStatus.UNAUTHORIZED,
-        message: { key: ErrorCode.INVALID_CREDENTIALS },
-        error: 'Invalid credentials',
-      });
+      throw new ApiException(
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.INVALID_CREDENTIALS,
+      );
     return this.authService.login(userId);
   }
 

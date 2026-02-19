@@ -5,7 +5,7 @@ import {
   ExecutionContext,
 } from '@nestjs/common';
 import { UserRole } from '../../../prisma/generated/enums.js';
-import { ApiErrorResponses } from '../../common/decorators/error.js';
+import { ApiErrorResponses } from '../../common/decorators/api-error.decorator.js';
 import { ErrorCode } from '../../common/enums/error-codes.enum.js';
 import { ModuleRef } from '@nestjs/core';
 import { Request } from 'express';
