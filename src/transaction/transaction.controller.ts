@@ -14,11 +14,6 @@ import {
   Query,
   ForbiddenException,
 } from '@nestjs/common';
-import {
-  Roles,
-  RolesException,
-  RolesExceptionCondition,
-} from '../auth/decorators/roles.decorator.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { TransactionService } from './transaction.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
@@ -41,18 +36,7 @@ import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { ApiQuery } from '@nestjs/swagger';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { STATUS_CODES } from 'node:http';
-
-const isTransactionCreator: RolesExceptionCondition = async (
-  user,
-  request,
-  moduleRef,
-) => {
-  const transactionService = moduleRef.get(TransactionService, {
-    strict: false,
-  });
-
-  return user.id === (await transactionService.findCreator(+request.params.id));
-};
+import { User } from '../user/entities/user.entity.js';
 
 @ApiTags('Transactions')
 @ApiBearerAuth()
@@ -167,8 +151,6 @@ export class TransactionController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN)
-  @RolesException(isTransactionCreator)
   @ApiOperation({ summary: 'Update a transaction by ID' })
   @ApiOkResponse({
     type: Transaction,
@@ -193,16 +175,28 @@ export class TransactionController {
       },
     },
   )
-  update(
+  async update(
+    @CurrentUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
+    if (
+      user.role !== UserRole.ADMIN &&
+      !(await this.transactionService.isCreator(id, user.id))
+    )
+      throw new ForbiddenException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: {
+          key: ErrorCode.NOT_TRANSACTION_CREATOR,
+          args: { transactionId: id },
+        },
+        error: STATUS_CODES[HttpStatus.FORBIDDEN],
+      });
+
     return this.transactionService.update(id, updateTransactionDto);
   }
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN)
-  @RolesException(isTransactionCreator)
   @ApiOperation({ summary: 'Delete a transaction by ID' })
   @ApiOkResponse({
     type: Transaction,
@@ -215,7 +209,23 @@ export class TransactionController {
     args: { id: 1 },
     prisma: { error: PrismaError.RecordsNotFound },
   })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  async remove(
+    @CurrentUser() user: User,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    if (
+      user.role !== UserRole.ADMIN &&
+      !(await this.transactionService.isCreator(id, user.id))
+    )
+      throw new ForbiddenException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: {
+          key: ErrorCode.NOT_TRANSACTION_CREATOR,
+          args: { transactionId: id },
+        },
+        error: STATUS_CODES[HttpStatus.FORBIDDEN],
+      });
+
     return this.transactionService.remove(id);
   }
 

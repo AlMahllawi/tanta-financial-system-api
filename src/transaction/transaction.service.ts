@@ -164,13 +164,12 @@ export class TransactionService {
     return this.mapToTransaction(transaction);
   }
 
-  async findCreator(id: number) {
-    return (
-      await this.prisma.transaction.findUnique({
-        where: { id },
-        select: { creatorId: true },
-      })
-    )?.creatorId;
+  async isCreator(id: number, userId: number) {
+    const transaction = await this.prisma.transaction.findUnique({
+      where: { id },
+      select: { creatorId: true },
+    });
+    return userId == transaction?.creatorId;
   }
 
   async update(id: number, updateTransactionDto: UpdateTransactionDto) {
