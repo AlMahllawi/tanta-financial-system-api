@@ -299,10 +299,26 @@ export class TransactionForwardController {
     args: { id: 1, transactionId: 1 },
     prisma: { error: PrismaError.RecordsNotFound },
   })
+  @ApiErrorResponses(
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Only the sender can undo this forward',
+      errorCode: ErrorCode.NOT_FORWARD_SENDER,
+      args: { id: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description:
+        'Cannot undo a forward that has already been seen by the receiver',
+      errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
+      args: { id: 1 },
+    },
+  )
   remove(
+    @CurrentUser('id') userId: number,
     @Param('transactionId', ParseIntPipe) transactionId: number,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.transactionForwardService.remove(transactionId, id);
+    return this.transactionForwardService.remove(userId, transactionId, id);
   }
 }

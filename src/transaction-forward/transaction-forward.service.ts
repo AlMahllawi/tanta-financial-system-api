@@ -206,8 +206,36 @@ export class TransactionForwardService {
     return plainToInstance(TransactionForward, updatedForward);
   }
 
-  async remove(transactionId: number, id: number) {
-    const forward = await this.prisma.transactionForward.delete({
+  async remove(userId: number, transactionId: number, id: number) {
+    const forward = await this.prisma.transactionForward.findUnique({
+      where: { id, transactionId },
+    });
+
+    if (!forward) {
+      throw new ApiException(
+        HttpStatus.NOT_FOUND,
+        ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
+        { id, transactionId },
+      );
+    }
+
+    if (forward.senderId !== userId) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.NOT_FORWARD_SENDER,
+        { id },
+      );
+    }
+
+    if (forward.receiverSeen) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.FORWARD_ALREADY_SEEN,
+        { id },
+      );
+    }
+
+    const removedForward = await this.prisma.transactionForward.delete({
       where: { id, transactionId },
       include: {
         sender: true,
@@ -215,7 +243,7 @@ export class TransactionForwardService {
       },
     });
 
-    return plainToInstance(TransactionForward, forward);
+    return plainToInstance(TransactionForward, removedForward);
   }
 
   private async validateForwardCreation(userId: number, transactionId: number) {
