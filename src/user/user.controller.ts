@@ -27,14 +27,12 @@ import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiErrorResponses } from '../common/decorators/error.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
-import { Roles } from '../common/decorators/roles.decorator.js';
+import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
-import { RolesException } from '../common/decorators/roles-exception.decorator.js';
 import { CurrentUser } from '../common/decorators/current-user.decorator.js';
 import { STATUS_CODES } from 'node:http';
-
 const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
 
 @ApiTags('Users')

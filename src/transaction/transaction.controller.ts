@@ -14,11 +14,11 @@ import {
   Query,
   ForbiddenException,
 } from '@nestjs/common';
-import { Roles } from '../common/decorators/roles.decorator.js';
 import {
+  Roles,
   RolesException,
   RolesExceptionCondition,
-} from '../common/decorators/roles-exception.decorator.js';
+} from '../auth/decorators/roles.decorator.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { TransactionService } from './transaction.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';

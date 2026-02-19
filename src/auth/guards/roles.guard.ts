@@ -7,15 +7,15 @@ import {
 } from '@nestjs/common';
 import { Reflector, ModuleRef } from '@nestjs/core';
 import { UserRole } from '../../../prisma/generated/enums.js';
-import { ROLES_KEY } from '../../common/decorators/roles.decorator.js';
+import {
+  ROLES_KEY,
+  ROLES_EXCEPTION_KEY,
+  RolesExceptionCondition,
+} from '../decorators/roles.decorator.js';
 import { User } from '../../user/entities/user.entity.js';
 import type { Request } from 'express';
 import { ErrorCode } from '../../common/enums/error-codes.enum.js';
 import { STATUS_CODES } from 'node:http';
-import {
-  ROLES_EXCEPTION_KEY,
-  RolesExceptionCondition,
-} from '../../common/decorators/roles-exception.decorator.js';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
