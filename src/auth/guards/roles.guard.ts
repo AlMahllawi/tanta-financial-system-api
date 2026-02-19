@@ -12,7 +12,10 @@ import { User } from '../../user/entities/user.entity.js';
 import type { Request } from 'express';
 import { ErrorCode } from '../../common/enums/error-codes.enum.js';
 import { STATUS_CODES } from 'node:http';
-import { ALLOW_SELF_KEY } from '../../common/decorators/allow-self.decorator.js';
+import {
+  ROLES_EXCEPTION_KEY,
+  RolesExceptionCondition,
+} from '../../common/decorators/roles-exception.decorator.js';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -23,12 +26,13 @@ export class RolesGuard implements CanActivate {
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );
-    const allowSelfParam = this.reflector.getAllAndOverride<string>(
-      ALLOW_SELF_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const exceptionCondition =
+      this.reflector.getAllAndOverride<RolesExceptionCondition>(
+        ROLES_EXCEPTION_KEY,
+        [context.getHandler(), context.getClass()],
+      );
 
-    if (!requiredRoles && !allowSelfParam) return true;
+    if (!requiredRoles && !exceptionCondition) return true;
 
     const request = context.switchToHttp().getRequest<Request>();
     const user = request.user as User;
@@ -38,12 +42,7 @@ export class RolesGuard implements CanActivate {
 
     if (hasRole) return true;
 
-    if (
-      allowSelfParam &&
-      user &&
-      request.params[allowSelfParam] &&
-      user.id === Number(request.params[allowSelfParam])
-    ) {
+    if (exceptionCondition && exceptionCondition(user, request, context)) {
       return true;
     }
 

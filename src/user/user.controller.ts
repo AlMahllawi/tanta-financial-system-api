@@ -31,7 +31,7 @@ import { Roles } from '../common/decorators/roles.decorator.js';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
-import { AllowSelf } from '../common/decorators/allow-self.decorator.js';
+import { RolesException } from '../common/decorators/roles-exception.decorator.js';
 import { CurrentUser } from '../common/decorators/current-user.decorator.js';
 import { STATUS_CODES } from 'node:http';
 
@@ -107,7 +107,7 @@ export class UserController {
 
   @Patch(':id')
   @Roles(UserRole.ADMIN)
-  @AllowSelf()
+  @RolesException((user, request) => user.id === +request.params.id)
   @ApiOperation({ summary: 'Update a user' })
   @ApiOkResponse({
     type: User,
@@ -154,7 +154,9 @@ export class UserController {
     @CurrentUser() user: User,
   ) {
     if (user.role !== UserRole.ADMIN) {
-      const updatingFields = Object.keys(updateUserDto);
+      const updatingFields = Object.keys(updateUserDto).filter(
+        (key: keyof UpdateUserDto) => updateUserDto[key] !== undefined,
+      );
       const forbiddenFields = updatingFields.filter(
         (field) => !ALLOWED_USER_UPDATE_FIELDS.includes(field),
       );
