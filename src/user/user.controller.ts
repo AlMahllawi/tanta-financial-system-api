@@ -31,7 +31,7 @@ import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
-import { CurrentUser } from '../common/decorators/current-user.decorator.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { STATUS_CODES } from 'node:http';
 const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
 

@@ -29,7 +29,7 @@ import { Transaction } from './entities/transaction.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiErrorResponses } from '../common/decorators/error.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import { CurrentUser } from '../common/decorators/current-user.decorator.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../common/filters/prisma-exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
