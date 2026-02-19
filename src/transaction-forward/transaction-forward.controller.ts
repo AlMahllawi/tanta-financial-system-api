@@ -163,13 +163,29 @@ export class TransactionForwardController {
     args: { id: 1, transactionId: 1 },
     prisma: { error: PrismaError.RecordsNotFound },
   })
+  @ApiErrorResponses(
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Only the sender can update this forward',
+      errorCode: ErrorCode.NOT_FORWARD_SENDER,
+      args: { id: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Cannot update if the receiver has already responded',
+      errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
+      args: { id: 1 },
+    },
+  )
   updateSender(
+    @CurrentUser('id') userId: number,
     @Param('transactionId', ParseIntPipe) transactionId: number,
     @Param('id', ParseIntPipe) id: number,
     @Body()
     updateTransactionForwardSenderDto: UpdateTransactionForwardSenderDto,
   ) {
     return this.transactionForwardService.updateSender(
+      userId,
       transactionId,
       id,
       updateTransactionForwardSenderDto,
