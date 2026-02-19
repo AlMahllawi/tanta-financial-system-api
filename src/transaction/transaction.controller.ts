@@ -140,6 +140,12 @@ export class TransactionController {
     args: { id: 1 },
     prisma: { error: PrismaError.RecordsNotFound },
   })
+  @ApiErrorResponses({
+    status: HttpStatus.FORBIDDEN,
+    description: 'User is not a participant in the transaction',
+    errorCode: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+    args: { transactionId: 1 },
+  })
   async findOne(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
@@ -264,6 +270,28 @@ export class TransactionController {
       },
     },
   )
+  @ApiErrorResponses(
+    {
+      status: HttpStatus.FORBIDDEN,
+      description:
+        'Cannot edit documents if receiver has already seen the forward',
+      errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
+      args: { transactionId: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description:
+        'Cannot edit documents if you have already responded to the forward',
+      errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
+      args: { transactionId: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'User is not a participant in the transaction',
+      errorCode: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+      args: { transactionId: 1 },
+    },
+  )
   async attachDocument(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
@@ -281,6 +309,34 @@ export class TransactionController {
     type: Transaction,
     description: 'Document detached from transaction successfully',
   })
+  @ApiErrorResponses(
+    {
+      status: HttpStatus.FORBIDDEN,
+      description:
+        'Cannot edit documents if receiver has already seen the forward',
+      errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
+      args: { transactionId: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description:
+        'Cannot edit documents if you have already responded to the forward',
+      errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
+      args: { transactionId: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'User is not a participant in the transaction',
+      errorCode: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+      args: { transactionId: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Only the user who attached the document can detach it',
+      errorCode: ErrorCode.NOT_DOCUMENT_ATTACHER,
+      args: { transactionId: 1, documentId: 1 },
+    },
+  )
   async detachDocument(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
