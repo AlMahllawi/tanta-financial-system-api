@@ -35,7 +35,10 @@ import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { ApiQuery } from '@nestjs/swagger';
-import { UserRole } from '../../prisma/generated/enums.js';
+import {
+  UserRole,
+  TransactionForwardStatus,
+} from '../../prisma/generated/enums.js';
 import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
 
 @ApiTags('Transactions')
@@ -137,7 +140,23 @@ export class TransactionController {
     args: { id: 1 },
     prisma: { error: PrismaError.RecordsNotFound },
   })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  async findOne(
+    @CurrentUser('id') userId: number,
+    @CurrentUser('role') role: UserRole,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    if (
+      role !== UserRole.ADMIN &&
+      !(await this.transactionService.isParticipant(id, userId))
+    )
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+        { transactionId: id },
+      );
+
+    void this.transactionService.markAsSeen(id, userId);
+
     return this.transactionService.findOne(id);
   }
 
@@ -251,15 +270,7 @@ export class TransactionController {
     @Param('id', ParseIntPipe) id: number,
     @Param('documentId', ParseIntPipe) documentId: number,
   ) {
-    if (
-      role !== UserRole.ADMIN &&
-      !(await this.transactionService.isParticipant(id, userId))
-    )
-      throw new ApiException(
-        HttpStatus.FORBIDDEN,
-        ErrorCode.NOT_TRANSACTION_PARTICIPANT,
-        { transactionId: id },
-      );
+    if (role !== UserRole.ADMIN) await this.checkRestriction(userId, id);
 
     return this.transactionService.attachDocument(id, documentId, userId);
   }
@@ -277,12 +288,7 @@ export class TransactionController {
     @Param('documentId', ParseIntPipe) documentId: number,
   ) {
     if (role !== UserRole.ADMIN) {
-      if (!(await this.transactionService.isParticipant(id, userId)))
-        throw new ApiException(
-          HttpStatus.FORBIDDEN,
-          ErrorCode.NOT_TRANSACTION_PARTICIPANT,
-          { transactionId: id },
-        );
+      await this.checkRestriction(userId, id);
 
       if (!(await this.transactionService.isAttacher(id, documentId, userId)))
         throw new ApiException(
@@ -293,5 +299,36 @@ export class TransactionController {
     }
 
     return this.transactionService.detachDocument(id, documentId);
+  }
+
+  private async checkRestriction(userId: number, transactionId: number) {
+    const latestForward =
+      await this.transactionService.findLatestForward(transactionId);
+
+    if (!latestForward) return;
+
+    if (latestForward.senderId === userId) {
+      if (latestForward.receiverSeen) {
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.FORWARD_ALREADY_SEEN,
+          { transactionId },
+        );
+      }
+    } else if (latestForward.receiverId === userId) {
+      if (latestForward.status !== TransactionForwardStatus.WAITING) {
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.FORWARD_ALREADY_RESPONDED,
+          { transactionId },
+        );
+      }
+    } else {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+        { transactionId },
+      );
+    }
   }
 }

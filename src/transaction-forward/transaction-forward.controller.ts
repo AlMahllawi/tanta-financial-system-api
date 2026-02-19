@@ -114,9 +114,12 @@ export class TransactionForwardController {
     prisma: { error: PrismaError.RecordsNotFound },
   })
   findOne(
+    @CurrentUser('id') userId: number,
     @Param('transactionId', ParseIntPipe) transactionId: number,
     @Param('id', ParseIntPipe) id: number,
   ) {
+    void this.transactionForwardService.markAsSeen(id, userId);
+
     return this.transactionForwardService.findOne(transactionId, id);
   }
 

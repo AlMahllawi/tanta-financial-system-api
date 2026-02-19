@@ -209,6 +209,43 @@ export class TransactionService {
     return attachment?.attachedBy === userId;
   }
 
+  async findLatestForward(id: number) {
+    const transaction = await this.prisma.transaction.findUnique({
+      where: { id },
+      select: {
+        forwards: {
+          orderBy: { id: 'desc' },
+          take: 1,
+        },
+      },
+    });
+
+    return transaction?.forwards[0];
+  }
+
+  async markAsSeen(transactionId: number, userId: number) {
+    const latestForward = await this.findLatestForward(transactionId);
+    if (!latestForward) return;
+
+    if (
+      latestForward.senderId === userId &&
+      latestForward.senderSeen === false
+    ) {
+      await this.prisma.transactionForward.update({
+        where: { id: latestForward.id },
+        data: { senderSeen: true },
+      });
+    } else if (
+      latestForward.receiverId === userId &&
+      latestForward.receiverSeen === false
+    ) {
+      await this.prisma.transactionForward.update({
+        where: { id: latestForward.id },
+        data: { receiverSeen: true },
+      });
+    }
+  }
+
   async update(id: number, updateTransactionDto: UpdateTransactionDto) {
     const transaction = await this.prisma.transaction.update({
       where: { id },

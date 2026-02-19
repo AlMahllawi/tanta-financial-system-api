@@ -6,6 +6,9 @@ import { TransactionForward } from './entities/transaction-forward.entity.js';
 import { TransactionForwardStatus } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
+import { ApiException } from '../common/exceptions/api.exception.js';
+import { HttpStatus } from '@nestjs/common';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
 
 @Injectable()
 export class TransactionForwardService {
@@ -16,6 +19,8 @@ export class TransactionForwardService {
     transactionId: number,
     createTransactionForwardDto: CreateTransactionForwardDto,
   ) {
+    await this.validateForwardCreation(senderId, transactionId);
+
     const forward = await this.prisma.transactionForward.create({
       data: {
         transactionId,
@@ -56,6 +61,36 @@ export class TransactionForwardService {
     });
 
     return plainToInstance(TransactionForward, forward);
+  }
+
+  async markAsSeen(forwardId: number, userId: number) {
+    const forward = await this.prisma.transactionForward.findUnique({
+      where: { id: forwardId },
+      select: {
+        id: true,
+        senderId: true,
+        receiverId: true,
+        senderSeen: true,
+        receiverSeen: true,
+      },
+    });
+
+    if (!forward) return;
+
+    if (forward.senderId === userId && forward.senderSeen === false) {
+      await this.prisma.transactionForward.update({
+        where: { id: forward.id },
+        data: { senderSeen: true },
+      });
+    } else if (
+      forward.receiverId === userId &&
+      forward.receiverSeen === false
+    ) {
+      await this.prisma.transactionForward.update({
+        where: { id: forward.id },
+        data: { receiverSeen: true },
+      });
+    }
   }
 
   async updateResponse(
@@ -110,5 +145,48 @@ export class TransactionForwardService {
     });
 
     return plainToInstance(TransactionForward, forward);
+  }
+
+  private async validateForwardCreation(userId: number, transactionId: number) {
+    const transaction = await this.prisma.transaction.findUnique({
+      where: { id: transactionId },
+      select: {
+        creatorId: true,
+        latestForward: true,
+      },
+    });
+
+    if (!transaction) {
+      throw new ApiException(
+        HttpStatus.NOT_FOUND,
+        ErrorCode.TRANSACTION_NOT_FOUND,
+        { transactionId },
+      );
+    }
+
+    const { latestForward } = transaction;
+
+    if (!latestForward) {
+      if (userId !== transaction.creatorId)
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.NOT_TRANSACTION_CREATOR,
+          { transactionId },
+        );
+    } else {
+      if (userId !== latestForward.receiverId)
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.NOT_LATEST_RECEIVER,
+          { transactionId },
+        );
+
+      if (latestForward.status === TransactionForwardStatus.WAITING)
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.FORWARD_NOT_RESPONDED,
+          { transactionId },
+        );
+    }
   }
 }
