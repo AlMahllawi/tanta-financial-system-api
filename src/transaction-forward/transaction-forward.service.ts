@@ -94,12 +94,55 @@ export class TransactionForwardService {
   }
 
   async updateResponse(
+    userId: number,
     transactionId: number,
     id: number,
     updateTransactionForwardDto: UpdateTransactionForwardDto,
   ) {
-    // TODO: deny if sender seen
-    const forward = await this.prisma.transactionForward.update({
+    const forward = await this.prisma.transactionForward.findUnique({
+      where: { id, transactionId },
+      include: {
+        transaction: {
+          select: {
+            latestForward: true,
+          },
+        },
+      },
+    });
+
+    if (!forward) {
+      throw new ApiException(
+        HttpStatus.NOT_FOUND,
+        ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
+        { id, transactionId },
+      );
+    }
+
+    if (forward.receiverId !== userId) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.NOT_FORWARD_RECEIVER,
+        { id },
+      );
+    }
+
+    if (forward.senderSeen) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.FORWARD_ALREADY_SEEN,
+        { id },
+      );
+    }
+
+    if (forward.transaction.latestForward?.id !== id) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.FORWARD_ALREADY_RESPONDED,
+        { id },
+      );
+    }
+
+    const updatedForward = await this.prisma.transactionForward.update({
       where: { id, transactionId },
       data: {
         status: updateTransactionForwardDto.status,
@@ -112,7 +155,7 @@ export class TransactionForwardService {
       },
     });
 
-    return plainToInstance(TransactionForward, forward);
+    return plainToInstance(TransactionForward, updatedForward);
   }
 
   async updateSender(

@@ -189,12 +189,34 @@ export class TransactionForwardController {
     args: { id: 1, transactionId: 1 },
     prisma: { error: PrismaError.RecordsNotFound },
   })
+  @ApiErrorResponses(
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Only the receiver can respond to this forward',
+      errorCode: ErrorCode.NOT_FORWARD_RECEIVER,
+      args: { id: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Cannot respond if the sender has already seen the forward',
+      errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
+      args: { id: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Cannot respond if the transaction has been forwarded again',
+      errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
+      args: { id: 1 },
+    },
+  )
   respond(
+    @CurrentUser('id') userId: number,
     @Param('transactionId', ParseIntPipe) transactionId: number,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTransactionForwardDto: UpdateTransactionForwardDto,
   ) {
     return this.transactionForwardService.updateResponse(
+      userId,
       transactionId,
       id,
       updateTransactionForwardDto,
@@ -214,12 +236,34 @@ export class TransactionForwardController {
     args: { id: 1, transactionId: 1 },
     prisma: { error: PrismaError.RecordsNotFound },
   })
+  @ApiErrorResponses(
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Only the receiver can respond to this forward',
+      errorCode: ErrorCode.NOT_FORWARD_RECEIVER,
+      args: { id: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Cannot respond if the sender has already seen the forward',
+      errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
+      args: { id: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Cannot respond if the transaction has been forwarded again',
+      errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
+      args: { id: 1 },
+    },
+  )
   updateResponse(
+    @CurrentUser('id') userId: number,
     @Param('transactionId', ParseIntPipe) transactionId: number,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTransactionForwardDto: UpdateTransactionForwardDto,
   ) {
     return this.transactionForwardService.updateResponse(
+      userId,
       transactionId,
       id,
       updateTransactionForwardDto,
