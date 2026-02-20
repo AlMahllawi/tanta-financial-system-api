@@ -16,15 +16,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const ALLOWED_ORIGINS = configService
-    .getOrThrow<string>('ALLOWED_ORIGINS')
-    .split(',');
+  const ALLOWED_ORIGINS = configService.getOrThrow<string>('ALLOWED_ORIGINS');
   const PORT = configService.getOrThrow<number>('PORT');
   const ENV = configService.getOrThrow<string>('NODE_ENV');
   const HOST = configService.getOrThrow<string>('HOST');
 
   app.enableCors({
-    origin: ALLOWED_ORIGINS,
+    origin: ALLOWED_ORIGINS === '*' ? true : ALLOWED_ORIGINS.split(','),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -70,7 +68,7 @@ async function bootstrap() {
   if (HOST === '0.0.0.0')
     logger.log(`Listening at port: ${PORT} (http://localhost:${PORT})`);
   else logger.log(`Listening at: http://${HOST}:${PORT}`);
-  logger.log(`Allowed origins: ${ALLOWED_ORIGINS.join(', ')}`);
+  logger.log(`Allowed origins: ${ALLOWED_ORIGINS}`);
 }
 
 void bootstrap();
