@@ -26,7 +26,7 @@ export class PaginationDto {
   readonly perPage?: number = 10;
 }
 
-export class MetaDto {
+export class PaginationMetaDto {
   @ApiProperty()
   total: number;
   @ApiProperty()
@@ -43,7 +43,7 @@ export class MetaDto {
 
 export class PaginatedDto<TData> {
   @ApiProperty()
-  meta: MetaDto;
+  pagination: PaginationMetaDto;
 
   data: TData[];
 }

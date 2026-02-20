@@ -25,7 +25,7 @@ export const createPaginatedResult = <T>(
 
   return {
     data,
-    meta: {
+    pagination: {
       total,
       lastPage,
       currentPage: page,
