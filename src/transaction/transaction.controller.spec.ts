@@ -1,6 +1,5 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ForbiddenException } from '@nestjs/common';
 import { TransactionController } from './transaction.controller.js';
 import { TransactionService } from './transaction.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
@@ -9,7 +8,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { Transaction } from './entities/transaction.entity.js';
 import { TransactionPriority, UserRole } from '../../prisma/generated/enums.js';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
-import { ErrorCode } from '../common/enums/error-codes.enum.js';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
@@ -59,29 +57,39 @@ describe('TransactionController', () => {
 
   describe('findAll', () => {
     it('should return an array of transactions', async () => {
-      transactionService.findAll.mockResolvedValue([new Transaction()]);
-      await controller.findAll(1, UserRole.USER);
-      expect(transactionService.findAll).toHaveBeenCalledWith(1, undefined);
-    });
-
-    it('should throw ForbiddenException if non-admin tries to access all transactions', async () => {
-      try {
-        await controller.findAll(1, UserRole.USER, TransactionQuery.ALL);
-        fail('Should have thrown ForbiddenException');
-      } catch (e: any) {
-        expect(e).toBeInstanceOf(ForbiddenException);
-        expect(e.getResponse()).toEqual({
-          key: ErrorCode.MISSING_ROLE,
-          args: { role: UserRole.ADMIN },
-        });
-      }
+      transactionService.findAll.mockResolvedValue({
+        data: [new Transaction()],
+        summary: {} as any,
+        pagination: {
+          total: 1,
+          lastPage: 1,
+          currentPage: 1,
+          perPage: 10,
+          prev: null,
+          next: null,
+        },
+      });
+      await controller.findAll(1, {}, undefined);
+      expect(transactionService.findAll).toHaveBeenCalledWith(1, {}, undefined);
     });
 
     it('should allow admin to access all transactions', async () => {
-      transactionService.findAll.mockResolvedValue([new Transaction()]);
-      await controller.findAll(1, UserRole.ADMIN, TransactionQuery.ALL);
+      transactionService.findAll.mockResolvedValue({
+        data: [new Transaction()],
+        summary: {} as any,
+        pagination: {
+          total: 1,
+          lastPage: 1,
+          currentPage: 1,
+          perPage: 10,
+          prev: null,
+          next: null,
+        },
+      });
+      await controller.findAll(1, {}, TransactionQuery.ALL);
       expect(transactionService.findAll).toHaveBeenCalledWith(
         1,
+        {},
         TransactionQuery.ALL,
       );
     });
@@ -92,7 +100,8 @@ describe('TransactionController', () => {
 
     it('should return a transaction if found', async () => {
       transactionService.findOne.mockResolvedValue(new Transaction());
-      await controller.findOne(id);
+      transactionService.isParticipant.mockResolvedValue(true);
+      await controller.findOne(1, UserRole.USER, id);
       expect(transactionService.findOne).toHaveBeenCalledWith(id);
     });
   });
@@ -105,7 +114,8 @@ describe('TransactionController', () => {
 
     it('should successfully update a transaction', async () => {
       transactionService.update.mockResolvedValue(new Transaction());
-      await controller.update(id, updateTransactionDto);
+      transactionService.isCreator.mockResolvedValue(true);
+      await controller.update(1, UserRole.USER, id, updateTransactionDto);
       expect(transactionService.update).toHaveBeenCalledWith(
         id,
         updateTransactionDto,
@@ -118,19 +128,25 @@ describe('TransactionController', () => {
 
     it('should successfully remove a transaction', async () => {
       transactionService.remove.mockResolvedValue(new Transaction());
-      await controller.remove(id);
+      transactionService.isCreator.mockResolvedValue(true);
+      await controller.remove(1, UserRole.USER, id);
       expect(transactionService.remove).toHaveBeenCalledWith(id);
     });
   });
 
   describe('attachDocument', () => {
-    const transactionId = 1;
-    const documentId = 2;
-    const userId = 3;
-
     it('should attach a document successfully', async () => {
+      const transactionId = 1;
+      const documentId = 2;
+      const userId = 3;
       transactionService.attachDocument.mockResolvedValue(new Transaction());
-      await controller.attachDocument(transactionId, documentId, userId);
+      transactionService.findLatestForward.mockResolvedValue(undefined);
+      await controller.attachDocument(
+        userId,
+        UserRole.USER,
+        transactionId,
+        documentId,
+      );
       expect(transactionService.attachDocument).toHaveBeenCalledWith(
         transactionId,
         documentId,
@@ -140,12 +156,19 @@ describe('TransactionController', () => {
   });
 
   describe('detachDocument', () => {
-    const transactionId = 1;
-    const documentId = 2;
-
     it('should detach a document successfully', async () => {
+      const transactionId = 1;
+      const documentId = 2;
+      const userId = 3;
       transactionService.detachDocument.mockResolvedValue(new Transaction());
-      await controller.detachDocument(transactionId, documentId);
+      transactionService.findLatestForward.mockResolvedValue(undefined);
+      transactionService.isAttacher.mockResolvedValue(true);
+      await controller.detachDocument(
+        userId,
+        UserRole.USER,
+        transactionId,
+        documentId,
+      );
       expect(transactionService.detachDocument).toHaveBeenCalledWith(
         transactionId,
         documentId,

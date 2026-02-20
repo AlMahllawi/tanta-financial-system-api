@@ -3,7 +3,10 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionService } from './transaction.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { TransactionPriority } from '../../prisma/generated/enums.js';
+import {
+  TransactionPriority,
+  TransactionForwardStatus,
+} from '../../prisma/generated/enums.js';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
@@ -72,7 +75,7 @@ describe('TransactionService', () => {
         },
       },
     ],
-    forwards: [],
+    latestForward: null,
   };
 
   describe('create', () => {
@@ -109,9 +112,7 @@ describe('TransactionService', () => {
               document: true,
             },
           },
-          forwards: {
-            orderBy: { id: 'desc' },
-            take: 1,
+          latestForward: {
             select: { status: true },
           },
         },
@@ -138,7 +139,7 @@ describe('TransactionService', () => {
     });
 
     it('should NOT return transactions where user is creator and no forwards (Creator Inbox) in Default view', async () => {
-      const tx = { ...transactionWithDocs, creatorId: 1, forwards: [] };
+      const tx = { ...transactionWithDocs, creatorId: 1, latestForward: null };
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
@@ -164,9 +165,13 @@ describe('TransactionService', () => {
     it('should return transactions where user is receiver of latest forward (Inbox)', async () => {
       const tx = {
         ...transactionWithDocs,
-        forwards: [
-          { id: 2, senderId: 9, receiverId: 1, forwardedAt: new Date() },
-        ],
+        latestForward: {
+          id: 2,
+          senderId: 9,
+          receiverId: 1,
+          forwardedAt: new Date(),
+          status: TransactionForwardStatus.WAITING,
+        },
       };
 
       prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
@@ -193,9 +198,13 @@ describe('TransactionService', () => {
     it('should return transactions where user is sender of latest forward (Outgoing)', async () => {
       const tx = {
         ...transactionWithDocs,
-        forwards: [
-          { id: 2, senderId: 1, receiverId: 9, forwardedAt: new Date() },
-        ],
+        latestForward: {
+          id: 2,
+          senderId: 1,
+          receiverId: 9,
+          forwardedAt: new Date(),
+          status: TransactionForwardStatus.WAITING,
+        },
       };
 
       prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
@@ -218,10 +227,13 @@ describe('TransactionService', () => {
     it('should return transactions where user is involved but not in latest forward (History) in Default view', async () => {
       const tx = {
         ...transactionWithDocs,
-        forwards: [
-          { id: 20, senderId: 9, receiverId: 10, forwardedAt: new Date() },
-          { id: 10, senderId: 1, receiverId: 9, forwardedAt: new Date() },
-        ],
+        latestForward: {
+          id: 20,
+          senderId: 9,
+          receiverId: 10,
+          forwardedAt: new Date(),
+          status: TransactionForwardStatus.WAITING,
+        },
       };
 
       prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
@@ -246,9 +258,7 @@ describe('TransactionService', () => {
         where: { id },
         include: {
           documents: { include: { document: true } },
-          forwards: {
-            orderBy: { id: 'desc' },
-            take: 1,
+          latestForward: {
             select: { status: true },
           },
         },
@@ -280,9 +290,7 @@ describe('TransactionService', () => {
         data: updateTransactionDto,
         include: {
           documents: { include: { document: true } },
-          forwards: {
-            orderBy: { id: 'desc' },
-            take: 1,
+          latestForward: {
             select: { status: true },
           },
         },
@@ -304,9 +312,7 @@ describe('TransactionService', () => {
         where: { id },
         include: {
           documents: { include: { document: true } },
-          forwards: {
-            orderBy: { id: 'desc' },
-            take: 1,
+          latestForward: {
             select: { status: true },
           },
         },
@@ -346,9 +352,7 @@ describe('TransactionService', () => {
         where: { id: transactionId },
         include: {
           documents: { include: { document: true } },
-          forwards: {
-            orderBy: { id: 'desc' },
-            take: 1,
+          latestForward: {
             select: { status: true },
           },
         },
@@ -379,9 +383,7 @@ describe('TransactionService', () => {
         where: { id: transactionId },
         include: {
           documents: { include: { document: true } },
-          forwards: {
-            orderBy: { id: 'desc' },
-            take: 1,
+          latestForward: {
             select: { status: true },
           },
         },

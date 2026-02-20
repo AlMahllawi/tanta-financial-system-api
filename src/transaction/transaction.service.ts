@@ -25,7 +25,7 @@ type TransactionWithDocuments = Prisma.TransactionGetPayload<{
         document: true;
       };
     };
-    forwards: {
+    latestForward: {
       select: {
         status: true;
       };
@@ -59,9 +59,7 @@ export class TransactionService {
             document: true,
           },
         },
-        forwards: {
-          orderBy: { id: 'desc' },
-          take: 1,
+        latestForward: {
           select: { status: true },
         },
       },
@@ -77,99 +75,43 @@ export class TransactionService {
   ) {
     const { skip, take, page, perPage } = createPaginator(paginationDto);
 
-    if (query === TransactionQuery.ALL) {
-      const [transactions, total, ...statusCounts] =
-        await this.prisma.$transaction([
-          this.prisma.transaction.findMany({
-            skip,
-            take,
-            include: {
-              documents: {
-                include: {
-                  document: true,
-                },
-              },
-              forwards: {
-                orderBy: { id: 'desc' },
-                take: 1,
-                select: { status: true },
-              },
-            },
-          }),
-          this.prisma.transaction.count(),
-          ...Object.values(TransactionForwardStatus).map((status) =>
-            this.prisma.transaction.count({
-              where: {
-                latestForward: { status },
-              },
-            }),
-          ),
-        ]);
-
-      const summary = Object.values(TransactionForwardStatus).reduce(
-        (acc, status, index) => {
-          acc[status] = statusCounts[index];
-          return acc;
-        },
-        {} as Record<TransactionForwardStatus, number>,
-      );
-
-      const transactionsPaginated = createPaginatedResult(
-        transactions.map((t) => this.mapToTransaction(t)),
-        total,
-        page,
-        perPage,
-      );
-
-      return {
-        ...transactionsPaginated,
-        summary,
-      };
-    }
-
     const where: Prisma.TransactionWhereInput = {};
-    const userViewedLatestForward: Prisma.TransactionForwardFindManyArgs = {
-      orderBy: { id: 'desc' },
-      take: 1,
-      select: { status: true },
-    };
 
-    if (query === TransactionQuery.INBOX) {
-      where.OR = [
-        {
-          latestForward: {
-            receiverId: userId,
-          },
-        },
-        {
-          latestForward: null,
-          creatorId: userId,
-        },
-      ];
-    } else if (query === TransactionQuery.OUTGOING) {
-      where.latestForward = {
-        senderId: userId,
-      };
-    } else {
-      where.OR = [
-        {
-          creatorId: userId,
-          latestForward: {
-            senderId: { not: userId },
-            receiverId: { not: userId },
-          },
-        },
-        {
-          forwards: {
-            some: {
-              OR: [{ senderId: userId }, { receiverId: userId }],
+    if (query !== TransactionQuery.ALL) {
+      if (query === TransactionQuery.INBOX) {
+        where.OR = [
+          {
+            latestForward: {
+              receiverId: userId,
             },
           },
-        },
-      ];
-      userViewedLatestForward.where = {
-        OR: [{ senderId: userId }, { receiverId: userId }],
-      };
+          {
+            latestForward: null,
+            creatorId: userId,
+          },
+        ];
+      } else if (query === TransactionQuery.OUTGOING) {
+        where.latestForward = {
+          senderId: userId,
+        };
+      } else {
+        where.OR = [
+          {
+            creatorId: userId,
+            latestForward: {
+              senderId: { not: userId },
+              receiverId: { not: userId },
+            },
+          },
+          {
+            forwards: {
+              some: {
+                OR: [{ senderId: userId }, { receiverId: userId }],
+              },
+            },
+          },
+        ];
+      }
     }
 
     const [transactions, total, ...statusCounts] =
@@ -184,7 +126,9 @@ export class TransactionService {
                 document: true,
               },
             },
-            forwards: userViewedLatestForward,
+            latestForward: {
+              select: { status: true },
+            },
           },
           orderBy: { createdAt: 'desc' },
         }),
@@ -231,9 +175,7 @@ export class TransactionService {
             document: true,
           },
         },
-        forwards: {
-          orderBy: { id: 'desc' },
-          take: 1,
+        latestForward: {
           select: { status: true },
         },
       },
@@ -334,9 +276,7 @@ export class TransactionService {
             document: true,
           },
         },
-        forwards: {
-          orderBy: { id: 'desc' },
-          take: 1,
+        latestForward: {
           select: { status: true },
         },
       },
@@ -354,9 +294,7 @@ export class TransactionService {
             document: true,
           },
         },
-        forwards: {
-          orderBy: { id: 'desc' },
-          take: 1,
+        latestForward: {
           select: { status: true },
         },
       },
@@ -408,8 +346,8 @@ export class TransactionService {
           downloadURI: getDownloadURI(td.document.id),
         }),
       ),
-      lastForwardStatus: transaction.forwards?.[0]?.status,
-      forwards: undefined,
+      lastForwardStatus: transaction.latestForward?.status,
+      latestForward: undefined,
     };
 
     return plainToInstance(Transaction, result);
