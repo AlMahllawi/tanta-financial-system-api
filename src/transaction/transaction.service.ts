@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
 import { Transaction } from './entities/transaction.entity.js';
-import { TransactionPriority } from '../../prisma/generated/enums.js';
+import {
+  TransactionPriority,
+  TransactionForwardStatus,
+} from '../../prisma/generated/enums.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
 import { Document } from '../document/entities/document.entity.js';
@@ -75,32 +78,53 @@ export class TransactionService {
     const { skip, take, page, perPage } = createPaginator(paginationDto);
 
     if (query === TransactionQuery.ALL) {
-      const [transactions, total] = await this.prisma.$transaction([
-        this.prisma.transaction.findMany({
-          skip,
-          take,
-          include: {
-            documents: {
-              include: {
-                document: true,
+      const [transactions, total, ...statusCounts] =
+        await this.prisma.$transaction([
+          this.prisma.transaction.findMany({
+            skip,
+            take,
+            include: {
+              documents: {
+                include: {
+                  document: true,
+                },
+              },
+              forwards: {
+                orderBy: { id: 'desc' },
+                take: 1,
+                select: { status: true },
               },
             },
-            forwards: {
-              orderBy: { id: 'desc' },
-              take: 1,
-              select: { status: true },
-            },
-          },
-        }),
-        this.prisma.transaction.count(),
-      ]);
+          }),
+          this.prisma.transaction.count(),
+          ...Object.values(TransactionForwardStatus).map((status) =>
+            this.prisma.transaction.count({
+              where: {
+                latestForward: { status },
+              },
+            }),
+          ),
+        ]);
 
-      return createPaginatedResult(
+      const summary = Object.values(TransactionForwardStatus).reduce(
+        (acc, status, index) => {
+          acc[status] = statusCounts[index];
+          return acc;
+        },
+        {} as Record<TransactionForwardStatus, number>,
+      );
+
+      const transactionsPaginated = createPaginatedResult(
         transactions.map((t) => this.mapToTransaction(t)),
         total,
         page,
         perPage,
       );
+
+      return {
+        ...transactionsPaginated,
+        summary,
+      };
     }
 
     const where: Prisma.TransactionWhereInput = {};
@@ -148,25 +172,42 @@ export class TransactionService {
       };
     }
 
-    const [transactions, total] = await this.prisma.$transaction([
-      this.prisma.transaction.findMany({
-        where,
-        skip,
-        take,
-        include: {
-          documents: {
-            include: {
-              document: true,
+    const [transactions, total, ...statusCounts] =
+      await this.prisma.$transaction([
+        this.prisma.transaction.findMany({
+          where,
+          skip,
+          take,
+          include: {
+            documents: {
+              include: {
+                document: true,
+              },
             },
+            forwards: userViewedLatestForward,
           },
-          forwards: userViewedLatestForward,
-        },
-        orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.transaction.count({ where }),
-    ]);
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.prisma.transaction.count({ where }),
+        ...Object.values(TransactionForwardStatus).map((status) =>
+          this.prisma.transaction.count({
+            where: {
+              ...where,
+              latestForward: { status },
+            },
+          }),
+        ),
+      ]);
 
-    return createPaginatedResult(
+    const summary = Object.values(TransactionForwardStatus).reduce(
+      (acc, status, index) => {
+        acc[status] = statusCounts[index];
+        return acc;
+      },
+      {} as Record<TransactionForwardStatus, number>,
+    );
+
+    const transactionsPaginated = createPaginatedResult(
       transactions.map((t) =>
         this.mapToTransaction(t as TransactionWithDocuments),
       ),
@@ -174,6 +215,11 @@ export class TransactionService {
       page,
       perPage,
     );
+
+    return {
+      ...transactionsPaginated,
+      summary,
+    };
   }
 
   async findOne(id: number) {
