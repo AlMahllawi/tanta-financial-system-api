@@ -45,5 +45,6 @@ export class PaginatedDto<TData> {
   @ApiProperty()
   pagination: PaginationMetaDto;
 
+  @ApiProperty({ isArray: true })
   data: TData[];
 }

@@ -10,7 +10,8 @@ export class UpdateTransactionForwardDto {
   @ApiProperty({ enum: TransactionForwardStatusUpdate })
   @IsEnum(TransactionForwardStatus)
   @NotEquals(TransactionForwardStatus.WAITING)
-  status: TransactionForwardStatus;
+  @IsOptional()
+  status?: TransactionForwardStatus;
 
   @ApiPropertyOptional()
   @IsString()

@@ -17,6 +17,9 @@ export class TransactionSummaryDto {
 }
 
 export class PaginatedTransactionsResponseDto extends PaginatedDto<Transaction> {
+  @ApiProperty({ type: [Transaction] })
+  declare data: Transaction[];
+
   @ApiProperty()
   summary: TransactionSummaryDto;
 }
