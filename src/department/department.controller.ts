@@ -9,6 +9,7 @@ import {
   HttpStatus,
   UseGuards,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service.js';
 import { CreateDepartmentDto } from './dto/create-department.dto.js';
@@ -27,6 +28,8 @@ import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorato
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
+import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 
 @ApiTags('Departments')
 @ApiBearerAuth()
@@ -58,12 +61,9 @@ export class DepartmentController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all departments' })
-  @ApiOkResponse({
-    type: [Department],
-    description: 'Departments retrieved successfully',
-  })
-  findAll() {
-    return this.departmentService.findAll();
+  @ApiPaginatedResponse(Department)
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.departmentService.findAll(paginationDto);
   }
 
   @Get(':name')

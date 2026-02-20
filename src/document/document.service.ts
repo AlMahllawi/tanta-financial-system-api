@@ -3,6 +3,11 @@ import { Document } from './entities/document.entity.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
 import { getDownloadURI } from '../common/utils/document.util.js';
+import {
+  createPaginatedResult,
+  createPaginator,
+} from '../common/utils/pagination.util.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 
 @Injectable()
 export class DocumentService {
@@ -23,18 +28,31 @@ export class DocumentService {
     });
   }
 
-  // TODO: paginate, filters
-  async findAll(uploaderId: number) {
-    const documents = await this.prisma.document.findMany({
-      where: { uploaderId },
-    });
+  async findAll(uploaderId: number, paginationDto: PaginationDto) {
+    const { skip, take, page, perPage } = createPaginator(paginationDto);
 
-    return plainToInstance(
-      Document,
-      documents.map((doc) => ({
-        ...doc,
-        downloadURI: getDownloadURI(doc.id),
-      })),
+    const [documents, total] = await this.prisma.$transaction([
+      this.prisma.document.findMany({
+        where: { uploaderId },
+        skip,
+        take,
+      }),
+      this.prisma.document.count({
+        where: { uploaderId },
+      }),
+    ]);
+
+    return createPaginatedResult(
+      plainToInstance(
+        Document,
+        documents.map((doc) => ({
+          ...doc,
+          downloadURI: getDownloadURI(doc.id),
+        })),
+      ),
+      total,
+      page,
+      perPage,
     );
   }
 

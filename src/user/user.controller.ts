@@ -10,6 +10,7 @@ import {
   UseGuards,
   ParseIntPipe,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -33,6 +34,8 @@ import { UserRole } from '../../prisma/generated/enums.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
 
 @ApiTags('Users')
@@ -78,12 +81,9 @@ export class UserController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all users' })
-  @ApiOkResponse({
-    type: [User],
-    description: 'Users retrieved successfully',
-  })
-  findAll() {
-    return this.userService.findAll();
+  @ApiPaginatedResponse(User)
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.userService.findAll(paginationDto);
   }
 
   @Get(':id')

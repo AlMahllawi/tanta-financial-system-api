@@ -36,6 +36,9 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
+import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { Query } from '@nestjs/common';
 
 @ApiTags('Documents')
 @ApiBearerAuth()
@@ -90,12 +93,12 @@ export class DocumentController {
 
   @Get('uploaded')
   @ApiOperation({ summary: 'Retrieve all documents uploaded by the user' })
-  @ApiOkResponse({
-    type: [Document],
-    description: 'Documents retrieved successfully',
-  })
-  findAll(@CurrentUser('id') uploaderId: number) {
-    return this.documentService.findAll(uploaderId);
+  @ApiPaginatedResponse(Document)
+  findAll(
+    @CurrentUser('id') uploaderId: number,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.documentService.findAll(uploaderId, paginationDto);
   }
 
   @Get(':id')

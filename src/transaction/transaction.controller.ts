@@ -35,6 +35,8 @@ import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { ApiQuery } from '@nestjs/swagger';
+import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 import {
   UserRole,
   TransactionForwardStatus,
@@ -109,22 +111,13 @@ export class TransactionController {
       '* `all`: Every transaction in the system (Admin only).\n\n' +
       "If absent, returns 'archive' transactions (history of involvement).",
   })
-  @ApiOkResponse({
-    type: [Transaction],
-    description: 'Transactions retrieved successfully',
-  })
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description:
-      'User does not have the required role to access all transactions',
-    errorCode: ErrorCode.MISSING_ROLE,
-    args: { roles: UserRole.ADMIN },
-  })
+  @ApiPaginatedResponse(Transaction)
   findAll(
     @CurrentUser('id') userId: number,
+    @Query() paginationDto: PaginationDto,
     @Query('query') query?: TransactionQuery,
   ) {
-    return this.transactionService.findAll(userId, query);
+    return this.transactionService.findAll(userId, paginationDto, query);
   }
 
   @Get(':id')

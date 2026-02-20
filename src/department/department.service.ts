@@ -6,6 +6,11 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
+import {
+  createPaginatedResult,
+  createPaginator,
+} from '../common/utils/pagination.util.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 
 @Injectable()
 export class DepartmentService {
@@ -21,11 +26,23 @@ export class DepartmentService {
     return plainToInstance(Department, department);
   }
 
-  // TODO: paginate
-  async findAll() {
-    const departments = await this.prisma.department.findMany();
+  async findAll(paginationDto: PaginationDto) {
+    const { skip, take, page, perPage } = createPaginator(paginationDto);
 
-    return plainToInstance(Department, departments);
+    const [departments, total] = await this.prisma.$transaction([
+      this.prisma.department.findMany({
+        skip,
+        take,
+      }),
+      this.prisma.department.count(),
+    ]);
+
+    return createPaginatedResult(
+      plainToInstance(Department, departments),
+      total,
+      page,
+      perPage,
+    );
   }
 
   async findOne(name: string) {

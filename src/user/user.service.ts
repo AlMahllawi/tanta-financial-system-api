@@ -6,6 +6,11 @@ import { UserRole } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
 import { hash } from 'argon2';
+import {
+  createPaginatedResult,
+  createPaginator,
+} from '../common/utils/pagination.util.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 
 @Injectable()
 export class UserService {
@@ -24,11 +29,23 @@ export class UserService {
     return plainToInstance(User, user);
   }
 
-  // TODO: paginate
-  async findAll() {
-    const users = await this.prisma.user.findMany();
+  async findAll(paginationDto: PaginationDto) {
+    const { skip, take, page, perPage } = createPaginator(paginationDto);
 
-    return plainToInstance(User, users);
+    const [users, total] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        skip,
+        take,
+      }),
+      this.prisma.user.count(),
+    ]);
+
+    return createPaginatedResult(
+      plainToInstance(User, users),
+      total,
+      page,
+      perPage,
+    );
   }
 
   async findOne(id: number) {

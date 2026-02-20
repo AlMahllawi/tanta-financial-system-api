@@ -8,6 +8,7 @@ import {
   HttpStatus,
   UseGuards,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { TransactionTypeService } from './transaction-type.service.js';
 import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
@@ -25,6 +26,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
+import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 
 @ApiTags('Transaction Types')
 @ApiBearerAuth()
@@ -76,12 +79,9 @@ export class TransactionTypeController {
 
   @Get()
   @ApiOperation({ summary: 'Retrieve all transaction types' })
-  @ApiOkResponse({
-    type: [TransactionType],
-    description: 'Transaction types retrieved successfully',
-  })
-  findAll() {
-    return this.transactionTypeService.findAll();
+  @ApiPaginatedResponse(TransactionType)
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.transactionTypeService.findAll(paginationDto);
   }
 
   @Get(':name')

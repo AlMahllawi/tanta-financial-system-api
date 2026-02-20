@@ -9,6 +9,11 @@ import { Document } from '../document/entities/document.entity.js';
 import { getDownloadURI } from '../common/utils/document.util.js';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { Prisma } from '../../prisma/generated/client.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
+import {
+  createPaginatedResult,
+  createPaginator,
+} from '../common/utils/pagination.util.js';
 
 type TransactionWithDocuments = Prisma.TransactionGetPayload<{
   include: {
@@ -62,23 +67,40 @@ export class TransactionService {
     return this.mapToTransaction(transaction);
   }
 
-  async findAll(userId: number, query?: TransactionQuery) {
+  async findAll(
+    userId: number,
+    paginationDto: PaginationDto,
+    query?: TransactionQuery,
+  ) {
+    const { skip, take, page, perPage } = createPaginator(paginationDto);
+
     if (query === TransactionQuery.ALL) {
-      const transactions = await this.prisma.transaction.findMany({
-        include: {
-          documents: {
-            include: {
-              document: true,
+      const [transactions, total] = await this.prisma.$transaction([
+        this.prisma.transaction.findMany({
+          skip,
+          take,
+          include: {
+            documents: {
+              include: {
+                document: true,
+              },
+            },
+            forwards: {
+              orderBy: { id: 'desc' },
+              take: 1,
+              select: { status: true },
             },
           },
-          forwards: {
-            orderBy: { id: 'desc' },
-            take: 1,
-            select: { status: true },
-          },
-        },
-      });
-      return transactions.map((t) => this.mapToTransaction(t));
+        }),
+        this.prisma.transaction.count(),
+      ]);
+
+      return createPaginatedResult(
+        transactions.map((t) => this.mapToTransaction(t)),
+        total,
+        page,
+        perPage,
+      );
     }
 
     const where: Prisma.TransactionWhereInput = {};
@@ -126,21 +148,31 @@ export class TransactionService {
       };
     }
 
-    const transactions = await this.prisma.transaction.findMany({
-      where,
-      include: {
-        documents: {
-          include: {
-            document: true,
+    const [transactions, total] = await this.prisma.$transaction([
+      this.prisma.transaction.findMany({
+        where,
+        skip,
+        take,
+        include: {
+          documents: {
+            include: {
+              document: true,
+            },
           },
+          forwards: userViewedLatestForward,
         },
-        forwards: userViewedLatestForward,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.transaction.count({ where }),
+    ]);
 
-    return transactions.map((t) =>
-      this.mapToTransaction(t as TransactionWithDocuments),
+    return createPaginatedResult(
+      transactions.map((t) =>
+        this.mapToTransaction(t as TransactionWithDocuments),
+      ),
+      total,
+      page,
+      perPage,
     );
   }
 

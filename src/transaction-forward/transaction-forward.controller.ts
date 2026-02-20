@@ -10,6 +10,7 @@ import {
   UseGuards,
   ParseIntPipe,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { TransactionForwardService } from './transaction-forward.service.js';
 import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
@@ -30,6 +31,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
+import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 
 @ApiTags('Transaction Forwards')
 @ApiBearerAuth()
@@ -119,12 +122,12 @@ export class TransactionForwardController {
 
   @Get()
   @ApiOperation({ summary: "Get all transaction's forwards" })
-  @ApiOkResponse({
-    type: [TransactionForward],
-    description: 'Transaction forwards retrieved successfully',
-  })
-  findAll(@Param('transactionId', ParseIntPipe) transactionId: number) {
-    return this.transactionForwardService.findAll(transactionId);
+  @ApiPaginatedResponse(TransactionForward)
+  findAll(
+    @Param('transactionId', ParseIntPipe) transactionId: number,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.transactionForwardService.findAll(transactionId, paginationDto);
   }
 
   @Get(':id')

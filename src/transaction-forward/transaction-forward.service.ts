@@ -9,6 +9,11 @@ import { plainToInstance } from 'class-transformer';
 import { ApiException } from '../common/exceptions/api.exception.js';
 import { HttpStatus } from '@nestjs/common';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import {
+  createPaginatedResult,
+  createPaginator,
+} from '../common/utils/pagination.util.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 
 @Injectable()
 export class TransactionForwardService {
@@ -38,17 +43,30 @@ export class TransactionForwardService {
     return plainToInstance(TransactionForward, forward);
   }
 
-  // TODO: paginate
-  async findAll(transactionId: number) {
-    const forwards = await this.prisma.transactionForward.findMany({
-      where: { transactionId },
-      include: {
-        sender: true,
-        receiver: true,
-      },
-    });
+  async findAll(transactionId: number, paginationDto: PaginationDto) {
+    const { skip, take, page, perPage } = createPaginator(paginationDto);
 
-    return plainToInstance(TransactionForward, forwards);
+    const [forwards, total] = await this.prisma.$transaction([
+      this.prisma.transactionForward.findMany({
+        where: { transactionId },
+        include: {
+          sender: true,
+          receiver: true,
+        },
+        skip,
+        take,
+      }),
+      this.prisma.transactionForward.count({
+        where: { transactionId },
+      }),
+    ]);
+
+    return createPaginatedResult(
+      plainToInstance(TransactionForward, forwards),
+      total,
+      page,
+      perPage,
+    );
   }
 
   async findOne(transactionId: number, id: number) {
