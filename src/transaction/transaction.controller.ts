@@ -41,7 +41,7 @@ import {
   TransactionForwardStatus,
 } from '../../prisma/generated/enums.js';
 import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
-import { PaginatedTransactionsResponseDto } from './dto/paginated-transactions-response.dto.js';
+import { PaginatedTransactionSummaryResponseDto } from './dto/paginated-transaction-summary-response.dto.js';
 
 @ApiTags('Transactions')
 @ApiBearerAuth()
@@ -111,7 +111,7 @@ export class TransactionController {
       '* `all`: Every transaction in the system (Admin only).\n\n' +
       "If absent, returns 'archive' transactions (history of involvement).",
   })
-  @ApiOkResponse({ type: PaginatedTransactionsResponseDto })
+  @ApiOkResponse({ type: PaginatedTransactionSummaryResponseDto })
   findAll(
     @CurrentUser('id') userId: number,
     @Query() paginationDto: PaginationDto,

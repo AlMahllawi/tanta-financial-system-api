@@ -8,6 +8,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { Transaction } from './entities/transaction.entity.js';
 import { TransactionPriority, UserRole } from '../../prisma/generated/enums.js';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
+import { TransactionSummary } from './entities/transaction-summary.entity.js';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
@@ -56,9 +57,9 @@ describe('TransactionController', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of transactions', async () => {
+    it('should return an array of transaction summaries', async () => {
       transactionService.findAll.mockResolvedValue({
-        data: [new Transaction()],
+        data: [new TransactionSummary()],
         summary: {} as any,
         pagination: {
           total: 1,
@@ -73,9 +74,9 @@ describe('TransactionController', () => {
       expect(transactionService.findAll).toHaveBeenCalledWith(1, {}, undefined);
     });
 
-    it('should allow admin to access all transactions', async () => {
+    it('should allow admin to access all transaction summaries', async () => {
       transactionService.findAll.mockResolvedValue({
-        data: [new Transaction()],
+        data: [new TransactionSummary()],
         summary: {} as any,
         pagination: {
           total: 1,

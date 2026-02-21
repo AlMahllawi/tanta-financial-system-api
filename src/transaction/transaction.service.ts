@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
 import { Transaction } from './entities/transaction.entity.js';
+import { TransactionSummary } from './entities/transaction-summary.entity.js';
 import {
   TransactionPriority,
   TransactionForwardStatus,
@@ -18,19 +19,19 @@ import {
   createPaginator,
 } from '../common/utils/pagination.util.js';
 
+const TRANSACTION_INCLUDE = {
+  documents: {
+    include: {
+      document: true,
+    },
+  },
+  latestForward: {
+    select: { status: true },
+  },
+} satisfies Prisma.TransactionInclude;
+
 type TransactionWithDocuments = Prisma.TransactionGetPayload<{
-  include: {
-    documents: {
-      include: {
-        document: true;
-      };
-    };
-    latestForward: {
-      select: {
-        status: true;
-      };
-    };
-  };
+  include: typeof TRANSACTION_INCLUDE;
 }>;
 
 @Injectable()
@@ -88,16 +89,7 @@ export class TransactionService {
             })) || [],
         },
       },
-      include: {
-        documents: {
-          include: {
-            document: true,
-          },
-        },
-        latestForward: {
-          select: { status: true },
-        },
-      },
+      include: TRANSACTION_INCLUDE,
     });
 
     return this.mapToTransaction(transaction);
@@ -130,14 +122,17 @@ export class TransactionService {
           where,
           skip,
           take,
-          include: {
-            documents: {
-              include: {
-                document: true,
-              },
-            },
+          select: {
+            id: true,
+            title: true,
+            typeName: true,
+            fulfilled: true,
+            priority: true,
             latestForward: {
               select: { status: true },
+            },
+            _count: {
+              select: { documents: true },
             },
           },
           orderBy: { createdAt: 'desc' },
@@ -163,7 +158,13 @@ export class TransactionService {
 
     const transactionsPaginated = createPaginatedResult(
       transactions.map((t) =>
-        this.mapToTransaction(t as TransactionWithDocuments),
+        plainToInstance(TransactionSummary, {
+          ...t,
+          documentsCount: t._count.documents,
+          lastForwardStatus: t.latestForward?.status,
+          latestForward: undefined,
+          _count: undefined,
+        }),
       ),
       total,
       page,
@@ -179,16 +180,7 @@ export class TransactionService {
   async findOne(id: number) {
     const transaction = await this.prisma.transaction.findUniqueOrThrow({
       where: { id },
-      include: {
-        documents: {
-          include: {
-            document: true,
-          },
-        },
-        latestForward: {
-          select: { status: true },
-        },
-      },
+      include: TRANSACTION_INCLUDE,
     });
 
     return this.mapToTransaction(transaction);
@@ -280,16 +272,7 @@ export class TransactionService {
     const transaction = await this.prisma.transaction.update({
       where: { id },
       data: updateTransactionDto,
-      include: {
-        documents: {
-          include: {
-            document: true,
-          },
-        },
-        latestForward: {
-          select: { status: true },
-        },
-      },
+      include: TRANSACTION_INCLUDE,
     });
 
     return this.mapToTransaction(transaction);
@@ -298,16 +281,7 @@ export class TransactionService {
   async remove(id: number) {
     const transaction = await this.prisma.transaction.delete({
       where: { id },
-      include: {
-        documents: {
-          include: {
-            document: true,
-          },
-        },
-        latestForward: {
-          select: { status: true },
-        },
-      },
+      include: TRANSACTION_INCLUDE,
     });
 
     return this.mapToTransaction(transaction);
