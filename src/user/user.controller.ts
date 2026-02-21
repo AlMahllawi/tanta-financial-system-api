@@ -86,6 +86,16 @@ export class UserController {
     return this.userService.findAll(paginationDto);
   }
 
+  @Get('me')
+  @ApiOperation({ summary: 'Retrieve the current user' })
+  @ApiOkResponse({
+    type: User,
+    description: 'Current user retrieved successfully',
+  })
+  getMe(@CurrentUser() user: User) {
+    return user;
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a user' })
   @ApiOkResponse({

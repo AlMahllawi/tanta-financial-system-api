@@ -53,9 +53,27 @@ describe('UserController', () => {
 
   describe('findAll', () => {
     it('should return an array of users', async () => {
-      userService.findAll.mockResolvedValue([new User()]);
-      await controller.findAll();
+      const result = {
+        data: [new User()],
+        pagination: {
+          total: 1,
+          perPage: 10,
+          currentPage: 1,
+          lastPage: 1,
+          prev: null,
+          next: null,
+        },
+      };
+      userService.findAll.mockResolvedValue(result as any);
+      await controller.findAll({ page: 1, perPage: 10 });
       expect(userService.findAll).toHaveBeenCalled();
+    });
+  });
+
+  describe('getMe', () => {
+    it('should return the current user', () => {
+      const user = new User();
+      expect(controller.getMe(user)).toBe(user);
     });
   });
 
@@ -77,7 +95,7 @@ describe('UserController', () => {
 
     it('should successfully update a user', async () => {
       userService.update.mockResolvedValue(new User());
-      await controller.update(id, updateUserDto);
+      await controller.update(id, updateUserDto, UserRole.ADMIN);
       expect(userService.update).toHaveBeenCalledWith(id, updateUserDto);
     });
   });
