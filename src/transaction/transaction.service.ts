@@ -37,6 +37,41 @@ type TransactionWithDocuments = Prisma.TransactionGetPayload<{
 export class TransactionService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private getInboxWhere(userId: number): Prisma.TransactionWhereInput {
+    return {
+      OR: [
+        {
+          latestForward: {
+            receiverId: userId,
+          },
+        },
+        {
+          forwards: {
+            some: {
+              senderId: userId,
+              senderSeen: false,
+            },
+          },
+        },
+        {
+          latestForward: null,
+          creatorId: userId,
+        },
+      ],
+    };
+  }
+
+  private getOutgoingWhere(userId: number): Prisma.TransactionWhereInput {
+    return {
+      forwards: {
+        some: {
+          senderId: userId,
+          status: TransactionForwardStatus.WAITING,
+        },
+      },
+    };
+  }
+
   async create(creatorId: number, createTransactionDto: CreateTransactionDto) {
     const transaction = await this.prisma.transaction.create({
       data: {
@@ -75,42 +110,17 @@ export class TransactionService {
   ) {
     const { skip, take, page, perPage } = createPaginator(paginationDto);
 
-    const where: Prisma.TransactionWhereInput = {};
+    let where: Prisma.TransactionWhereInput = {};
 
     if (query !== TransactionQuery.ALL) {
       if (query === TransactionQuery.INBOX) {
-        where.OR = [
-          {
-            latestForward: {
-              receiverId: userId,
-            },
-          },
-          {
-            latestForward: null,
-            creatorId: userId,
-          },
-        ];
+        where = this.getInboxWhere(userId);
       } else if (query === TransactionQuery.OUTGOING) {
-        where.latestForward = {
-          senderId: userId,
-        };
+        where = this.getOutgoingWhere(userId);
       } else {
-        where.OR = [
-          {
-            creatorId: userId,
-            latestForward: {
-              senderId: { not: userId },
-              receiverId: { not: userId },
-            },
-          },
-          {
-            forwards: {
-              some: {
-                OR: [{ senderId: userId }, { receiverId: userId }],
-              },
-            },
-          },
-        ];
+        where.NOT = {
+          OR: [this.getInboxWhere(userId), this.getOutgoingWhere(userId)],
+        };
       }
     }
 
