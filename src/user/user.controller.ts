@@ -35,7 +35,8 @@ import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { UserQueryDto } from './dto/user-query.dto.js';
+
 const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
 
 @ApiTags('Users')
@@ -82,8 +83,24 @@ export class UserController {
   @Get()
   @ApiOperation({ summary: 'Retrieve all users' })
   @ApiPaginatedResponse(User)
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.userService.findAll(paginationDto);
+  @ApiErrorResponses({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Filtering by active status is restricted for non-admin users',
+    errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
+    args: { fields: 'active' },
+  })
+  findAll(
+    @Query() queryDto: UserQueryDto,
+    @CurrentUser('role') role: UserRole,
+  ) {
+    if (role !== UserRole.ADMIN && queryDto.active !== undefined) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.RESTRICTED_FIELD_UPDATE,
+        { fields: 'active' },
+      );
+    }
+    return this.userService.findAll(queryDto);
   }
 
   @Get('me')

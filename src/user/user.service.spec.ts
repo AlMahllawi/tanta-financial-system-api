@@ -68,25 +68,53 @@ describe('UserService', () => {
   });
 
   describe('findAll', () => {
+    const users = [
+      {
+        id: 1,
+        name: 'Test User',
+        departmentName: 'Test Department',
+        hashedPassword: 'hashedPassword',
+        active: true,
+        lastLogin: null,
+        role: UserRole.USER,
+        createdAt: new Date(),
+      },
+    ];
+
     it('should return an array of users', async () => {
-      const users = [
-        {
-          id: 1,
-          name: 'Test User',
-          departmentName: 'Test Department',
-          hashedPassword: 'hashedPassword',
-          active: true,
-          lastLogin: null,
-          role: UserRole.USER,
-          createdAt: new Date(),
-        },
-      ];
-
       prismaMock.user.findMany.mockResolvedValue(users);
+      prismaMock.user.count.mockResolvedValue(1);
+      prismaMock.$transaction.mockResolvedValue([users, 1]);
 
-      await service.findAll();
+      await service.findAll({ page: 1, perPage: 10 });
 
       expect(prismaMock.user.findMany).toHaveBeenCalled();
+    });
+
+    it('should filter users by specific properties', async () => {
+      prismaMock.user.findMany.mockResolvedValue(users);
+      prismaMock.user.count.mockResolvedValue(1);
+      prismaMock.$transaction.mockResolvedValue([users, 1]);
+
+      await service.findAll({
+        page: 1,
+        perPage: 10,
+        name: 'test name',
+        department: 'test dept',
+        role: UserRole.USER,
+        active: true,
+      });
+
+      expect(prismaMock.user.findMany).toHaveBeenCalledWith({
+        where: {
+          name: { contains: 'test name', mode: 'insensitive' },
+          departmentName: { contains: 'test dept', mode: 'insensitive' },
+          role: UserRole.USER,
+          active: true,
+        },
+        skip: 0,
+        take: 10,
+      });
     });
   });
 

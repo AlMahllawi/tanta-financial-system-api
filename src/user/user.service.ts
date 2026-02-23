@@ -10,7 +10,8 @@ import {
   createPaginatedResult,
   createPaginator,
 } from '../common/utils/pagination.util.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { UserQueryDto } from './dto/user-query.dto.js';
+import { Prisma } from '../../prisma/generated/client.js';
 
 @Injectable()
 export class UserService {
@@ -29,15 +30,30 @@ export class UserService {
     return plainToInstance(User, user);
   }
 
-  async findAll(paginationDto: PaginationDto) {
-    const { skip, take, page, perPage } = createPaginator(paginationDto);
+  async findAll(queryDto: UserQueryDto) {
+    const { skip, take, page, perPage } = createPaginator(queryDto);
+
+    const where: Prisma.UserWhereInput = { active: true };
+    if (queryDto.name)
+      where.name = { contains: queryDto.name, mode: 'insensitive' };
+
+    if (queryDto.department)
+      where.departmentName = {
+        contains: queryDto.department,
+        mode: 'insensitive',
+      };
+
+    if (queryDto.role) where.role = queryDto.role;
+
+    if (queryDto.active !== undefined) where.active = queryDto.active;
 
     const [users, total] = await this.prisma.$transaction([
       this.prisma.user.findMany({
+        where,
         skip,
         take,
       }),
-      this.prisma.user.count(),
+      this.prisma.user.count({ where }),
     ]);
 
     return createPaginatedResult(

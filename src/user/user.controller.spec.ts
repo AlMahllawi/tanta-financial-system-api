@@ -52,7 +52,7 @@ describe('UserController', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of users', async () => {
+    it('should return an array of users for admin', async () => {
       const result = {
         data: [new User()],
         pagination: {
@@ -65,8 +65,40 @@ describe('UserController', () => {
         },
       };
       userService.findAll.mockResolvedValue(result as any);
-      await controller.findAll({ page: 1, perPage: 10 });
+      await controller.findAll(
+        { page: 1, perPage: 10, name: 'test' },
+        UserRole.ADMIN,
+      );
       expect(userService.findAll).toHaveBeenCalled();
+    });
+
+    it('should return users for regular role without active filter', async () => {
+      const result = {
+        data: [new User()],
+        pagination: {
+          total: 1,
+          perPage: 10,
+          currentPage: 1,
+          lastPage: 1,
+          prev: null,
+          next: null,
+        },
+      };
+      userService.findAll.mockResolvedValue(result as any);
+      await controller.findAll(
+        { page: 1, perPage: 10, name: 'test' },
+        UserRole.USER,
+      );
+      expect(userService.findAll).toHaveBeenCalled();
+    });
+
+    it('should throw ApiException if non-admin tries to filter by active', () => {
+      expect(() =>
+        controller.findAll(
+          { page: 1, perPage: 10, active: true },
+          UserRole.USER,
+        ),
+      ).toThrow();
     });
   });
 
