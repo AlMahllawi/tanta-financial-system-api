@@ -13,7 +13,8 @@ import { Document } from '../document/entities/document.entity.js';
 import { getDownloadURI } from '../common/utils/document.util.js';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { Prisma } from '../../prisma/generated/client.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+
+import { TransactionQueryDto } from './dto/transaction-query.dto.js';
 import {
   createPaginatedResult,
   createPaginator,
@@ -95,16 +96,23 @@ export class TransactionService {
     return this.mapToTransaction(transaction);
   }
 
-  async findAll(
-    userId: number,
-    paginationDto: PaginationDto,
-    query?: TransactionQuery,
-  ) {
-    const { skip, take, page, perPage } = createPaginator(paginationDto);
+  async findAll(userId: number, queryDto: TransactionQueryDto) {
+    const { skip, take, page, perPage } = createPaginator(queryDto);
 
     let where: Prisma.TransactionWhereInput = {};
 
-    if (query !== TransactionQuery.ALL) {
+    const {
+      query,
+      title,
+      description,
+      typeName,
+      fulfilled,
+      priority,
+      creatorId,
+      lastForwardStatus,
+    } = queryDto;
+
+    if (query && query !== TransactionQuery.ALL) {
       if (query === TransactionQuery.INBOX) {
         where = this.getInboxWhere(userId);
       } else if (query === TransactionQuery.OUTGOING) {
@@ -114,7 +122,21 @@ export class TransactionService {
           OR: [this.getInboxWhere(userId), this.getOutgoingWhere(userId)],
         };
       }
+    } else if (!query) {
+      // Default behavior if query is absent: 'archive'
+      where.NOT = {
+        OR: [this.getInboxWhere(userId), this.getOutgoingWhere(userId)],
+      };
     }
+
+    if (title) where.title = { contains: title, mode: 'insensitive' };
+    if (description)
+      where.description = { contains: description, mode: 'insensitive' };
+    if (typeName) where.typeName = { contains: typeName, mode: 'insensitive' };
+    if (fulfilled !== undefined) where.fulfilled = fulfilled;
+    if (priority) where.priority = priority;
+    if (creatorId) where.creatorId = creatorId;
+    if (lastForwardStatus) where.latestForward = { status: lastForwardStatus };
 
     const [transactions, total, ...statusCounts] =
       await this.prisma.$transaction([

@@ -144,7 +144,7 @@ describe('TransactionService', () => {
         transactionSummaryPayload as any,
       ]);
 
-      const result = await service.findAll(1, {}, TransactionQuery.ALL);
+      const result = await service.findAll(1, { query: TransactionQuery.ALL });
 
       expect(prismaMock.transaction.findMany).toHaveBeenCalledTimes(1);
       expect(result.data).toHaveLength(1);
@@ -164,16 +164,16 @@ describe('TransactionService', () => {
       prismaMock.transaction.findMany.mockResolvedValue([
         transactionSummaryPayload as any,
       ]);
-      const resultInbox = await service.findAll(1, {}, TransactionQuery.INBOX);
+      const resultInbox = await service.findAll(1, {
+        query: TransactionQuery.INBOX,
+      });
       expect(resultInbox.data).toHaveLength(1);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
-      const resultOutgoing = await service.findAll(
-        1,
-        {},
-        TransactionQuery.OUTGOING,
-      );
+      const resultOutgoing = await service.findAll(1, {
+        query: TransactionQuery.OUTGOING,
+      });
       expect(resultOutgoing.data).toHaveLength(0);
     });
 
@@ -194,7 +194,9 @@ describe('TransactionService', () => {
         transactionSummaryPayload as any,
       ]);
 
-      const result = await service.findAll(1, {}, TransactionQuery.INBOX);
+      const result = await service.findAll(1, {
+        query: TransactionQuery.INBOX,
+      });
       expect(result.data).toHaveLength(1);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
@@ -204,11 +206,9 @@ describe('TransactionService', () => {
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
-      const resultOutgoing = await service.findAll(
-        1,
-        {},
-        TransactionQuery.OUTGOING,
-      );
+      const resultOutgoing = await service.findAll(1, {
+        query: TransactionQuery.OUTGOING,
+      });
       expect(resultOutgoing.data).toHaveLength(0);
     });
 
@@ -229,7 +229,9 @@ describe('TransactionService', () => {
         transactionSummaryPayload as any,
       ]);
 
-      const result = await service.findAll(1, {}, TransactionQuery.OUTGOING);
+      const result = await service.findAll(1, {
+        query: TransactionQuery.OUTGOING,
+      });
       expect(result.data).toHaveLength(1);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
@@ -239,7 +241,9 @@ describe('TransactionService', () => {
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
-      const resultInbox = await service.findAll(1, {}, TransactionQuery.INBOX);
+      const resultInbox = await service.findAll(1, {
+        query: TransactionQuery.INBOX,
+      });
       expect(resultInbox.data).toHaveLength(0);
     });
 

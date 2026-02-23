@@ -70,8 +70,8 @@ describe('TransactionController', () => {
           next: null,
         },
       });
-      await controller.findAll(1, {}, undefined);
-      expect(transactionService.findAll).toHaveBeenCalledWith(1, {}, undefined);
+      await controller.findAll(1, {});
+      expect(transactionService.findAll).toHaveBeenCalledWith(1, {});
     });
 
     it('should allow admin to access all transaction summaries', async () => {
@@ -87,12 +87,10 @@ describe('TransactionController', () => {
           next: null,
         },
       });
-      await controller.findAll(1, {}, TransactionQuery.ALL);
-      expect(transactionService.findAll).toHaveBeenCalledWith(
-        1,
-        {},
-        TransactionQuery.ALL,
-      );
+      await controller.findAll(1, { query: TransactionQuery.ALL });
+      expect(transactionService.findAll).toHaveBeenCalledWith(1, {
+        query: TransactionQuery.ALL,
+      });
     });
   });
 

@@ -22,6 +22,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { Transaction } from './entities/transaction.entity.js';
@@ -34,8 +35,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
-import { ApiQuery } from '@nestjs/swagger';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { TransactionQueryDto } from './dto/transaction-query.dto.js';
 import {
   UserRole,
   TransactionForwardStatus,
@@ -114,10 +114,9 @@ export class TransactionController {
   @ApiOkResponse({ type: PaginatedTransactionSummaryResponseDto })
   findAll(
     @CurrentUser('id') userId: number,
-    @Query() paginationDto: PaginationDto,
-    @Query('query') query?: TransactionQuery,
+    @Query() queryDto: TransactionQueryDto,
   ) {
-    return this.transactionService.findAll(userId, paginationDto, query);
+    return this.transactionService.findAll(userId, queryDto);
   }
 
   @Get(':id')
