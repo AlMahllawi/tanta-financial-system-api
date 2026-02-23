@@ -144,7 +144,7 @@ export class TransactionForwardService {
       );
     }
 
-    if (forward.senderSeen) {
+    if (forward.senderSeen && forward.receiverComment !== null) {
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORWARD_ALREADY_SEEN,
@@ -166,6 +166,7 @@ export class TransactionForwardService {
         status: updateTransactionForwardDto.status,
         receiverComment: updateTransactionForwardDto.comment ?? null,
         receiverSeen: true,
+        senderSeen: false,
       },
       include: {
         sender: true,
