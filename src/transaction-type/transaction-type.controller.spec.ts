@@ -5,6 +5,7 @@ import { TransactionTypeService } from './transaction-type.service.js';
 import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { TransactionType } from './entities/transaction-type.entity.js';
+import { UserRole } from '../../prisma/generated/enums.js';
 
 describe('TransactionTypeController', () => {
   let controller: TransactionTypeController;
@@ -52,15 +53,39 @@ describe('TransactionTypeController', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of transaction types', async () => {
+    it('should return an array of transaction types for admin', async () => {
       transactionTypeService.findAll.mockResolvedValue({
         data: [new TransactionType()],
       } as any);
-      await controller.findAll({ page: 1, perPage: 10 });
+      await controller.findAll(
+        { page: 1, perPage: 10, creatorId: 1 },
+        UserRole.ADMIN,
+      );
+      expect(transactionTypeService.findAll).toHaveBeenCalledWith({
+        page: 1,
+        perPage: 10,
+        creatorId: 1,
+      });
+    });
+
+    it('should return transaction types for user without creatorId filter', async () => {
+      transactionTypeService.findAll.mockResolvedValue({
+        data: [new TransactionType()],
+      } as any);
+      await controller.findAll({ page: 1, perPage: 10 }, UserRole.USER);
       expect(transactionTypeService.findAll).toHaveBeenCalledWith({
         page: 1,
         perPage: 10,
       });
+    });
+
+    it('should throw ApiException if non-admin tries to filter by creatorId', () => {
+      expect(() =>
+        controller.findAll(
+          { page: 1, perPage: 10, creatorId: 1 },
+          UserRole.USER,
+        ),
+      ).toThrow();
     });
   });
 

@@ -66,9 +66,10 @@ describe('TransactionTypeService', () => {
       prismaMock.transactionType.count.mockResolvedValue(1);
       prismaMock.$transaction.mockResolvedValue([types, 1]);
 
-      await service.findAll({ page: 1, perPage: 10 });
+      await service.findAll({ page: 1, perPage: 10, creatorId: 1 });
 
       expect(prismaMock.transactionType.findMany).toHaveBeenCalledWith({
+        where: { creatorId: 1 },
         skip: 0,
         take: 10,
       });

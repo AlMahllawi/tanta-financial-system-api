@@ -27,7 +27,9 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { TransactionTypeQueryDto } from './dto/transaction-type-query.dto.js';
+import { UserRole } from '../../prisma/generated/enums.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 
 @ApiTags('Transaction Types')
 @ApiBearerAuth()
@@ -80,8 +82,18 @@ export class TransactionTypeController {
   @Get()
   @ApiOperation({ summary: 'Retrieve all transaction types' })
   @ApiPaginatedResponse(TransactionType)
-  findAll(@Query() paginationDto: PaginationDto) {
-    return this.transactionTypeService.findAll(paginationDto);
+  findAll(
+    @Query() queryDto: TransactionTypeQueryDto,
+    @CurrentUser('role') role: UserRole,
+  ) {
+    if (queryDto.creatorId !== undefined && role !== UserRole.ADMIN) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.RESTRICTED_FIELD_UPDATE,
+        { fields: 'creatorId' },
+      );
+    }
+    return this.transactionTypeService.findAll(queryDto);
   }
 
   @Get(':name')

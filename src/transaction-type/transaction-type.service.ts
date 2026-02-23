@@ -7,7 +7,8 @@ import {
   createPaginatedResult,
   createPaginator,
 } from '../common/utils/pagination.util.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { TransactionTypeQueryDto } from './dto/transaction-type-query.dto.js';
+import { Prisma } from '../../prisma/generated/client.js';
 
 @Injectable()
 export class TransactionTypeService {
@@ -27,15 +28,19 @@ export class TransactionTypeService {
     return plainToInstance(TransactionType, transactionType);
   }
 
-  async findAll(paginationDto: PaginationDto) {
-    const { skip, take, page, perPage } = createPaginator(paginationDto);
+  async findAll(queryDto: TransactionTypeQueryDto) {
+    const { skip, take, page, perPage } = createPaginator(queryDto);
+
+    const where: Prisma.TransactionTypeWhereInput = {};
+    if (queryDto.creatorId) where.creatorId = queryDto.creatorId;
 
     const [transactionTypes, total] = await this.prisma.$transaction([
       this.prisma.transactionType.findMany({
+        where,
         skip,
         take,
       }),
-      this.prisma.transactionType.count(),
+      this.prisma.transactionType.count({ where }),
     ]);
 
     return createPaginatedResult(
