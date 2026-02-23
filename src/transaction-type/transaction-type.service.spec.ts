@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionTypeService } from './transaction-type.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
+import { UserRole } from '../../prisma/generated/enums.js';
 
 describe('TransactionTypeService', () => {
   let service: TransactionTypeService;
@@ -100,19 +101,47 @@ describe('TransactionTypeService', () => {
   describe('remove', () => {
     const name = 'Financial';
 
-    it('should successfully remove a transaction type', async () => {
-      const deletedType = {
+    it('should successfully remove a transaction type if user is creator', async () => {
+      const type = {
         name,
         creatorId: 1,
       };
 
-      prismaMock.transactionType.delete.mockResolvedValue(deletedType);
+      prismaMock.transactionType.findUniqueOrThrow.mockResolvedValue(type);
+      prismaMock.transactionType.delete.mockResolvedValue(type);
 
-      await service.remove(name);
+      await service.remove(name, 1, UserRole.USER);
 
       expect(prismaMock.transactionType.delete).toHaveBeenCalledWith({
         where: { name },
       });
+    });
+
+    it('should successfully remove a transaction type if user is admin', async () => {
+      const type = {
+        name,
+        creatorId: 2,
+      };
+
+      prismaMock.transactionType.findUniqueOrThrow.mockResolvedValue(type);
+      prismaMock.transactionType.delete.mockResolvedValue(type);
+
+      await service.remove(name, 1, UserRole.ADMIN);
+
+      expect(prismaMock.transactionType.delete).toHaveBeenCalledWith({
+        where: { name },
+      });
+    });
+
+    it('should throw ApiException if user is not creator and not admin', async () => {
+      const type = {
+        name,
+        creatorId: 2,
+      };
+
+      prismaMock.transactionType.findUniqueOrThrow.mockResolvedValue(type);
+
+      await expect(service.remove(name, 1, UserRole.USER)).rejects.toThrow();
     });
   });
 });

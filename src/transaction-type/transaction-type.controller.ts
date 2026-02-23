@@ -19,6 +19,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
 import { TransactionType } from './entities/transaction-type.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
@@ -126,7 +127,16 @@ export class TransactionTypeController {
     args: { name: 'Unknown Type' },
     prisma: { error: PrismaError.RecordsNotFound },
   })
-  remove(@Param('name') name: string) {
-    return this.transactionTypeService.remove(name);
+  @ApiErrorResponses({
+    status: HttpStatus.FORBIDDEN,
+    description: 'You are not the creator of this transaction type',
+    errorCode: ErrorCode.NOT_TRANSACTION_TYPE_CREATOR,
+  })
+  remove(
+    @Param('name') name: string,
+    @CurrentUser('id') userId: number,
+    @CurrentUser('role') role: UserRole,
+  ) {
+    return this.transactionTypeService.remove(name, userId, role);
   }
 }

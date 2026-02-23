@@ -104,8 +104,12 @@ describe('TransactionTypeController', () => {
 
     it('should successfully remove a transaction type', async () => {
       transactionTypeService.remove.mockResolvedValue(new TransactionType());
-      await controller.remove(name);
-      expect(transactionTypeService.remove).toHaveBeenCalledWith(name);
+      await controller.remove(name, 1, UserRole.ADMIN);
+      expect(transactionTypeService.remove).toHaveBeenCalledWith(
+        name,
+        1,
+        UserRole.ADMIN,
+      );
     });
   });
 });

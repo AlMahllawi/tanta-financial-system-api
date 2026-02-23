@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
 import { TransactionType } from './entities/transaction-type.entity.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -9,6 +9,9 @@ import {
 } from '../common/utils/pagination.util.js';
 import { TransactionTypeQueryDto } from './dto/transaction-type-query.dto.js';
 import { Prisma } from '../../prisma/generated/client.js';
+import { UserRole } from '../../prisma/generated/enums.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
 
 @Injectable()
 export class TransactionTypeService {
@@ -61,8 +64,22 @@ export class TransactionTypeService {
     return plainToInstance(TransactionType, transactionType);
   }
 
-  async remove(name: string) {
-    const transactionType = await this.prisma.transactionType.delete({
+  async remove(name: string, userId: number, role: UserRole) {
+    let transactionType: TransactionType;
+    if (role !== UserRole.ADMIN) {
+      transactionType = await this.prisma.transactionType.findUniqueOrThrow({
+        where: { name },
+      });
+
+      if (transactionType.creatorId !== userId) {
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.NOT_TRANSACTION_TYPE_CREATOR,
+        );
+      }
+    }
+
+    transactionType = await this.prisma.transactionType.delete({
       where: { name },
     });
 
