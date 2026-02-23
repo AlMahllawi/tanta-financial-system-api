@@ -41,16 +41,21 @@ describe('DocumentController', () => {
 
     it('should successfully create a document', async () => {
       documentService.create.mockResolvedValue(new Document());
-      await controller.create(mockFile, 1);
+      await controller.create(1, mockFile);
       expect(documentService.create).toHaveBeenCalledWith(1, mockFile);
     });
   });
 
   describe('findAll', () => {
     it('should return an array of documents', async () => {
-      documentService.findAll.mockResolvedValue([new Document()]);
-      await controller.findAll(1);
-      expect(documentService.findAll).toHaveBeenCalledWith(1);
+      documentService.findAll.mockResolvedValue({
+        data: [new Document()],
+      } as any);
+      await controller.findAll(1, { page: 1, perPage: 10 });
+      expect(documentService.findAll).toHaveBeenCalledWith(1, {
+        page: 1,
+        perPage: 10,
+      });
     });
   });
 

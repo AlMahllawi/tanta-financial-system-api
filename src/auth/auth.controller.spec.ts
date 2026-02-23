@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { UnauthorizedException } from '@nestjs/common';
+import { ApiException } from '../common/exceptions/api.exception.js';
 import { LoginDto } from './dto/login.dto.js';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { User } from '../user/entities/user.entity.js';
@@ -71,12 +71,10 @@ describe('AuthController', () => {
       expect(authServiceMock.login).toHaveBeenCalledWith(authenticatedUser.id);
     });
 
-    it('should throw UnauthorizedException for invalid credentials', async () => {
+    it('should throw ApiException for invalid credentials', async () => {
       authServiceMock.validateUser.mockResolvedValue(null);
 
-      await expect(controller.login(loginDto)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(controller.login(loginDto)).rejects.toThrow(ApiException);
       expect(authServiceMock.login).not.toHaveBeenCalled();
     });
   });

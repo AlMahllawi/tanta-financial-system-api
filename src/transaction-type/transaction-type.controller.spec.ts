@@ -43,7 +43,7 @@ describe('TransactionTypeController', () => {
 
     it('should successfully create a transaction type', async () => {
       transactionTypeService.create.mockResolvedValue(new TransactionType());
-      await controller.create(createTransactionTypeDto, 1);
+      await controller.create(1, createTransactionTypeDto);
       expect(transactionTypeService.create).toHaveBeenCalledWith(
         1,
         createTransactionTypeDto,
@@ -53,9 +53,14 @@ describe('TransactionTypeController', () => {
 
   describe('findAll', () => {
     it('should return an array of transaction types', async () => {
-      transactionTypeService.findAll.mockResolvedValue([new TransactionType()]);
-      await controller.findAll();
-      expect(transactionTypeService.findAll).toHaveBeenCalled();
+      transactionTypeService.findAll.mockResolvedValue({
+        data: [new TransactionType()],
+      } as any);
+      await controller.findAll({ page: 1, perPage: 10 });
+      expect(transactionTypeService.findAll).toHaveBeenCalledWith({
+        page: 1,
+        perPage: 10,
+      });
     });
   });
 

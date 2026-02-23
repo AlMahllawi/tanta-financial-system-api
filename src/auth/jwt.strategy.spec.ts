@@ -5,7 +5,7 @@ import { UserService } from '../user/user.service.js';
 import { ConfigService } from '@nestjs/config';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { JwtPayload } from './interfaces/auth.interface.js';
-import { UnauthorizedException } from '@nestjs/common';
+import { ApiException } from '../common/exceptions/api.exception.js';
 import { User } from '../user/entities/user.entity.js';
 import { plainToInstance } from 'class-transformer';
 import { UserRole } from '../../prisma/generated/enums.js';
@@ -65,21 +65,17 @@ describe('JwtStrategy', () => {
       expect(result).toEqual(user);
     });
 
-    it('should throw UnauthorizedException if user is inactive', async () => {
+    it('should throw ApiException if user is inactive', async () => {
       const inactiveUser = plainToInstance(User, { ...user, active: false });
       userServiceMock.findOne.mockResolvedValue(inactiveUser);
 
-      await expect(strategy.validate(payload)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(strategy.validate(payload)).rejects.toThrow(ApiException);
     });
 
-    it('should throw UnauthorizedException if user not found', async () => {
+    it('should throw ApiException if user not found', async () => {
       userServiceMock.findOne.mockRejectedValue(new Error('User not found'));
 
-      await expect(strategy.validate(payload)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      await expect(strategy.validate(payload)).rejects.toThrow(ApiException);
     });
   });
 });

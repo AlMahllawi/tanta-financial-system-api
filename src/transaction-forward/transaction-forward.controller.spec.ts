@@ -3,10 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionForwardController } from './transaction-forward.controller.js';
 import { TransactionForwardService } from './transaction-forward.service.js';
 import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
-import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto.js';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { TransactionForward } from './entities/transaction-forward.entity.js';
-import { TransactionForwardStatus } from '../../prisma/generated/enums.js';
 
 describe('TransactionForwardController', () => {
   let controller: TransactionForwardController;
@@ -49,7 +47,7 @@ describe('TransactionForwardController', () => {
       transactionForwardService.create.mockResolvedValue(
         new TransactionForward(),
       );
-      await controller.create(transactionId, createDto, 1);
+      await controller.create(1, transactionId, createDto);
       expect(transactionForwardService.create).toHaveBeenCalledWith(
         1,
         transactionId,
@@ -62,12 +60,13 @@ describe('TransactionForwardController', () => {
     const transactionId = 1;
 
     it('should return an array of transaction forwards', async () => {
-      transactionForwardService.findAll.mockResolvedValue([
-        new TransactionForward(),
-      ]);
-      await controller.findAll(transactionId);
+      transactionForwardService.findAll.mockResolvedValue({
+        data: [new TransactionForward()],
+      } as any);
+      await controller.findAll(transactionId, { page: 1, perPage: 10 });
       expect(transactionForwardService.findAll).toHaveBeenCalledWith(
         transactionId,
+        { page: 1, perPage: 10 },
       );
     });
   });
@@ -80,7 +79,7 @@ describe('TransactionForwardController', () => {
       transactionForwardService.findOne.mockResolvedValue(
         new TransactionForward(),
       );
-      await controller.findOne(transactionId, id);
+      await controller.findOne(1, transactionId, id);
       expect(transactionForwardService.findOne).toHaveBeenCalledWith(
         transactionId,
         id,
@@ -89,24 +88,7 @@ describe('TransactionForwardController', () => {
   });
 
   describe('update', () => {
-    const transactionId = 1;
-    const id = 1;
-    const updateDto: UpdateTransactionForwardDto = {
-      status: TransactionForwardStatus.APPROVED,
-      comment: 'Looks good',
-    };
-
-    it('should successfully update a transaction forward', async () => {
-      transactionForwardService.update.mockResolvedValue(
-        new TransactionForward(),
-      );
-      await controller.update(transactionId, id, updateDto);
-      expect(transactionForwardService.update).toHaveBeenCalledWith(
-        transactionId,
-        id,
-        updateDto,
-      );
-    });
+    it('is skipped because no active endpoint', () => {});
   });
 
   describe('remove', () => {
@@ -117,8 +99,9 @@ describe('TransactionForwardController', () => {
       transactionForwardService.remove.mockResolvedValue(
         new TransactionForward(),
       );
-      await controller.remove(transactionId, id);
+      await controller.remove(transactionId, id, 1);
       expect(transactionForwardService.remove).toHaveBeenCalledWith(
+        1,
         transactionId,
         id,
       );

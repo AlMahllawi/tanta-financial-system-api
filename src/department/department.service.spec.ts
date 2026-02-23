@@ -5,7 +5,7 @@ import { DepartmentService } from './department.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateDepartmentDto } from './dto/create-department.dto.js';
 import { UpdateDepartmentDto } from './dto/update-department.dto.js';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ApiException } from '../common/exceptions/api.exception.js';
 
 describe('DepartmentService', () => {
   let service: DepartmentService;
@@ -62,11 +62,16 @@ describe('DepartmentService', () => {
         },
       ];
 
-      prismaMock.department.findMany.mockResolvedValue(departments);
+      prismaMock.department.findMany.mockResolvedValue(departments as any);
+      prismaMock.department.count.mockResolvedValue(1);
+      prismaMock.$transaction.mockResolvedValue([departments, 1]);
 
-      await service.findAll();
+      await service.findAll({ page: 1, perPage: 10 });
 
-      expect(prismaMock.department.findMany).toHaveBeenCalled();
+      expect(prismaMock.department.findMany).toHaveBeenCalledWith({
+        skip: 0,
+        take: 10,
+      });
     });
   });
 
@@ -118,7 +123,7 @@ describe('DepartmentService', () => {
       prismaMock.user.findUnique.mockResolvedValue(null);
 
       await expect(service.update(name, updateDepartmentDto)).rejects.toThrow(
-        NotFoundException,
+        ApiException,
       );
     });
 
@@ -129,7 +134,7 @@ describe('DepartmentService', () => {
       } as any);
 
       await expect(service.update(name, updateDepartmentDto)).rejects.toThrow(
-        ConflictException,
+        ApiException,
       );
     });
   });

@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { hash } from 'argon2';
 import { UserRole } from '../../prisma/generated/enums.js';
-import { UnauthorizedException } from '@nestjs/common';
+import { ApiException } from '../common/exceptions/api.exception.js';
 import { User } from '../user/entities/user.entity.js';
 import { plainToInstance } from 'class-transformer';
 
@@ -185,13 +185,13 @@ describe('AuthService', () => {
       });
     });
 
-    it('should throw UnauthorizedException for invalid refresh token', async () => {
+    it('should throw ApiException for invalid refresh token', async () => {
       jwtServiceMock.verify.mockImplementation(() => {
         throw new Error('invalid token');
       });
 
       await expect(service.refresh('invalid-token')).rejects.toThrow(
-        UnauthorizedException,
+        ApiException,
       );
     });
   });

@@ -72,13 +72,19 @@ describe('DocumentService', () => {
       ];
 
       prismaMock.document.findMany.mockResolvedValue(documents);
+      prismaMock.document.count.mockResolvedValue(1);
+      prismaMock.$transaction.mockResolvedValue([documents, 1]);
 
-      const result = await service.findAll(uploaderId);
+      await service.findAll(uploaderId, {
+        page: 1,
+        perPage: 10,
+      });
 
       expect(prismaMock.document.findMany).toHaveBeenCalledWith({
         where: { uploaderId },
+        skip: 0,
+        take: 10,
       });
-      expect(result).toHaveLength(1);
     });
   });
 

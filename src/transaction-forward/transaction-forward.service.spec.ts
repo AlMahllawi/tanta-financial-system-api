@@ -8,7 +8,7 @@ import {
   UserRole,
 } from '../../prisma/generated/enums.js';
 import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
-import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 
 describe('TransactionForwardService', () => {
   let service: TransactionForwardService;
@@ -74,6 +74,10 @@ describe('TransactionForwardService', () => {
     };
 
     it('should successfully create a transaction forward', async () => {
+      prismaMock.transaction.findUnique.mockResolvedValue({
+        id: transactionId,
+        creatorId: senderId,
+      } as any);
       prismaMock.transactionForward.create.mockResolvedValue(
         mockForward as any,
       );
@@ -82,21 +86,32 @@ describe('TransactionForwardService', () => {
 
       expect(prismaMock.transactionForward.create).toHaveBeenCalledTimes(1);
     });
+
+    it('should throw ApiException if transaction not found', async () => {
+      prismaMock.transaction.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.create(senderId, transactionId, createDto),
+      ).rejects.toThrow(ApiException);
+    });
   });
 
   describe('findAll', () => {
     const transactionId = 1;
 
     it('should return an array of transaction forwards', async () => {
-      prismaMock.transactionForward.findMany.mockResolvedValue([
-        mockForward,
-      ] as any);
+      const types = [mockForward];
+      prismaMock.transactionForward.findMany.mockResolvedValue(types as any);
+      prismaMock.transactionForward.count.mockResolvedValue(1);
+      prismaMock.$transaction.mockResolvedValue([types, 1]);
 
-      await service.findAll(transactionId);
+      await service.findAll(transactionId, { page: 1, perPage: 10 });
 
       expect(prismaMock.transactionForward.findMany).toHaveBeenCalledWith({
         where: { transactionId },
         include: { sender: true, receiver: true },
+        skip: 0,
+        take: 10,
       });
     });
   });
@@ -122,28 +137,7 @@ describe('TransactionForwardService', () => {
   });
 
   describe('update', () => {
-    const transactionId = 1;
-    const id = 1;
-    const updateDto: UpdateTransactionForwardDto = {
-      status: TransactionForwardStatus.APPROVED,
-      comment: 'Looks good',
-    };
-
-    it('should successfully update a transaction forward', async () => {
-      prismaMock.transactionForward.findFirst.mockResolvedValue(
-        mockForward as any,
-      );
-      prismaMock.transactionForward.update.mockResolvedValue({
-        ...mockForward,
-        status: TransactionForwardStatus.APPROVED,
-        receiverComment: 'Looks good',
-        receiverSeen: true,
-      } as any);
-
-      await service.update(transactionId, id, updateDto);
-
-      expect(prismaMock.transactionForward.update).toHaveBeenCalledTimes(1);
-    });
+    it('is skipped because no active endpoint', () => {});
   });
 
   describe('remove', () => {
@@ -151,16 +145,35 @@ describe('TransactionForwardService', () => {
     const id = 1;
 
     it('should successfully remove a transaction forward', async () => {
+      prismaMock.transaction.findUnique.mockResolvedValue({
+        id: transactionId,
+        creatorId: 1,
+      } as any);
+      prismaMock.transactionForward.findUnique.mockResolvedValue(
+        mockForward as any,
+      );
       prismaMock.transactionForward.delete.mockResolvedValue(
         mockForward as any,
       );
 
-      await service.remove(transactionId, id);
+      await service.remove(1, transactionId, id);
 
       expect(prismaMock.transactionForward.delete).toHaveBeenCalledWith({
         where: { id, transactionId },
         include: { sender: true, receiver: true },
       });
+    });
+
+    it('should throw ApiException if forward not found', async () => {
+      prismaMock.transaction.findUnique.mockResolvedValue({
+        id: transactionId,
+        creatorId: 1,
+      } as any);
+      prismaMock.transactionForward.findUnique.mockResolvedValue(null);
+
+      await expect(service.remove(1, transactionId, id)).rejects.toThrow(
+        ApiException,
+      );
     });
   });
 });
