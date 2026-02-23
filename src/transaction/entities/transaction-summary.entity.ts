@@ -12,6 +12,9 @@ export class TransactionSummary {
   title: string;
 
   @ApiProperty()
+  createdAt: Date;
+
+  @ApiProperty()
   typeName: string;
 
   @ApiProperty()

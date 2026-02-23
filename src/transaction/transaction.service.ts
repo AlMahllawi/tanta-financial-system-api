@@ -128,6 +128,7 @@ export class TransactionService {
             typeName: true,
             fulfilled: true,
             priority: true,
+            createdAt: true,
             latestForward: {
               select: { status: true },
             },
