@@ -4,11 +4,11 @@ Feature: Documents Management
   So that I can attach them to transactions or view them
 
   Scenario: Successful file upload
-    Given the file is a PDF/Images/Word or specified valid type
+    Given the file is a PDF, Images, Word or specified valid type
     And the file size is within the allowed limits
     When the upload is successful
     Then the document is stored in the system
-    And the system returns response 200
+    And the system returns response 201
 
   Scenario: Invalid file type on upload
     Given the file type is invalid
@@ -18,7 +18,7 @@ Feature: Documents Management
   Scenario: Uploading without file
     Given no file is provided
     When the upload is attempted
-    Then the system returns 404
+    Then the system returns 400
 
   Scenario: View populated documents list
     Given the endpoint requires a user token
@@ -73,4 +73,4 @@ Feature: Documents Management
   Scenario: Document uploader not found
     Given the uploading user cannot be verified
     When the upload is attempted
-    Then the system returns 404
+    Then the system returns 401

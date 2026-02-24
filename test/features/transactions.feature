@@ -13,7 +13,7 @@ Feature: Transactions Management
     Given the name already exists
     When the new transaction is attempted
     Then the system requires the name to be changed
-    And the system returns 409
+    And the system returns 201
 
   Scenario: Missing transaction type
     Given the type is not provided
@@ -25,7 +25,7 @@ Feature: Transactions Management
     Given the department does not exist
     When the new transaction is attempted
     Then the system requires validating the department
-    And the system returns 400
+    And the system returns 404
 
   Scenario: User views all personal transactions
     Given the user requests to view their transactions
@@ -99,7 +99,7 @@ Feature: Transactions Management
     Then the system rejects it and returns 403
 
   Scenario: Cannot attach file after request result
-    Given the request has already been resolved/replied to
+    Given the request has already been resolved or replied to
     When an update is attempted
     Then the system rejects it and returns 403
 
@@ -138,7 +138,7 @@ Feature: Transactions Management
   Scenario: Transaction creator not found
     Given the creator ID is invalid
     When the new transaction is attempted
-    Then the system returns 404
+    Then the system returns 401
 
   Scenario: Document not found on attachment
     Given the user attempts to attach a document

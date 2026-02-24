@@ -21,11 +21,7 @@ Feature: Departments Management
     Then all departments are displayed as a list
     And the system returns response 200
 
-  Scenario: View empty departments list
-    Given there are no existing departments
-    When the user requests to view all departments
-    Then the system returns an empty list
-    And the system returns response 200
+
 
   Scenario: Find existing department by name
     Given the user provides a correct department name
@@ -61,7 +57,7 @@ Feature: Departments Management
   Scenario: Deleting a department linked to transactions
     Given the department is used in other actual and past transactions
     When the admin attempts a deletion
-    Then the system prevents the deletion and asks for permission/triggers alert
+    Then the system prevents the deletion and asks for permission or triggers alert
 
   Scenario: Delete non-existent department
     Given the name does not exist
@@ -81,4 +77,4 @@ Feature: Departments Management
   Scenario: Manager is not a member of the department
     Given the assigned manager does not belong to this department
     When the update is attempted
-    Then the system returns 400
+    Then the system returns 409

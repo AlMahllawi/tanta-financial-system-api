@@ -56,7 +56,7 @@ Feature: Forwards Management
     And the user has not placed a previous reply
     When the response is given manually
     Then the success triggers properly
-    And the system returns response 200
+    And the system returns response 201
 
   Scenario: Preventing multiple identical responses
     Given the user attempts to reply for a second time

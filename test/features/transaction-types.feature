@@ -18,7 +18,7 @@ Feature: Transaction Types Management
     Scenario: Transaction type creator not found
         Given the creator ID is invalid
         When the creation is attempted
-        Then the system returns 404
+        Then the system returns 401
 
     Scenario: Fetch existing transaction type
         Given a valid transaction type ID
