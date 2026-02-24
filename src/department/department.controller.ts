@@ -30,6 +30,10 @@ import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { PaginationDto } from '../common/dto/pagination.dto.js';
+import {
+  matchConstraintField,
+  matchConstraintIndex,
+} from '../prisma/prisma.matchers.js';
 
 @ApiTags('Departments')
 @ApiBearerAuth()
@@ -52,7 +56,7 @@ export class DepartmentController {
     args: { name: 'Computer Science' },
     prisma: {
       error: PrismaError.UniqueConstraintViolation,
-      matcher: (meta) => meta.field === 'name',
+      matcher: matchConstraintField('name'),
     },
   })
   create(@Body() createDepartmentDto: CreateDepartmentDto) {
@@ -97,7 +101,7 @@ export class DepartmentController {
       args: { name: 'Computer Science' },
       prisma: {
         error: PrismaError.UniqueConstraintViolation,
-        matcher: (meta) => meta.field === 'name',
+        matcher: matchConstraintField('name'),
       },
     },
     {
@@ -108,17 +112,9 @@ export class DepartmentController {
       args: { managerId: 1 },
       prisma: {
         error: PrismaError.UniqueConstraintViolation,
-        matcher: (meta) => meta.field === 'managerId',
+        matcher: matchConstraintField('managerId'),
       },
     },
-  )
-  @ApiErrorResponses({
-    status: HttpStatus.CONFLICT,
-    description: 'The specified manager does not belong to this department',
-    errorCode: ErrorCode.MANAGER_NOT_MEMBER_OF_DEPARTMENT,
-    args: { managerId: 1, departmentName: 'Engineering' },
-  })
-  @ApiPrismaErrorResponses(
     {
       status: HttpStatus.NOT_FOUND,
       description: 'No department was found with such name',
@@ -133,10 +129,16 @@ export class DepartmentController {
       args: { managerId: 1 },
       prisma: {
         error: PrismaError.ForeignConstraintViolation,
-        matcher: (meta) => meta.field === 'managerId',
+        matcher: matchConstraintIndex('fk_department_manager'),
       },
     },
   )
+  @ApiErrorResponses({
+    status: HttpStatus.CONFLICT,
+    description: 'The specified manager does not belong to this department',
+    errorCode: ErrorCode.MANAGER_NOT_MEMBER_OF_DEPARTMENT,
+    args: { managerId: 1, departmentName: 'Engineering' },
+  })
   update(
     @Param('name') name: string,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
@@ -150,13 +152,25 @@ export class DepartmentController {
     type: Department,
     description: 'Department deleted successfully',
   })
-  @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No department was found with such name',
-    errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
-    args: { name: 'Unknown Department' },
-    prisma: { error: PrismaError.RecordsNotFound },
-  })
+  @ApiPrismaErrorResponses(
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No department was found with such name',
+      errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
+      args: { name: 'Unknown Department' },
+      prisma: { error: PrismaError.RecordsNotFound },
+    },
+    {
+      status: HttpStatus.CONFLICT,
+      description: 'Cannot delete department with existing members',
+      errorCode: ErrorCode.DEPARTMENT_HAS_MEMBERS,
+      args: { name: 'Computer Science' },
+      prisma: {
+        error: PrismaError.ForeignConstraintViolation,
+        matcher: matchConstraintIndex('fk_user_department'),
+      },
+    },
+  )
   remove(@Param('name') name: string) {
     return this.departmentService.remove(name);
   }

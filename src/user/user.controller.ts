@@ -36,6 +36,10 @@ import { PrismaError } from 'prisma-error-enum';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { UserQueryDto } from './dto/user-query.dto.js';
+import {
+  matchConstraintField,
+  matchConstraintIndex,
+} from '../prisma/prisma.matchers.js';
 
 const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
 
@@ -62,7 +66,7 @@ export class UserController {
       args: { name: 'John Doe' },
       prisma: {
         error: PrismaError.UniqueConstraintViolation,
-        matcher: (meta) => meta.field === 'name',
+        matcher: matchConstraintField('name'),
       },
     },
     {
@@ -72,7 +76,7 @@ export class UserController {
       args: { departmentName: 'Finance' },
       prisma: {
         error: PrismaError.ForeignConstraintViolation,
-        matcher: (meta) => meta.field === 'departmentName',
+        matcher: matchConstraintIndex('fk_user_department'),
       },
     },
   )
@@ -146,7 +150,7 @@ export class UserController {
       args: { name: 'John Doe' },
       prisma: {
         error: PrismaError.UniqueConstraintViolation,
-        matcher: (meta) => meta.field === 'name',
+        matcher: matchConstraintField('name'),
       },
     },
     {
@@ -163,7 +167,7 @@ export class UserController {
       args: { departmentName: 'Finance' },
       prisma: {
         error: PrismaError.ForeignConstraintViolation,
-        matcher: (meta) => meta.field === 'departmentName',
+        matcher: matchConstraintIndex('fk_user_department'),
       },
     },
   )
@@ -204,13 +208,25 @@ export class UserController {
     type: User,
     description: 'User deleted successfully',
   })
-  @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No user was found with such id',
-    errorCode: ErrorCode.USER_NOT_FOUND,
-    args: { id: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
-  })
+  @ApiPrismaErrorResponses(
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No user was found with such id',
+      errorCode: ErrorCode.USER_NOT_FOUND,
+      args: { id: 1 },
+      prisma: { error: PrismaError.RecordsNotFound },
+    },
+    {
+      status: HttpStatus.CONFLICT,
+      description: 'Cannot delete a user who manages a department',
+      errorCode: ErrorCode.USER_MANAGES_DEPARTMENT,
+      args: { id: 1 },
+      prisma: {
+        error: PrismaError.ForeignConstraintViolation,
+        matcher: matchConstraintIndex('fk_department_manager'),
+      },
+    },
+  )
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);
   }

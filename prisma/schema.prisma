@@ -12,7 +12,7 @@ model Department {
   name      String @id
   managerId Int?   @unique
 
-  manager User?  @relation("Manages", fields: [managerId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  manager User?  @relation("Manages", fields: [managerId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_department_manager")
   members User[] @relation("BelongsTo")
 }
 
@@ -23,7 +23,7 @@ enum UserRole {
 
 model User {
   id             Int       @id @default(autoincrement())
-  name           String    @unique
+  name           String    @unique(map: "uq_user_name")
   hashedPassword String
   departmentName String
   active         Boolean   @default(true)
@@ -31,7 +31,7 @@ model User {
   createdAt      DateTime  @default(now()) @db.Timestamptz
   lastLogin      DateTime? @db.Timestamptz
 
-  department          Department            @relation("BelongsTo", fields: [departmentName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  department          Department            @relation("BelongsTo", fields: [departmentName], references: [name], onDelete: Restrict, onUpdate: Cascade, map: "fk_user_department")
   managedDepartment   Department?           @relation("Manages")
   createdTypes        TransactionType[]
   createdTransactions Transaction[]
@@ -99,7 +99,7 @@ model TransactionDocument {
   document    Document    @relation(fields: [documentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   attacher    User        @relation(fields: [attachedBy], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  @@id([transactionId, documentId])
+  @@id([transactionId, documentId], map: "pk_transaction_document")
 }
 
 model TransactionType {

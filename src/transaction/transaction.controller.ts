@@ -42,6 +42,10 @@ import {
 } from '../../prisma/generated/enums.js';
 import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
 import { PaginatedTransactionSummaryResponseDto } from './dto/paginated-transaction-summary-response.dto.js';
+import {
+  matchConstraintField,
+  matchConstraintIndex,
+} from '../prisma/prisma.matchers.js';
 
 @ApiTags('Transactions')
 @ApiBearerAuth()
@@ -65,7 +69,7 @@ export class TransactionController {
       args: { typeName: 'Unknown Type' },
       prisma: {
         error: PrismaError.ForeignConstraintViolation,
-        matcher: (meta) => meta.field === 'typeName',
+        matcher: matchConstraintField('typeName'),
       },
     },
     {
@@ -75,7 +79,7 @@ export class TransactionController {
       args: { creatorId: 1 },
       prisma: {
         error: PrismaError.ForeignConstraintViolation,
-        matcher: (meta) => meta.field === 'creatorId',
+        matcher: matchConstraintField('creatorId'),
       },
     },
     {
@@ -85,7 +89,7 @@ export class TransactionController {
       args: { id: '1, 2' },
       prisma: {
         error: PrismaError.ForeignConstraintViolation,
-        matcher: (meta) => meta.field === 'TransactionDocument',
+        matcher: matchConstraintField('TransactionDocument'),
       },
     },
   )
@@ -179,7 +183,7 @@ export class TransactionController {
       args: { typeName: 'Unknown Type' },
       prisma: {
         error: PrismaError.ForeignConstraintViolation,
-        matcher: (meta) => meta.field === 'typeName',
+        matcher: matchConstraintField('typeName'),
       },
     },
   )
@@ -208,13 +212,25 @@ export class TransactionController {
     type: Transaction,
     description: 'Transaction deleted successfully',
   })
-  @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No transaction was found with such id',
-    errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
-    args: { id: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
-  })
+  @ApiPrismaErrorResponses(
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No transaction was found with such id',
+      errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
+      args: { id: 1 },
+      prisma: { error: PrismaError.RecordsNotFound },
+    },
+    {
+      status: HttpStatus.CONFLICT,
+      description: 'Cannot delete a transaction that has forwards',
+      errorCode: ErrorCode.TRANSACTION_HAS_FORWARDS,
+      args: { id: 1 },
+      prisma: {
+        error: PrismaError.ForeignConstraintViolation,
+        matcher: matchConstraintIndex('fk_transaction_forward_transaction_id'),
+      },
+    },
+  )
   async remove(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
@@ -248,7 +264,7 @@ export class TransactionController {
       args: { id: 1 },
       prisma: {
         error: PrismaError.ForeignConstraintViolation,
-        matcher: (meta) => meta.field === 'transactionId',
+        matcher: matchConstraintField('transactionId'),
       },
     },
     {
@@ -258,7 +274,7 @@ export class TransactionController {
       args: { id: 1 },
       prisma: {
         error: PrismaError.ForeignConstraintViolation,
-        matcher: (meta) => meta.field === 'documentId',
+        matcher: matchConstraintField('documentId'),
       },
     },
   )

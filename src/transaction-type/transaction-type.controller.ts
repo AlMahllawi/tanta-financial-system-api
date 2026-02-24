@@ -27,6 +27,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
+import { matchConstraintField } from '../prisma/prisma.matchers.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { TransactionTypeQueryDto } from './dto/transaction-type-query.dto.js';
 import { UserRole } from '../../prisma/generated/enums.js';
@@ -56,7 +57,7 @@ export class TransactionTypeController {
       args: { name: 'Financial' },
       prisma: {
         error: PrismaError.UniqueConstraintViolation,
-        matcher: (meta) => meta.field === 'name',
+        matcher: matchConstraintField('name'),
       },
     },
     {
@@ -66,7 +67,7 @@ export class TransactionTypeController {
       args: { creatorId: 1 },
       prisma: {
         error: PrismaError.ForeignConstraintViolation,
-        matcher: (meta) => meta.field === 'creatorId',
+        matcher: matchConstraintField('creatorId'),
       },
     },
   )
