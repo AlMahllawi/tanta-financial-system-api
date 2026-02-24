@@ -49,7 +49,7 @@ describe('TransactionController', () => {
     it('should successfully create a transaction', async () => {
       transactionService.create.mockResolvedValue(new Transaction());
       await controller.create(1, createTransactionDto);
-      expect(transactionService.create).toHaveBeenCalledWith(
+      expect(transactionService['create']).toHaveBeenCalledWith(
         1,
         createTransactionDto,
       );
@@ -60,7 +60,7 @@ describe('TransactionController', () => {
     it('should return an array of transaction summaries', async () => {
       transactionService.findAll.mockResolvedValue({
         data: [new TransactionSummary()],
-        summary: {} as any,
+        summary: {} as never,
         pagination: {
           total: 1,
           lastPage: 1,
@@ -71,13 +71,13 @@ describe('TransactionController', () => {
         },
       });
       await controller.findAll(1, {});
-      expect(transactionService.findAll).toHaveBeenCalledWith(1, {});
+      expect(transactionService['findAll']).toHaveBeenCalledWith(1, {});
     });
 
     it('should allow admin to access all transaction summaries', async () => {
       transactionService.findAll.mockResolvedValue({
         data: [new TransactionSummary()],
-        summary: {} as any,
+        summary: {} as never,
         pagination: {
           total: 1,
           lastPage: 1,
@@ -88,7 +88,7 @@ describe('TransactionController', () => {
         },
       });
       await controller.findAll(1, { query: TransactionQuery.ALL });
-      expect(transactionService.findAll).toHaveBeenCalledWith(1, {
+      expect(transactionService['findAll']).toHaveBeenCalledWith(1, {
         query: TransactionQuery.ALL,
       });
     });
@@ -101,7 +101,7 @@ describe('TransactionController', () => {
       transactionService.findOne.mockResolvedValue(new Transaction());
       transactionService.isParticipant.mockResolvedValue(true);
       await controller.findOne(1, UserRole.USER, id);
-      expect(transactionService.findOne).toHaveBeenCalledWith(id);
+      expect(transactionService['findOne']).toHaveBeenCalledWith(id);
     });
   });
 
@@ -115,7 +115,7 @@ describe('TransactionController', () => {
       transactionService.update.mockResolvedValue(new Transaction());
       transactionService.isCreator.mockResolvedValue(true);
       await controller.update(1, UserRole.USER, id, updateTransactionDto);
-      expect(transactionService.update).toHaveBeenCalledWith(
+      expect(transactionService['update']).toHaveBeenCalledWith(
         id,
         updateTransactionDto,
       );
@@ -129,7 +129,7 @@ describe('TransactionController', () => {
       transactionService.remove.mockResolvedValue(new Transaction());
       transactionService.isCreator.mockResolvedValue(true);
       await controller.remove(1, UserRole.USER, id);
-      expect(transactionService.remove).toHaveBeenCalledWith(id);
+      expect(transactionService['remove']).toHaveBeenCalledWith(id);
     });
   });
 
@@ -146,7 +146,7 @@ describe('TransactionController', () => {
         transactionId,
         documentId,
       );
-      expect(transactionService.attachDocument).toHaveBeenCalledWith(
+      expect(transactionService['attachDocument']).toHaveBeenCalledWith(
         transactionId,
         documentId,
         userId,
@@ -168,7 +168,7 @@ describe('TransactionController', () => {
         transactionId,
         documentId,
       );
-      expect(transactionService.detachDocument).toHaveBeenCalledWith(
+      expect(transactionService['detachDocument']).toHaveBeenCalledWith(
         transactionId,
         documentId,
       );

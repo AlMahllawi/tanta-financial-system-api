@@ -50,7 +50,7 @@ describe('TransactionTypeService', () => {
 
       await service.create(creatorId, createTransactionTypeDto);
 
-      expect(prismaMock.transactionType.create).toHaveBeenCalledTimes(1);
+      expect(prismaMock.transactionType['create']).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -69,7 +69,7 @@ describe('TransactionTypeService', () => {
 
       await service.findAll({ page: 1, perPage: 10, creatorId: 1 });
 
-      expect(prismaMock.transactionType.findMany).toHaveBeenCalledWith({
+      expect(prismaMock.transactionType['findMany']).toHaveBeenCalledWith({
         where: { creatorId: 1 },
         skip: 0,
         take: 10,
@@ -90,11 +90,11 @@ describe('TransactionTypeService', () => {
 
       await service.findOne(name);
 
-      expect(prismaMock.transactionType.findUniqueOrThrow).toHaveBeenCalledWith(
-        {
-          where: { name },
-        },
-      );
+      expect(
+        prismaMock.transactionType['findUniqueOrThrow'],
+      ).toHaveBeenCalledWith({
+        where: { name },
+      });
     });
   });
 
@@ -112,7 +112,7 @@ describe('TransactionTypeService', () => {
 
       await service.remove(name, 1, UserRole.USER);
 
-      expect(prismaMock.transactionType.delete).toHaveBeenCalledWith({
+      expect(prismaMock.transactionType['delete']).toHaveBeenCalledWith({
         where: { name },
       });
     });
@@ -128,7 +128,7 @@ describe('TransactionTypeService', () => {
 
       await service.remove(name, 1, UserRole.ADMIN);
 
-      expect(prismaMock.transactionType.delete).toHaveBeenCalledWith({
+      expect(prismaMock.transactionType['delete']).toHaveBeenCalledWith({
         where: { name },
       });
     });

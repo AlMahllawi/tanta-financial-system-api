@@ -57,11 +57,11 @@ describe('UserService', () => {
 
       await service.create(createUserDto);
 
-      expect(prismaMock.user.create).toHaveBeenCalledTimes(1);
+      expect(prismaMock.user['create']).toHaveBeenCalledTimes(1);
       // Verify password was hashed (different from input or just exists)
       const createCallArgs = prismaMock.user.create.mock.calls[0][0];
-      expect(createCallArgs.data.hashedPassword).toBeDefined();
-      expect(createCallArgs.data.hashedPassword).not.toEqual(
+      expect(createCallArgs.data['hashedPassword']).toBeDefined();
+      expect(createCallArgs.data['hashedPassword']).not.toEqual(
         createUserDto.password,
       );
     });
@@ -88,7 +88,7 @@ describe('UserService', () => {
 
       await service.findAll({ page: 1, perPage: 10 });
 
-      expect(prismaMock.user.findMany).toHaveBeenCalled();
+      expect(prismaMock.user['findMany']).toHaveBeenCalled();
     });
 
     it('should filter users by specific properties', async () => {
@@ -105,7 +105,7 @@ describe('UserService', () => {
         active: true,
       });
 
-      expect(prismaMock.user.findMany).toHaveBeenCalledWith({
+      expect(prismaMock.user['findMany']).toHaveBeenCalledWith({
         where: {
           name: { contains: 'test name', mode: 'insensitive' },
           departmentName: { contains: 'test dept', mode: 'insensitive' },
@@ -137,7 +137,7 @@ describe('UserService', () => {
 
       await service.findOne(id);
 
-      expect(prismaMock.user.findUniqueOrThrow).toHaveBeenCalledWith({
+      expect(prismaMock.user['findUniqueOrThrow']).toHaveBeenCalledWith({
         where: { id },
       });
     });
@@ -167,10 +167,10 @@ describe('UserService', () => {
 
       await service.update(id, updateUserDto);
 
-      expect(prismaMock.user.update).toHaveBeenCalledTimes(1);
+      expect(prismaMock.user['update']).toHaveBeenCalledTimes(1);
       const updateCallArgs = prismaMock.user.update.mock.calls[0][0];
-      expect(updateCallArgs.data.hashedPassword).toBeDefined();
-      expect(updateCallArgs.data.hashedPassword).not.toEqual(
+      expect(updateCallArgs.data['hashedPassword']).toBeDefined();
+      expect(updateCallArgs.data['hashedPassword']).not.toEqual(
         updateUserDto.password,
       );
     });
@@ -195,7 +195,7 @@ describe('UserService', () => {
 
       await service.remove(id);
 
-      expect(prismaMock.user.delete).toHaveBeenCalledWith({
+      expect(prismaMock.user['delete']).toHaveBeenCalledWith({
         where: { id },
       });
     });

@@ -52,8 +52,8 @@ describe('DocumentService', () => {
 
       const result = await service.create(uploaderId, mockFile);
 
-      expect(prismaMock.document.create).toHaveBeenCalledTimes(1);
-      expect(result.downloadURI).toBe('/documents/1/download');
+      expect(prismaMock.document['create']).toHaveBeenCalledTimes(1);
+      expect(result['downloadURI']).toBe('/documents/1/download');
     });
   });
 
@@ -80,7 +80,7 @@ describe('DocumentService', () => {
         perPage: 10,
       });
 
-      expect(prismaMock.document.findMany).toHaveBeenCalledWith({
+      expect(prismaMock.document['findMany']).toHaveBeenCalledWith({
         where: { uploaderId },
         skip: 0,
         take: 10,
@@ -104,10 +104,10 @@ describe('DocumentService', () => {
 
       const result = await service.findOne(id);
 
-      expect(prismaMock.document.findUniqueOrThrow).toHaveBeenCalledWith({
+      expect(prismaMock.document['findUniqueOrThrow']).toHaveBeenCalledWith({
         where: { id },
       });
-      expect(result.downloadURI).toBe('/documents/1/download');
+      expect(result['downloadURI']).toBe('/documents/1/download');
     });
   });
 
@@ -127,7 +127,7 @@ describe('DocumentService', () => {
 
       await service.remove(id);
 
-      expect(prismaMock.document.delete).toHaveBeenCalledWith({
+      expect(prismaMock.document['delete']).toHaveBeenCalledWith({
         where: { id },
       });
     });

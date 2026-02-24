@@ -45,7 +45,7 @@ describe('TransactionTypeController', () => {
     it('should successfully create a transaction type', async () => {
       transactionTypeService.create.mockResolvedValue(new TransactionType());
       await controller.create(1, createTransactionTypeDto);
-      expect(transactionTypeService.create).toHaveBeenCalledWith(
+      expect(transactionTypeService['create']).toHaveBeenCalledWith(
         1,
         createTransactionTypeDto,
       );
@@ -56,12 +56,12 @@ describe('TransactionTypeController', () => {
     it('should return an array of transaction types for admin', async () => {
       transactionTypeService.findAll.mockResolvedValue({
         data: [new TransactionType()],
-      } as any);
+      } as never);
       await controller.findAll(
         { page: 1, perPage: 10, creatorId: 1 },
         UserRole.ADMIN,
       );
-      expect(transactionTypeService.findAll).toHaveBeenCalledWith({
+      expect(transactionTypeService['findAll']).toHaveBeenCalledWith({
         page: 1,
         perPage: 10,
         creatorId: 1,
@@ -71,9 +71,9 @@ describe('TransactionTypeController', () => {
     it('should return transaction types for user without creatorId filter', async () => {
       transactionTypeService.findAll.mockResolvedValue({
         data: [new TransactionType()],
-      } as any);
+      } as never);
       await controller.findAll({ page: 1, perPage: 10 }, UserRole.USER);
-      expect(transactionTypeService.findAll).toHaveBeenCalledWith({
+      expect(transactionTypeService['findAll']).toHaveBeenCalledWith({
         page: 1,
         perPage: 10,
       });
@@ -95,7 +95,7 @@ describe('TransactionTypeController', () => {
     it('should return a transaction type if found', async () => {
       transactionTypeService.findOne.mockResolvedValue(new TransactionType());
       await controller.findOne(name);
-      expect(transactionTypeService.findOne).toHaveBeenCalledWith(name);
+      expect(transactionTypeService['findOne']).toHaveBeenCalledWith(name);
     });
   });
 
@@ -105,7 +105,7 @@ describe('TransactionTypeController', () => {
     it('should successfully remove a transaction type', async () => {
       transactionTypeService.remove.mockResolvedValue(new TransactionType());
       await controller.remove(name, 1, UserRole.ADMIN);
-      expect(transactionTypeService.remove).toHaveBeenCalledWith(
+      expect(transactionTypeService['remove']).toHaveBeenCalledWith(
         name,
         1,
         UserRole.ADMIN,

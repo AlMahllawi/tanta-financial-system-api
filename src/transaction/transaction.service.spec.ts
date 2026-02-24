@@ -17,13 +17,15 @@ describe('TransactionService', () => {
 
   beforeEach(async () => {
     prismaMock = mockDeep<PrismaService>();
-    prismaMock.$transaction.mockImplementation(async (arg: any) => {
+    prismaMock.$transaction.mockImplementation(async (arg: unknown) => {
       if (Array.isArray(arg)) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        return Promise.all(arg) as Promise<any>;
+        return Promise.all(arg) as Promise<never>;
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return arg(prismaMock);
+      if (typeof arg === 'function') {
+        const fn = arg as (p: PrismaService) => Promise<unknown>;
+        return fn(prismaMock) as Promise<never>;
+      }
+      return undefined as never;
     });
 
     const module: TestingModule = await Test.createTestingModule({
@@ -102,12 +104,12 @@ describe('TransactionService', () => {
 
     it('should successfully create a transaction and transform result', async () => {
       prismaMock.transaction.create.mockResolvedValue(
-        transactionWithDocs as any,
+        transactionWithDocs as never,
       );
 
       const result = await service.create(creatorId, createTransactionDto);
 
-      expect(prismaMock.transaction.create).toHaveBeenCalledWith({
+      expect(prismaMock.transaction['create']).toHaveBeenCalledWith({
         data: {
           title: createTransactionDto.title,
           description: createTransactionDto.description,
@@ -130,7 +132,7 @@ describe('TransactionService', () => {
         },
       });
 
-      expect(result.documents).toHaveLength(1);
+      expect(result['documents']).toHaveLength(1);
       expect(result.documents[0].downloadURI).toBeDefined();
       expect(result.documents[0].downloadURI).toContain(
         '/documents/100/download',
@@ -141,13 +143,13 @@ describe('TransactionService', () => {
   describe('findAll', () => {
     it('should return an array of transaction summaries', async () => {
       prismaMock.transaction.findMany.mockResolvedValue([
-        transactionSummaryPayload as any,
+        transactionSummaryPayload as never,
       ]);
 
       const result = await service.findAll(1, { query: TransactionQuery.ALL });
 
-      expect(prismaMock.transaction.findMany).toHaveBeenCalledTimes(1);
-      expect(result.data).toHaveLength(1);
+      expect(prismaMock.transaction['findMany']).toHaveBeenCalledTimes(1);
+      expect(result['data']).toHaveLength(1);
       expect(result.data[0].documentsCount).toBe(1);
     });
 
@@ -158,23 +160,23 @@ describe('TransactionService', () => {
       prismaMock.transaction.findMany.mockResolvedValue([]);
 
       const result = await service.findAll(1, {});
-      expect(result.data).toHaveLength(0);
+      expect(result['data']).toHaveLength(0);
 
       prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
       prismaMock.transaction.findMany.mockResolvedValue([
-        transactionSummaryPayload as any,
+        transactionSummaryPayload as never,
       ]);
       const resultInbox = await service.findAll(1, {
         query: TransactionQuery.INBOX,
       });
-      expect(resultInbox.data).toHaveLength(1);
+      expect(resultInbox['data']).toHaveLength(1);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
       const resultOutgoing = await service.findAll(1, {
         query: TransactionQuery.OUTGOING,
       });
-      expect(resultOutgoing.data).toHaveLength(0);
+      expect(resultOutgoing['data']).toHaveLength(0);
     });
 
     it('should return transactions where user is receiver of latest forward (Inbox)', async () => {
@@ -191,25 +193,25 @@ describe('TransactionService', () => {
 
       prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
       prismaMock.transaction.findMany.mockResolvedValue([
-        transactionSummaryPayload as any,
+        transactionSummaryPayload as never,
       ]);
 
       const result = await service.findAll(1, {
         query: TransactionQuery.INBOX,
       });
-      expect(result.data).toHaveLength(1);
+      expect(result['data']).toHaveLength(1);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
       const resultDefault = await service.findAll(1, {});
-      expect(resultDefault.data).toHaveLength(0);
+      expect(resultDefault['data']).toHaveLength(0);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
       const resultOutgoing = await service.findAll(1, {
         query: TransactionQuery.OUTGOING,
       });
-      expect(resultOutgoing.data).toHaveLength(0);
+      expect(resultOutgoing['data']).toHaveLength(0);
     });
 
     it('should return transactions where user is sender of latest forward (Outgoing)', async () => {
@@ -226,25 +228,25 @@ describe('TransactionService', () => {
 
       prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
       prismaMock.transaction.findMany.mockResolvedValue([
-        transactionSummaryPayload as any,
+        transactionSummaryPayload as never,
       ]);
 
       const result = await service.findAll(1, {
         query: TransactionQuery.OUTGOING,
       });
-      expect(result.data).toHaveLength(1);
+      expect(result['data']).toHaveLength(1);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
       const resultDefault = await service.findAll(1, {});
-      expect(resultDefault.data).toHaveLength(0);
+      expect(resultDefault['data']).toHaveLength(0);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
       const resultInbox = await service.findAll(1, {
         query: TransactionQuery.INBOX,
       });
-      expect(resultInbox.data).toHaveLength(0);
+      expect(resultInbox['data']).toHaveLength(0);
     });
 
     it('should return transactions where user is involved but not in latest forward (History) in Default view', async () => {
@@ -261,11 +263,11 @@ describe('TransactionService', () => {
 
       prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
       prismaMock.transaction.findMany.mockResolvedValue([
-        transactionSummaryPayload as any,
+        transactionSummaryPayload as never,
       ]);
 
       const result = await service.findAll(1, {});
-      expect(result.data).toHaveLength(1);
+      expect(result['data']).toHaveLength(1);
     });
   });
 
@@ -274,12 +276,12 @@ describe('TransactionService', () => {
 
     it('should return a transaction if found', async () => {
       prismaMock.transaction.findUniqueOrThrow.mockResolvedValue(
-        transactionWithDocs as any,
+        transactionWithDocs as never,
       );
 
       const result = await service.findOne(id);
 
-      expect(prismaMock.transaction.findUniqueOrThrow).toHaveBeenCalledWith({
+      expect(prismaMock.transaction['findUniqueOrThrow']).toHaveBeenCalledWith({
         where: { id },
         include: {
           documents: { include: { document: true } },
@@ -305,12 +307,12 @@ describe('TransactionService', () => {
         ...updateTransactionDto,
       };
       prismaMock.transaction.update.mockResolvedValue(
-        updatedTransaction as any,
+        updatedTransaction as never,
       );
 
       await service.update(id, updateTransactionDto);
 
-      expect(prismaMock.transaction.update).toHaveBeenCalledWith({
+      expect(prismaMock.transaction['update']).toHaveBeenCalledWith({
         where: { id },
         data: updateTransactionDto,
         include: {
@@ -328,12 +330,12 @@ describe('TransactionService', () => {
 
     it('should successfully remove a transaction', async () => {
       prismaMock.transaction.delete.mockResolvedValue(
-        transactionWithDocs as any,
+        transactionWithDocs as never,
       );
 
       await service.remove(id);
 
-      expect(prismaMock.transaction.delete).toHaveBeenCalledWith({
+      expect(prismaMock.transaction['delete']).toHaveBeenCalledWith({
         where: { id },
         include: {
           documents: { include: { document: true } },
@@ -351,14 +353,14 @@ describe('TransactionService', () => {
     const userId = 1;
 
     it('should attach a document using upsert', async () => {
-      prismaMock.transactionDocument.upsert.mockResolvedValue({} as any);
+      prismaMock.transactionDocument.upsert.mockResolvedValue({} as never);
       prismaMock.transaction.findUniqueOrThrow.mockResolvedValue(
-        transactionWithDocs as any,
+        transactionWithDocs as never,
       );
 
       await service.attachDocument(transactionId, documentId, userId);
 
-      expect(prismaMock.transactionDocument.upsert).toHaveBeenCalledWith({
+      expect(prismaMock.transactionDocument['upsert']).toHaveBeenCalledWith({
         where: {
           transactionId_documentId: {
             transactionId,
@@ -373,7 +375,7 @@ describe('TransactionService', () => {
         update: {},
       });
 
-      expect(prismaMock.transaction.findUniqueOrThrow).toHaveBeenCalledWith({
+      expect(prismaMock.transaction['findUniqueOrThrow']).toHaveBeenCalledWith({
         where: { id: transactionId },
         include: {
           documents: { include: { document: true } },
@@ -392,19 +394,21 @@ describe('TransactionService', () => {
     it('should detach a document using deleteMany', async () => {
       prismaMock.transactionDocument.deleteMany.mockResolvedValue({ count: 1 });
       prismaMock.transaction.findUniqueOrThrow.mockResolvedValue(
-        transactionWithDocs as any,
+        transactionWithDocs as never,
       );
 
       await service.detachDocument(transactionId, documentId);
 
-      expect(prismaMock.transactionDocument.deleteMany).toHaveBeenCalledWith({
-        where: {
-          transactionId,
-          documentId,
+      expect(prismaMock.transactionDocument['deleteMany']).toHaveBeenCalledWith(
+        {
+          where: {
+            transactionId,
+            documentId,
+          },
         },
-      });
+      );
 
-      expect(prismaMock.transaction.findUniqueOrThrow).toHaveBeenCalledWith({
+      expect(prismaMock.transaction['findUniqueOrThrow']).toHaveBeenCalledWith({
         where: { id: transactionId },
         include: {
           documents: { include: { document: true } },

@@ -48,7 +48,7 @@ describe('TransactionForwardController', () => {
         new TransactionForward(),
       );
       await controller.create(1, transactionId, createDto);
-      expect(transactionForwardService.create).toHaveBeenCalledWith(
+      expect(transactionForwardService['create']).toHaveBeenCalledWith(
         1,
         transactionId,
         createDto,
@@ -62,9 +62,9 @@ describe('TransactionForwardController', () => {
     it('should return an array of transaction forwards', async () => {
       transactionForwardService.findAll.mockResolvedValue({
         data: [new TransactionForward()],
-      } as any);
+      } as never);
       await controller.findAll(transactionId, { page: 1, perPage: 10 });
-      expect(transactionForwardService.findAll).toHaveBeenCalledWith(
+      expect(transactionForwardService['findAll']).toHaveBeenCalledWith(
         transactionId,
         { page: 1, perPage: 10 },
       );
@@ -80,7 +80,7 @@ describe('TransactionForwardController', () => {
         new TransactionForward(),
       );
       await controller.findOne(1, transactionId, id);
-      expect(transactionForwardService.findOne).toHaveBeenCalledWith(
+      expect(transactionForwardService['findOne']).toHaveBeenCalledWith(
         transactionId,
         id,
       );
@@ -100,7 +100,7 @@ describe('TransactionForwardController', () => {
         new TransactionForward(),
       );
       await controller.remove(transactionId, id, 1);
-      expect(transactionForwardService.remove).toHaveBeenCalledWith(
+      expect(transactionForwardService['remove']).toHaveBeenCalledWith(
         1,
         transactionId,
         id,

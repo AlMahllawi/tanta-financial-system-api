@@ -64,18 +64,20 @@ describe('AuthController', () => {
 
       await controller.login(loginDto);
 
-      expect(authServiceMock.validateUser).toHaveBeenCalledWith(
+      expect(authServiceMock['validateUser']).toHaveBeenCalledWith(
         loginDto.name,
         loginDto.password,
       );
-      expect(authServiceMock.login).toHaveBeenCalledWith(authenticatedUser.id);
+      expect(authServiceMock['login']).toHaveBeenCalledWith(
+        authenticatedUser.id,
+      );
     });
 
     it('should throw ApiException for invalid credentials', async () => {
       authServiceMock.validateUser.mockResolvedValue(null);
 
       await expect(controller.login(loginDto)).rejects.toThrow(ApiException);
-      expect(authServiceMock.login).not.toHaveBeenCalled();
+      expect(authServiceMock['login']).not.toHaveBeenCalled();
     });
   });
 
@@ -102,7 +104,7 @@ describe('AuthController', () => {
         refreshToken: 'valid-refresh-token',
       });
 
-      expect(authServiceMock.refresh).toHaveBeenCalledWith(
+      expect(authServiceMock['refresh']).toHaveBeenCalledWith(
         'valid-refresh-token',
       );
       expect(result).toEqual(tokens);

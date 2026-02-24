@@ -42,7 +42,7 @@ describe('DocumentController', () => {
     it('should successfully create a document', async () => {
       documentService.create.mockResolvedValue(new Document());
       await controller.create(1, mockFile);
-      expect(documentService.create).toHaveBeenCalledWith(1, mockFile);
+      expect(documentService['create']).toHaveBeenCalledWith(1, mockFile);
     });
   });
 
@@ -50,9 +50,9 @@ describe('DocumentController', () => {
     it('should return an array of documents', async () => {
       documentService.findAll.mockResolvedValue({
         data: [new Document()],
-      } as any);
+      } as never);
       await controller.findAll(1, { page: 1, perPage: 10 });
-      expect(documentService.findAll).toHaveBeenCalledWith(1, {
+      expect(documentService['findAll']).toHaveBeenCalledWith(1, {
         page: 1,
         perPage: 10,
       });
@@ -65,7 +65,7 @@ describe('DocumentController', () => {
     it('should return a document if found', async () => {
       documentService.findOne.mockResolvedValue(new Document());
       await controller.findOne(id);
-      expect(documentService.findOne).toHaveBeenCalledWith(id);
+      expect(documentService['findOne']).toHaveBeenCalledWith(id);
     });
   });
 
@@ -75,7 +75,7 @@ describe('DocumentController', () => {
     it('should successfully remove a document', async () => {
       documentService.remove.mockResolvedValue(new Document());
       await controller.remove(id);
-      expect(documentService.remove).toHaveBeenCalledWith(id);
+      expect(documentService['remove']).toHaveBeenCalledWith(id);
     });
   });
 });

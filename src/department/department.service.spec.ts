@@ -49,7 +49,7 @@ describe('DepartmentService', () => {
 
       await service.create(createDepartmentDto);
 
-      expect(prismaMock.department.create).toHaveBeenCalledTimes(1);
+      expect(prismaMock.department['create']).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -62,13 +62,13 @@ describe('DepartmentService', () => {
         },
       ];
 
-      prismaMock.department.findMany.mockResolvedValue(departments as any);
+      prismaMock.department.findMany.mockResolvedValue(departments as never);
       prismaMock.department.count.mockResolvedValue(1);
       prismaMock.$transaction.mockResolvedValue([departments, 1]);
 
       await service.findAll({ page: 1, perPage: 10 });
 
-      expect(prismaMock.department.findMany).toHaveBeenCalledWith({
+      expect(prismaMock.department['findMany']).toHaveBeenCalledWith({
         skip: 0,
         take: 10,
       });
@@ -88,7 +88,7 @@ describe('DepartmentService', () => {
 
       await service.findOne(name);
 
-      expect(prismaMock.department.findUniqueOrThrow).toHaveBeenCalledWith({
+      expect(prismaMock.department['findUniqueOrThrow']).toHaveBeenCalledWith({
         where: { name },
       });
     });
@@ -110,13 +110,13 @@ describe('DepartmentService', () => {
       prismaMock.user.findUnique.mockResolvedValue({
         id: 2,
         departmentName: name,
-      } as any);
+      } as never);
 
       prismaMock.department.update.mockResolvedValue(updatedDepartment);
 
       await service.update(name, updateDepartmentDto);
 
-      expect(prismaMock.department.update).toHaveBeenCalledTimes(1);
+      expect(prismaMock.department['update']).toHaveBeenCalledTimes(1);
     });
 
     it('should throw NotFoundException if manager does not exist', async () => {
@@ -131,7 +131,7 @@ describe('DepartmentService', () => {
       prismaMock.user.findUnique.mockResolvedValue({
         id: 2,
         departmentName: 'Other Department',
-      } as any);
+      } as never);
 
       await expect(service.update(name, updateDepartmentDto)).rejects.toThrow(
         ApiException,
@@ -152,7 +152,7 @@ describe('DepartmentService', () => {
 
       await service.remove(name);
 
-      expect(prismaMock.department.delete).toHaveBeenCalledWith({
+      expect(prismaMock.department['delete']).toHaveBeenCalledWith({
         where: { name },
       });
     });

@@ -43,7 +43,7 @@ describe('DepartmentController', () => {
     it('should successfully create a department', async () => {
       departmentService.create.mockResolvedValue(new Department());
       await controller.create(createDepartmentDto);
-      expect(departmentService.create).toHaveBeenCalledWith(
+      expect(departmentService['create']).toHaveBeenCalledWith(
         createDepartmentDto,
       );
     });
@@ -53,7 +53,7 @@ describe('DepartmentController', () => {
     it('should return an array of departments', async () => {
       departmentService.findAll.mockResolvedValue([new Department()]);
       await controller.findAll();
-      expect(departmentService.findAll).toHaveBeenCalled();
+      expect(departmentService['findAll']).toHaveBeenCalled();
     });
   });
 
@@ -63,7 +63,7 @@ describe('DepartmentController', () => {
     it('should return a department if found', async () => {
       departmentService.findOne.mockResolvedValue(new Department());
       await controller.findOne(name);
-      expect(departmentService.findOne).toHaveBeenCalledWith(name);
+      expect(departmentService['findOne']).toHaveBeenCalledWith(name);
     });
   });
 
@@ -76,7 +76,7 @@ describe('DepartmentController', () => {
     it('should successfully update a department', async () => {
       departmentService.update.mockResolvedValue(new Department());
       await controller.update(name, updateDepartmentDto);
-      expect(departmentService.update).toHaveBeenCalledWith(
+      expect(departmentService['update']).toHaveBeenCalledWith(
         name,
         updateDepartmentDto,
       );
@@ -89,7 +89,7 @@ describe('DepartmentController', () => {
     it('should successfully remove a department', async () => {
       departmentService.remove.mockResolvedValue(new Department());
       await controller.remove(name);
-      expect(departmentService.remove).toHaveBeenCalledWith(name);
+      expect(departmentService['remove']).toHaveBeenCalledWith(name);
     });
   });
 });

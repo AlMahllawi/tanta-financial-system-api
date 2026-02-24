@@ -76,7 +76,7 @@ describe('AuthService', () => {
 
       const result = await service.validateUser(name, pass);
 
-      expect(userServiceMock.findUserForAuth).toHaveBeenCalledWith(name);
+      expect(userServiceMock['findUserForAuth']).toHaveBeenCalledWith(name);
       expect(result).toBe(userBase.id);
     });
 
@@ -132,8 +132,8 @@ describe('AuthService', () => {
 
       const result = await service.login(user.id);
 
-      expect(userServiceMock.updateLastLogin).toHaveBeenCalledWith(user.id);
-      expect(jwtServiceMock.sign).toHaveBeenCalledWith({
+      expect(userServiceMock['updateLastLogin']).toHaveBeenCalledWith(user.id);
+      expect(jwtServiceMock['sign']).toHaveBeenCalledWith({
         id: user.id,
       });
 
@@ -173,11 +173,11 @@ describe('AuthService', () => {
 
       const result = await service.refresh('valid-refresh-token');
 
-      expect(jwtServiceMock.verify).toHaveBeenCalledWith(
+      expect(jwtServiceMock['verify']).toHaveBeenCalledWith(
         'valid-refresh-token',
         { secret: 'refresh-secret' },
       );
-      expect(userServiceMock.findOne).toHaveBeenCalledWith(1);
+      expect(userServiceMock['findOne']).toHaveBeenCalledWith(1);
       expect(result).toEqual({
         access_token: accessToken,
         refresh_token: refreshToken,

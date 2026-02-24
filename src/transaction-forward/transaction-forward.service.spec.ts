@@ -77,14 +77,14 @@ describe('TransactionForwardService', () => {
       prismaMock.transaction.findUnique.mockResolvedValue({
         id: transactionId,
         creatorId: senderId,
-      } as any);
+      } as never);
       prismaMock.transactionForward.create.mockResolvedValue(
-        mockForward as any,
+        mockForward as never,
       );
 
       await service.create(senderId, transactionId, createDto);
 
-      expect(prismaMock.transactionForward.create).toHaveBeenCalledTimes(1);
+      expect(prismaMock.transactionForward['create']).toHaveBeenCalledTimes(1);
     });
 
     it('should throw ApiException if transaction not found', async () => {
@@ -101,13 +101,13 @@ describe('TransactionForwardService', () => {
 
     it('should return an array of transaction forwards', async () => {
       const types = [mockForward];
-      prismaMock.transactionForward.findMany.mockResolvedValue(types as any);
+      prismaMock.transactionForward.findMany.mockResolvedValue(types as never);
       prismaMock.transactionForward.count.mockResolvedValue(1);
       prismaMock.$transaction.mockResolvedValue([types, 1]);
 
       await service.findAll(transactionId, { page: 1, perPage: 10 });
 
-      expect(prismaMock.transactionForward.findMany).toHaveBeenCalledWith({
+      expect(prismaMock.transactionForward['findMany']).toHaveBeenCalledWith({
         where: { transactionId },
         include: { sender: true, receiver: true },
         skip: 0,
@@ -122,13 +122,13 @@ describe('TransactionForwardService', () => {
 
     it('should return a transaction forward if found', async () => {
       prismaMock.transactionForward.findFirstOrThrow.mockResolvedValue(
-        mockForward as any,
+        mockForward as never,
       );
 
       await service.findOne(transactionId, id);
 
       expect(
-        prismaMock.transactionForward.findFirstOrThrow,
+        prismaMock.transactionForward['findFirstOrThrow'],
       ).toHaveBeenCalledWith({
         where: { id, transactionId },
         include: { sender: true, receiver: true },
@@ -148,17 +148,17 @@ describe('TransactionForwardService', () => {
       prismaMock.transaction.findUnique.mockResolvedValue({
         id: transactionId,
         creatorId: 1,
-      } as any);
+      } as never);
       prismaMock.transactionForward.findUnique.mockResolvedValue(
-        mockForward as any,
+        mockForward as never,
       );
       prismaMock.transactionForward.delete.mockResolvedValue(
-        mockForward as any,
+        mockForward as never,
       );
 
       await service.remove(1, transactionId, id);
 
-      expect(prismaMock.transactionForward.delete).toHaveBeenCalledWith({
+      expect(prismaMock.transactionForward['delete']).toHaveBeenCalledWith({
         where: { id, transactionId },
         include: { sender: true, receiver: true },
       });
@@ -168,7 +168,7 @@ describe('TransactionForwardService', () => {
       prismaMock.transaction.findUnique.mockResolvedValue({
         id: transactionId,
         creatorId: 1,
-      } as any);
+      } as never);
       prismaMock.transactionForward.findUnique.mockResolvedValue(null);
 
       await expect(service.remove(1, transactionId, id)).rejects.toThrow(

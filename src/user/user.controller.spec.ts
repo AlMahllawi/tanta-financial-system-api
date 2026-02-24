@@ -47,7 +47,7 @@ describe('UserController', () => {
     it('should successfully create a user', async () => {
       userService.create.mockResolvedValue(new User());
       await controller.create(createUserDto);
-      expect(userService.create).toHaveBeenCalledWith(createUserDto);
+      expect(userService['create']).toHaveBeenCalledWith(createUserDto);
     });
   });
 
@@ -64,12 +64,12 @@ describe('UserController', () => {
           next: null,
         },
       };
-      userService.findAll.mockResolvedValue(result as any);
+      userService.findAll.mockResolvedValue(result as never);
       await controller.findAll(
         { page: 1, perPage: 10, name: 'test' },
         UserRole.ADMIN,
       );
-      expect(userService.findAll).toHaveBeenCalled();
+      expect(userService['findAll']).toHaveBeenCalled();
     });
 
     it('should return users for regular role without active filter', async () => {
@@ -84,12 +84,12 @@ describe('UserController', () => {
           next: null,
         },
       };
-      userService.findAll.mockResolvedValue(result as any);
+      userService.findAll.mockResolvedValue(result as never);
       await controller.findAll(
         { page: 1, perPage: 10, name: 'test' },
         UserRole.USER,
       );
-      expect(userService.findAll).toHaveBeenCalled();
+      expect(userService['findAll']).toHaveBeenCalled();
     });
 
     it('should throw ApiException if non-admin tries to filter by active', () => {
@@ -115,7 +115,7 @@ describe('UserController', () => {
     it('should return a user if found', async () => {
       userService.findOne.mockResolvedValue(new User());
       await controller.findOne(id);
-      expect(userService.findOne).toHaveBeenCalledWith(id);
+      expect(userService['findOne']).toHaveBeenCalledWith(id);
     });
   });
 
@@ -128,7 +128,7 @@ describe('UserController', () => {
     it('should successfully update a user', async () => {
       userService.update.mockResolvedValue(new User());
       await controller.update(id, updateUserDto, UserRole.ADMIN);
-      expect(userService.update).toHaveBeenCalledWith(id, updateUserDto);
+      expect(userService['update']).toHaveBeenCalledWith(id, updateUserDto);
     });
   });
 
@@ -138,7 +138,7 @@ describe('UserController', () => {
     it('should successfully remove a user', async () => {
       userService.remove.mockResolvedValue(new User());
       await controller.remove(id);
-      expect(userService.remove).toHaveBeenCalledWith(id);
+      expect(userService['remove']).toHaveBeenCalledWith(id);
     });
   });
 });
