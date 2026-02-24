@@ -40,3 +40,8 @@ Feature: Transaction Types Management
         Given the user attempts to update restricted fields
         When the update is processed
         Then the system returns 403
+
+    Scenario: Delete non-existent transaction type
+        Given the transaction type does not exist
+        When the deletion is attempted
+        Then the system returns 404

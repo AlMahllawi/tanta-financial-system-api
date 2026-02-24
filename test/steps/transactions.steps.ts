@@ -121,9 +121,9 @@ defineFeature(feature, (test) => {
     await prisma.transactionForward.deleteMany({});
     await prisma.transactionDocument.deleteMany({});
     await prisma.transaction.deleteMany({});
-    if (currentDocId) {
-      await prisma.document.deleteMany({ where: { id: currentDocId } });
-    }
+    await prisma.document.deleteMany({
+      where: { uploaderId: { in: [adminUserId, regularUserId] } },
+    });
     await prisma.transactionType.deleteMany({ where: { name: 'TxTest Type' } });
     await prisma.user.deleteMany({
       where: { name: { in: ['tx_admin', 'tx_user', 'tx_other'] } },
@@ -887,6 +887,86 @@ defineFeature(feature, (test) => {
         .patch(`/transactions/${currentTxId}`)
         .set('Authorization', `Bearer ${otherToken}`)
         .send({ description: 'Attempt' });
+    });
+
+    shared.thenSystemReturnsStatus(then, () => response);
+  });
+
+  // --- Transaction document not found on creation ---
+  test('Transaction document not found on creation', ({
+    given,
+    when,
+    then,
+  }) => {
+    given('the request references a non-existent document ID', () => {
+      requestPayload = {
+        title: 'Bad Doc Id Tx',
+        description: 'Test',
+        typeName: 'TxTest Type',
+        priority: 'MEDIUM',
+        documentsIds: [999999],
+      };
+    });
+
+    when('the new transaction is attempted', async () => {
+      response = await request(httpServer)
+        .post('/transactions')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send(requestPayload);
+    });
+
+    shared.thenSystemReturnsStatus(then, () => response);
+  });
+
+  // --- Update transaction to non-existent type ---
+  test('Update transaction to non-existent type', ({ given, when, then }) => {
+    given('the transaction exists but the new type does not', async () => {
+      const tx = await prisma.transaction.create({
+        data: {
+          title: 'Update Bad Type Tx',
+          description: '',
+          typeName: 'TxTest Type',
+          creatorId: adminUserId,
+        },
+      });
+      currentTxId = tx.id;
+    });
+
+    when('the update is attempted with a non-existent type', async () => {
+      response = await request(httpServer)
+        .patch(`/transactions/${currentTxId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ typeName: 'Non Existent Type XYZ' });
+    });
+
+    shared.thenSystemReturnsStatus(then, () => response);
+  });
+
+  // --- Delete transaction that has forwards ---
+  test('Delete transaction that has forwards', ({ given, when, then }) => {
+    given('the transaction has been forwarded', async () => {
+      const tx = await prisma.transaction.create({
+        data: {
+          title: 'Delete Forwarded Tx',
+          description: '',
+          typeName: 'TxTest Type',
+          creatorId: adminUserId,
+        },
+      });
+      currentTxId = tx.id;
+      await prisma.transactionForward.create({
+        data: {
+          transactionId: currentTxId,
+          senderId: adminUserId,
+          receiverId: regularUserId,
+        },
+      });
+    });
+
+    when('the deletion process is triggered', async () => {
+      response = await request(httpServer)
+        .delete(`/transactions/${currentTxId}`)
+        .set('Authorization', `Bearer ${adminToken}`);
     });
 
     shared.thenSystemReturnsStatus(then, () => response);

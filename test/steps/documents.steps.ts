@@ -20,6 +20,7 @@ defineFeature(feature, (test) => {
   let userToken: string;
   let otherToken: string;
   let userId: number;
+  let otherId: number;
   let docId: number | null = null;
   let httpServer: http.Server;
 
@@ -64,6 +65,7 @@ defineFeature(feature, (test) => {
         departmentName: 'Doc Test Dept',
       },
     });
+    otherId = other.id;
 
     userToken = jwtService.sign({
       id: user.id,
@@ -79,6 +81,12 @@ defineFeature(feature, (test) => {
 
   afterAll(async () => {
     await prisma.transactionDocument.deleteMany({});
+    await prisma.transaction.deleteMany({
+      where: { creatorId: { in: [userId, otherId] } },
+    });
+    await prisma.transactionType.deleteMany({
+      where: { name: 'DocTest Type' },
+    });
     await prisma.document.deleteMany({
       where: { uploaderId: { in: [userId] } },
     });

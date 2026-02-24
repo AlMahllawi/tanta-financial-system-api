@@ -109,9 +109,9 @@ defineFeature(feature, (test) => {
   });
 
   afterAll(async () => {
-    await prisma.transactionForward.deleteMany({});
-    await prisma.transactionDocument.deleteMany({});
-    await prisma.transaction.deleteMany({});
+    await prisma.transactionForward.deleteMany({ where: { senderId } });
+    // This suite doesn't use transaction features that touch transactionDocument, so no need to clear it globally
+    await prisma.transaction.deleteMany({ where: { creatorId: senderId } });
     await prisma.transactionType.deleteMany({
       where: { name: 'FwdTest Type' },
     });
@@ -571,6 +571,38 @@ defineFeature(feature, (test) => {
       response = await request(httpServer)
         .delete(`/transaction/${txId}/forward/${fwdId}`)
         .set('Authorization', `Bearer ${senderToken}`);
+    });
+
+    shared.thenSystemReturnsStatus(then, () => response);
+  });
+
+  // --- Update non-existent forward ---
+  test('Update non-existent forward', ({ given, when, then }) => {
+    given('the forward does not exist', async () => {
+      txId = await createTx('Fwd Update NonExist Tx');
+    });
+
+    when('the sender attempts to update the forward comment', async () => {
+      response = await request(httpServer)
+        .patch(`/transaction/${txId}/forward/999999`)
+        .set('Authorization', `Bearer ${senderToken}`)
+        .send({ senderComment: 'Updated comment' });
+    });
+
+    shared.thenSystemReturnsStatus(then, () => response);
+  });
+
+  // --- Update response on non-existent forward ---
+  test('Update response on non-existent forward', ({ given, when, then }) => {
+    given('the forward does not exist for response update', async () => {
+      txId = await createTx('Fwd UpdateResp NonExist Tx');
+    });
+
+    when('the receiver attempts to update the response', async () => {
+      response = await request(httpServer)
+        .patch(`/transaction/${txId}/forward/999999/response`)
+        .set('Authorization', `Bearer ${receiverToken}`)
+        .send({ status: 'APPROVED', comment: 'Attempt' });
     });
 
     shared.thenSystemReturnsStatus(then, () => response);

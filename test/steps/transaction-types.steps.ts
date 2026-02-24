@@ -234,4 +234,21 @@ defineFeature(feature, (test) => {
 
     shared.thenSystemReturnsStatus(then, () => response);
   });
+
+  // --- Delete non-existent transaction type ---
+  test('Delete non-existent transaction type', ({ given, when, then }) => {
+    given('the transaction type does not exist', () => {
+      // Will use a non-existent name
+    });
+
+    when('the deletion is attempted', async () => {
+      response = await request(httpServer)
+        .delete(
+          `/transactions/types/${encodeURIComponent('Non Existent Type XYZ')}`,
+        )
+        .set('Authorization', `Bearer ${adminToken}`);
+    });
+
+    shared.thenSystemReturnsStatus(then, () => response);
+  });
 });

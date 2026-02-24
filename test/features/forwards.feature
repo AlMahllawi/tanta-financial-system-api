@@ -109,3 +109,13 @@ Feature: Forwards Management
     Given the forward has already been seen by the receiver
     When an update requiring unseen status is attempted
     Then the system returns 403
+
+  Scenario: Update non-existent forward
+    Given the forward does not exist
+    When the sender attempts to update the forward comment
+    Then the system returns 404
+
+  Scenario: Update response on non-existent forward
+    Given the forward does not exist for response update
+    When the receiver attempts to update the response
+    Then the system returns 404

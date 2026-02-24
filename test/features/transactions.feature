@@ -145,6 +145,21 @@ Feature: Transactions Management
     When the requested document does not exist
     Then the system returns 404
 
+  Scenario: Transaction document not found on creation
+    Given the request references a non-existent document ID
+    When the new transaction is attempted
+    Then the system returns 404
+
+  Scenario: Update transaction to non-existent type
+    Given the transaction exists but the new type does not
+    When the update is attempted with a non-existent type
+    Then the system returns 404
+
+  Scenario: Delete transaction that has forwards
+    Given the transaction has been forwarded
+    When the deletion process is triggered
+    Then the system returns 409
+
   Scenario: Unauthorized transaction update or delete
     Given the user is not the transaction creator
     When the update or deletion is attempted
