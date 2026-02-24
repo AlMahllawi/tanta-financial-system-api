@@ -32,6 +32,13 @@ Feature: Users Management
     Then the system returns an empty list
     And the system returns response 200
 
+  Scenario: User without admin role filters by active status
+    Given the user has role "USER"
+    When they try to filter results using active
+    Then the API should respond with 403 Forbidden
+    And the message should indicate that active is a restricted field
+
+
   Scenario: Find existing user
     Given the provided name is correct
     And the endpoint is only for admin
@@ -43,6 +50,11 @@ Feature: Users Management
     Given the name does not exist
     When the admin searches for the user
     Then the system returns 404
+
+ Scenario: Retrieve current user successfully
+  Given the user is authenticated with a valid token
+  When they request the current user details
+  Then the system returns 200 
 
   Scenario: Successful user update
     Given the request accepts the name (id) and new details
@@ -58,6 +70,12 @@ Feature: Users Management
     Given a user requests a role update
     When the user is not an admin
     Then the system should reject the modification since its restricted to admin only
+
+  Scenario: Update user with invalid input data
+    Given the request body contains invalid name, departmentName, password, or role
+    When the admin sends a request to update an existing user
+    Then the system returns 400
+    And the response should include validation error messages
 
   Scenario: Update using widely assigned username
     Given a new username is already used
@@ -78,4 +96,11 @@ Feature: Users Management
   Scenario: Prevent deletion of user linked to main operations
     Given the user is linked to main operations
     When the deletion is attempted
-    Then the system prevents deletion and triggers a warning
+    Then the system prevents deletion and triggers a warning 
+    And returns 409
+
+  Scenario: user deleting another user without authorization
+    Given the user has role "USER"
+    When they try to delete another user
+    Then the system returns respond 403 Forbidden
+    
