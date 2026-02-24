@@ -273,26 +273,16 @@ export class TransactionService {
   }
 
   async markAsSeen(transactionId: number, userId: number) {
-    const latestForward = await this.findLatestForward(transactionId);
-    if (!latestForward) return;
-
-    if (
-      latestForward.senderId === userId &&
-      latestForward.senderSeen === false
-    ) {
-      await this.prisma.transactionForward.update({
-        where: { id: latestForward.id },
+    await Promise.all([
+      this.prisma.transactionForward.updateMany({
+        where: { transactionId, senderId: userId },
         data: { senderSeen: true },
-      });
-    } else if (
-      latestForward.receiverId === userId &&
-      latestForward.receiverSeen === false
-    ) {
-      await this.prisma.transactionForward.update({
-        where: { id: latestForward.id },
+      }),
+      this.prisma.transactionForward.updateMany({
+        where: { transactionId, receiverId: userId },
         data: { receiverSeen: true },
-      });
-    }
+      }),
+    ]);
   }
 
   async update(id: number, updateTransactionDto: UpdateTransactionDto) {
