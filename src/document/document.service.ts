@@ -56,6 +56,12 @@ export class DocumentService {
     );
   }
 
+  async findOneWithContent(id: number) {
+    return this.prisma.document.findUniqueOrThrow({
+      where: { id },
+    });
+  }
+
   async findOne(id: number) {
     const document = await this.prisma.document.findUniqueOrThrow({
       where: { id },

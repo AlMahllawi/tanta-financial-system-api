@@ -135,7 +135,7 @@ export class DocumentController {
     @Param('id', ParseIntPipe) id: number,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    const document = await this.documentService.findOne(id);
+    const document = await this.documentService.findOneWithContent(id);
 
     res.set({
       'Content-Type': contentType(document.title) || 'application/octet-stream',
