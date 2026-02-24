@@ -19,6 +19,16 @@ Feature: Users Management
     When the admin tries to create the user
     Then the system returns 404
 
+  Scenario: Unauthorized role accessing restricted resource
+    Given the user is logged in with role USER
+    When they try to access an endpoint that requires role ADMIN
+    Then the system respond with 403 Forbidden
+  
+   Scenario: One or more of the fields are empty or contain an error
+    Given Explain where the error is
+    When the admin tries to create the user
+    Then the system returns 400 
+    
   Scenario: View populated users list
     Given the endpoint is protected
     When the user requests the list of all users
