@@ -27,7 +27,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
-import { matchConstraintField } from '../prisma/prisma.matchers.js';
+import {
+  matchConstraintField,
+  matchModelName,
+} from '../prisma/prisma.matchers.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { TransactionTypeQueryDto } from './dto/transaction-type-query.dto.js';
 import { UserRole } from '../../prisma/generated/enums.js';
@@ -109,7 +112,10 @@ export class TransactionTypeController {
     description: 'No transaction type was found with such name',
     errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
     args: { name: 'Unknown Type' },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('TransactionType'),
+    },
   })
   findOne(@Param('name') name: string) {
     return this.transactionTypeService.findOne(name);
@@ -126,7 +132,10 @@ export class TransactionTypeController {
     description: 'No transaction type was found with such name',
     errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
     args: { name: 'Unknown Type' },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('TransactionType'),
+    },
   })
   @ApiErrorResponses({
     status: HttpStatus.FORBIDDEN,

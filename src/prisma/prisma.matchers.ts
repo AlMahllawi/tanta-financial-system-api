@@ -39,3 +39,9 @@ export function matchMessage(includes: string) {
     return message.includes(includes);
   };
 }
+
+export function matchModelName(modelName: string) {
+  return (meta: Record<string, unknown>) => {
+    return meta?.modelName === modelName;
+  };
+}

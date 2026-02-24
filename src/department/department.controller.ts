@@ -33,6 +33,7 @@ import { PaginationDto } from '../common/dto/pagination.dto.js';
 import {
   matchConstraintField,
   matchConstraintIndex,
+  matchModelName,
 } from '../prisma/prisma.matchers.js';
 
 @ApiTags('Departments')
@@ -81,7 +82,10 @@ export class DepartmentController {
     description: 'No department was found with such name',
     errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
     args: { name: 'Unknown Department' },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('Department'),
+    },
   })
   findOne(@Param('name') name: string) {
     return this.departmentService.findOne(name);
@@ -120,7 +124,10 @@ export class DepartmentController {
       description: 'No department was found with such name',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
       args: { name: 'Unknown Department' },
-      prisma: { error: PrismaError.RecordsNotFound },
+      prisma: {
+        error: PrismaError.RecordsNotFound,
+        matcher: matchModelName('Department'),
+      },
     },
     {
       status: HttpStatus.NOT_FOUND,
@@ -158,7 +165,10 @@ export class DepartmentController {
       description: 'No department was found with such name',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
       args: { name: 'Unknown Department' },
-      prisma: { error: PrismaError.RecordsNotFound },
+      prisma: {
+        error: PrismaError.RecordsNotFound,
+        matcher: matchModelName('Department'),
+      },
     },
     {
       status: HttpStatus.CONFLICT,

@@ -39,6 +39,7 @@ import { UserQueryDto } from './dto/user-query.dto.js';
 import {
   matchConstraintField,
   matchConstraintIndex,
+  matchModelName,
 } from '../prisma/prisma.matchers.js';
 
 const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
@@ -128,7 +129,10 @@ export class UserController {
     description: 'No user was found with such id',
     errorCode: ErrorCode.USER_NOT_FOUND,
     args: { id: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('User'),
+    },
   })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(id);
@@ -158,7 +162,10 @@ export class UserController {
       description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
       args: { id: 1 },
-      prisma: { error: PrismaError.RecordsNotFound },
+      prisma: {
+        error: PrismaError.RecordsNotFound,
+        matcher: matchModelName('User'),
+      },
     },
     {
       status: HttpStatus.NOT_FOUND,
@@ -214,7 +221,10 @@ export class UserController {
       description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
       args: { id: 1 },
-      prisma: { error: PrismaError.RecordsNotFound },
+      prisma: {
+        error: PrismaError.RecordsNotFound,
+        matcher: matchModelName('User'),
+      },
     },
     {
       status: HttpStatus.CONFLICT,

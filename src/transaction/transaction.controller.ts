@@ -45,6 +45,7 @@ import { PaginatedTransactionSummaryResponseDto } from './dto/paginated-transact
 import {
   matchConstraintField,
   matchConstraintIndex,
+  matchModelName,
 } from '../prisma/prisma.matchers.js';
 
 @ApiTags('Transactions')
@@ -134,7 +135,10 @@ export class TransactionController {
     description: 'No transaction was found with such id',
     errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
     args: { id: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('Transaction'),
+    },
   })
   @ApiErrorResponses({
     status: HttpStatus.FORBIDDEN,
@@ -174,7 +178,10 @@ export class TransactionController {
       description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { id: 1 },
-      prisma: { error: PrismaError.RecordsNotFound },
+      prisma: {
+        error: PrismaError.RecordsNotFound,
+        matcher: matchModelName('Transaction'),
+      },
     },
     {
       status: HttpStatus.NOT_FOUND,
@@ -218,7 +225,10 @@ export class TransactionController {
       description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { id: 1 },
-      prisma: { error: PrismaError.RecordsNotFound },
+      prisma: {
+        error: PrismaError.RecordsNotFound,
+        matcher: matchModelName('Transaction'),
+      },
     },
     {
       status: HttpStatus.CONFLICT,

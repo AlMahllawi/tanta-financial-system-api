@@ -36,7 +36,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
-import { matchConstraintField } from '../prisma/prisma.matchers.js';
+import {
+  matchConstraintField,
+  matchModelName,
+} from '../prisma/prisma.matchers.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { PaginationDto } from '../common/dto/pagination.dto.js';
 import { Query } from '@nestjs/common';
@@ -113,7 +116,10 @@ export class DocumentController {
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
     args: { id: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('Document'),
+    },
   })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.documentService.findOne(id);
@@ -129,7 +135,10 @@ export class DocumentController {
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
     args: { id: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('Document'),
+    },
   })
   async download(
     @Param('id', ParseIntPipe) id: number,
@@ -156,7 +165,10 @@ export class DocumentController {
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
     args: { id: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('Document'),
+    },
   })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.documentService.remove(id);

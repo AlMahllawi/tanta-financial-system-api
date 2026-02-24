@@ -31,7 +31,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { PrismaError } from 'prisma-error-enum';
-import { matchConstraintField } from '../prisma/prisma.matchers.js';
+import {
+  matchConstraintField,
+  matchModelName,
+} from '../prisma/prisma.matchers.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { PaginationDto } from '../common/dto/pagination.dto.js';
 
@@ -142,7 +145,10 @@ export class TransactionForwardController {
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
     args: { id: 1, transactionId: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('TransactionForward'),
+    },
   })
   findOne(
     @CurrentUser('id') userId: number,
@@ -165,7 +171,10 @@ export class TransactionForwardController {
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
     args: { id: 1, transactionId: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('TransactionForward'),
+    },
   })
   @ApiErrorResponses(
     {
@@ -207,7 +216,10 @@ export class TransactionForwardController {
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
     args: { id: 1, transactionId: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('TransactionForward'),
+    },
   })
   @ApiErrorResponses(
     {
@@ -254,7 +266,10 @@ export class TransactionForwardController {
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
     args: { id: 1, transactionId: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('TransactionForward'),
+    },
   })
   @ApiErrorResponses(
     {
@@ -301,7 +316,10 @@ export class TransactionForwardController {
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
     args: { id: 1, transactionId: 1 },
-    prisma: { error: PrismaError.RecordsNotFound },
+    prisma: {
+      error: PrismaError.RecordsNotFound,
+      matcher: matchModelName('TransactionForward'),
+    },
   })
   @ApiErrorResponses(
     {
