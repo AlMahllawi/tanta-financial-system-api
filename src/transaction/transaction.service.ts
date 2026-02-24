@@ -55,22 +55,26 @@ export class TransactionService {
             },
           },
         },
-        {
-          latestForward: null,
-          creatorId: userId,
-        },
       ],
     };
   }
 
   private getOutgoingWhere(userId: number): Prisma.TransactionWhereInput {
     return {
-      forwards: {
-        some: {
-          senderId: userId,
-          status: TransactionForwardStatus.WAITING,
+      OR: [
+        {
+          forwards: {
+            some: {
+              senderId: userId,
+              status: TransactionForwardStatus.WAITING,
+            },
+          },
         },
-      },
+        {
+          latestForward: null,
+          creatorId: userId,
+        },
+      ],
     };
   }
 
