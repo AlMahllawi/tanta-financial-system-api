@@ -57,8 +57,8 @@ Feature: Departments Management
   Scenario: Deleting a department linked to transactions
     Given the department is used in other actual and past transactions
     When the admin attempts a deletion
-    Then the system prevents the deletion and asks for permission or triggers alert
-
+    Then the system prevents the deletion and asks for permission or triggers alert and returns 409
+    
   Scenario: Delete non-existent department
     Given the name does not exist
     When the admin attempts a deletion
