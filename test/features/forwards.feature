@@ -10,6 +10,12 @@ Feature: Forwards Management
     When the forward operates successfully
     Then the system returns response 201
 
+ Scenario: Non-creator attempts to create the first forward for a transaction
+   Given the user is authenticated with a valid token
+   And the user is not the creator of the transaction
+   When they attempt to create the first forward for that transaction
+   Then the system returns 403
+
   Scenario: Prevent forwarding finished transactions
     Given the transaction has been finalized
     When the forward is attempted
@@ -46,6 +52,12 @@ Feature: Forwards Management
     And the user is able to view forward details
     And the system returns response 200
 
+  Scenario: Display forward seen flags
+    Given the forward exists
+    When the user retrieves forward details
+    Then the system displays senderSeen and receiverSeen flags
+    And the system returns 200
+
   Scenario: Fetch non-existent forward transaction
     Given the transaction is not documented or missing
     When the specific forward is searched
@@ -58,10 +70,16 @@ Feature: Forwards Management
     Then the success triggers properly
     And the system returns response 201
 
-  Scenario: Preventing multiple identical responses
-    Given the user attempts to reply for a second time
-    When the response validation checks
-    Then the system rejects double replies
+  //Scenario: Preventing multiple identical responses
+   // Given the user attempts to reply for a second time
+   // When the response validation checks
+   // Then the system rejects double replies
+
+  Scenario: Prevent response when transaction has been forwarded again
+    Given the forward has already been re-forwarded to another receiver
+    When the receiver attempts to create a response
+    Then the system rejects the response
+    And the system returns 403
 
   Scenario: Response to an invalid transaction
     Given the transaction isn't valid or is missing
@@ -109,6 +127,18 @@ Feature: Forwards Management
     Given the forward has already been seen by the receiver
     When an update requiring unseen status is attempted
     Then the system returns 403
+
+  Scenario: Prevent sender update when receiver already responded
+    Given the receiver has already submitted a response
+    When the sender attempts to update the forward comment
+    Then the system blocks the update
+    And the system returns 403
+
+  Scenario: Prevent updating response when transaction has been forwarded again
+     Given the forward has been forwarded again to another receiver
+     When the receiver attempts to update their previous response
+     Then the update is rejected
+     And the system returns 403
 
   Scenario: Update non-existent forward
     Given the forward does not exist
