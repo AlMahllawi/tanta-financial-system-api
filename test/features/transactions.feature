@@ -15,17 +15,30 @@ Feature: Transactions Management
     Then the system requires the name to be changed
     And the system returns 201
 
-  Scenario: Missing transaction type
-    Given the type is not provided
-    When the new transaction is attempted
-    Then the system requires selecting a type
-    And the system returns 400
+  Scenario: Validation fails when title or type name is invalid
+    Given the user provides transaction data
+    And the title is too short or does not match the required pattern
+    Or the type Name is too short or does not match the required pattern
+    When the user submits the request
+    Then the system returns 400 Bad Request
+  
+  Scenario: Validation fails when priority value is invalid
+    Given the user provides a priority not in HIGH, MEDIUM, or LOW
+    When the user submits the request
+    Then the system returns 400 
 
   Scenario: Missing department details on transaction
     Given the department does not exist
     When the new transaction is attempted
     Then the system requires validating the department
     And the system returns 404
+
+  Scenario: Prevent creating a transaction with a duplicated title
+    Given a transaction already exists with the same title
+    When the user attempts to create a new transaction using the same title
+    Then the system rejects the request
+    And returns 409
+    And the message indicates that the title must be unique
 
   Scenario: User views all personal transactions
     Given the user requests to view their transactions
@@ -55,7 +68,8 @@ Feature: Transactions Management
   Scenario: Unauthorized transaction viewing
     Given the user attempts to view a transaction they do not own
     When the request is processed
-    Then they cannot view another user's transactions
+    Then they cannot view another user's transactions 
+    And the systems returns 403
 
   Scenario: Successful valid transaction update
     Given the transaction name is correct and the transaction has not been forwarded
@@ -73,6 +87,12 @@ Feature: Transactions Management
     When the update is attempted
     Then the system returns 404
 
+  Scenario: Fail to create a transaction when the provided type does not exist
+    Given the user provides a transaction type name that is not registered
+    When the transaction creation request is submitted
+    Then the system returns 404 
+    And the message indicates that the transaction type was not found
+
   Scenario: Delete a valid un-forwarded transaction
     Given the transaction has not been forwarded to anyone yet
     When the deletion process is triggered
@@ -83,6 +103,11 @@ Feature: Transactions Management
     Given the transaction is missing
     When the deletion process runs
     Then the system returns 404
+
+  Scenario: Cannot delete a transaction that has forwards
+    When the user deletes transaction 
+    Then the response should be 409
+    And the error key should be "TRANSACTION_HAS_FORWARDS"
 
   Scenario: Valid document attachment to transaction
     Given an existing document or new file is selected
@@ -102,6 +127,11 @@ Feature: Transactions Management
     Given the request has already been resolved or replied to
     When an update is attempted
     Then the system rejects it and returns 403
+
+  Scenario: User is not a participant in the transaction
+  When the user tries to access transaction
+  Then the response should be 403
+  And the error key should be "NOT_TRANSACTION_PARTICIPANT"
 
   Scenario: Attach to non-existent transaction
     Given the transaction does not exist
