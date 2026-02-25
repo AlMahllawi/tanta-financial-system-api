@@ -18,7 +18,7 @@ Feature: Transaction Types Management
     Scenario: Transaction type creator not found
         Given the creator ID is invalid
         When the creation is attempted
-        Then the system returns 401
+        Then the system returns 404
 
     Scenario: Fetch existing transaction type
         Given a valid transaction type ID
@@ -40,6 +40,11 @@ Feature: Transaction Types Management
         Given the user attempts to update restricted fields
         When the update is processed
         Then the system returns 403
+
+    Scenario: Transaction type deleted successfully
+        Given the user is creator of transaction type
+        When  a deletion is attemted
+        Then the system returns 200
 
     Scenario: Delete non-existent transaction type
         Given the transaction type does not exist
