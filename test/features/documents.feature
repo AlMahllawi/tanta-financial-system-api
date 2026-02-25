@@ -44,6 +44,12 @@ Feature: Documents Management
     When the document is requested
     Then the system returns 404
 
+ Scenario: User cannot view documents owned by other users
+  Given a logged-in user with role USER
+  When they send a GET request for a document owned by a different user
+  Then the API must return 403 Forbidden
+
+  
   Scenario: Successful document deletion
     Given the document exists
     When the deletion is successful
@@ -69,6 +75,10 @@ Feature: Documents Management
     Given the document ID does not exist
     When the user requests to download the document
     Then the system returns 404
+
+  Scenario: Client-side download failure returns 204
+    When a document download fails due to a client issue
+    Then the system returns 204 with no file downloaded
 
   Scenario: Document uploader not found
     Given the uploading user cannot be verified
