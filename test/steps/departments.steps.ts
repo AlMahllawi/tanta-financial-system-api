@@ -19,6 +19,7 @@ defineFeature(feature, (test) => {
   let prisma: PrismaService;
   let jwtService: JwtService;
   let adminToken: string;
+  let userToken: string;
   let requestPayload: Record<string, unknown> = {};
   let httpServer: http.Server;
   let currentDeptName: string | null = null;
@@ -84,7 +85,7 @@ defineFeature(feature, (test) => {
       role: adminUser.role,
     });
 
-    jwtService.sign({
+    userToken = jwtService.sign({
       id: standardUser.id,
       username: standardUser.name,
       role: standardUser.role,
@@ -481,6 +482,42 @@ defineFeature(feature, (test) => {
         .patch(`/departments/${currentDeptName}`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send(requestPayload);
+    });
+
+    shared.thenSystemReturnsStatus(then, () => response);
+  });
+
+  test('Prevent non-admin user from managing departments', ({
+    given,
+    when,
+    then,
+  }) => {
+    given('a regular user is logged in', () => {
+      // Covered by userToken
+    });
+
+    when('the user attempts to create a department', async () => {
+      response = await request(httpServer)
+        .post('/departments')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ name: 'Unauthorized Dept' });
+    });
+
+    shared.thenSystemReturnsStatus(then, () => response);
+
+    when('the user attempts to update a department', async () => {
+      response = await request(httpServer)
+        .patch('/departments/Admin%20Dept')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({ name: 'Hack Dept' });
+    });
+
+    shared.thenSystemReturnsStatus(then, () => response);
+
+    when('the user attempts to delete a department', async () => {
+      response = await request(httpServer)
+        .delete('/departments/Admin%20Dept')
+        .set('Authorization', `Bearer ${userToken}`);
     });
 
     shared.thenSystemReturnsStatus(then, () => response);

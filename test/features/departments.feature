@@ -78,3 +78,12 @@ Feature: Departments Management
     Given the assigned manager does not belong to this department
     When the update is attempted
     Then the system returns 409
+
+  Scenario: Prevent non-admin user from managing departments
+    Given a regular user is logged in
+    When the user attempts to create a department
+    Then the system returns 403
+    When the user attempts to update a department
+    Then the system returns 403
+    When the user attempts to delete a department
+    Then the system returns 403

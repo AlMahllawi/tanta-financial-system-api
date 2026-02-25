@@ -35,16 +35,20 @@ import {
   matchConstraintIndex,
   matchModelName,
 } from '../prisma/prisma.matchers.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
+import { UserRole } from '../../prisma/generated/enums.js';
 
 @ApiTags('Departments')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @UseFilters(PrismaExceptionFilter)
 @Controller('departments')
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}
 
   @Post()
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Create a new department' })
   @ApiCreatedResponse({
     type: Department,
@@ -92,6 +96,7 @@ export class DepartmentController {
   }
 
   @Patch(':name')
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Update a department' })
   @ApiOkResponse({
     type: Department,
@@ -154,6 +159,7 @@ export class DepartmentController {
   }
 
   @Delete(':name')
+  @Roles(UserRole.ADMIN)
   @ApiOperation({ summary: 'Delete a department' })
   @ApiOkResponse({
     type: Department,
