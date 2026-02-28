@@ -9,6 +9,11 @@ import {
 } from './seeds/department.factory.js';
 import { manyUsersFactory, userFactory } from './seeds/user.factory.js';
 import { faker } from '@faker-js/faker';
+import { manyDocumentsFactory } from './seeds/document.factory.js';
+import { manyTransactionTypesFactory } from './seeds/transaction-type.factory.js';
+import { manyTransactionsFactory } from './seeds/transaction.factory.js';
+import { transactionForwardFactory } from './seeds/transaction-forward.factory.js';
+import { TransactionForwardStatus } from './generated/enums.js';
 
 interface EnvVars {
   DEFAULT_ADMIN_NAME: string;
@@ -143,6 +148,86 @@ async function main() {
   console.log(
     `Created ${departments.length} departments with ${totalUsersCount} users.`,
   );
+
+  console.log('Fetching created users to seed transactions and documents...');
+  const users = await prisma.user.findMany();
+
+  console.log(
+    `Seeding documents, transaction types, and transactions for ${users.length} users...`,
+  );
+  for (const user of users) {
+    const docsData = manyDocumentsFactory(
+      faker.number.int({ min: 5, max: 10 }),
+      user.id,
+    );
+    await prisma.document.createMany({ data: docsData });
+
+    const userDocs = await prisma.document.findMany({
+      where: { uploaderId: user.id },
+    });
+
+    const typesData = manyTransactionTypesFactory(
+      faker.number.int({ min: 1, max: 2 }),
+      user.id,
+    );
+    await prisma.transactionType.createMany({
+      data: typesData,
+      skipDuplicates: true,
+    });
+
+    const userTypes = await prisma.transactionType.findMany({
+      where: { creatorId: user.id },
+    });
+
+    const txCount = faker.number.int({ min: 2, max: 4 });
+    for (let i = 0; i < txCount; i++) {
+      const type = faker.helpers.arrayElement(userTypes);
+      const txData = manyTransactionsFactory(1, user.id, type.name)[0];
+      const tx = await prisma.transaction.create({ data: txData });
+
+      const docsToAttach = faker.helpers.arrayElements(
+        userDocs,
+        faker.number.int({ min: 1, max: 3 }),
+      );
+      await prisma.transactionDocument.createMany({
+        data: docsToAttach.map((doc) => ({
+          transactionId: tx.id,
+          documentId: doc.id,
+          attachedBy: user.id,
+        })),
+      });
+    }
+  }
+
+  console.log('Seeding transaction forwards (chains)...');
+  const allTransactions = await prisma.transaction.findMany();
+  for (const tx of allTransactions) {
+    const chainLength = faker.number.int({ min: 2, max: 10 });
+    const chainUsers = faker.helpers.arrayElements(users, chainLength);
+
+    if (chainUsers.length < 2) continue;
+
+    for (let i = 0; i < chainUsers.length - 1; i++) {
+      const sender = chainUsers[i];
+      const receiver = chainUsers[i + 1];
+      const isLast = i === chainUsers.length - 2;
+
+      const forwardData = transactionForwardFactory(
+        tx.id,
+        sender.id,
+        receiver.id,
+        {
+          senderSeen: true,
+          receiverSeen: !isLast,
+          status: isLast
+            ? TransactionForwardStatus.WAITING
+            : TransactionForwardStatus.APPROVED,
+        },
+      );
+
+      await prisma.transactionForward.create({ data: forwardData });
+    }
+  }
 
   console.log('Test seeds completed.');
 }
