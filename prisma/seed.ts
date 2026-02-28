@@ -13,7 +13,6 @@ import { manyDocumentsFactory } from './seeds/document.factory.js';
 import { manyTransactionTypesFactory } from './seeds/transaction-type.factory.js';
 import { manyTransactionsFactory } from './seeds/transaction.factory.js';
 import { transactionForwardFactory } from './seeds/transaction-forward.factory.js';
-import { TransactionForwardStatus } from './generated/enums.js';
 
 interface EnvVars {
   DEFAULT_ADMIN_NAME: string;
@@ -216,13 +215,7 @@ async function main() {
         tx.id,
         sender.id,
         receiver.id,
-        {
-          senderSeen: true,
-          receiverSeen: !isLast,
-          status: isLast
-            ? TransactionForwardStatus.WAITING
-            : TransactionForwardStatus.APPROVED,
-        },
+        { isLast },
       );
 
       await prisma.transactionForward.create({ data: forwardData });

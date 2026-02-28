@@ -9,18 +9,26 @@ export const transactionForwardFactory = (
     status?: TransactionForwardStatus;
     senderSeen?: boolean;
     receiverSeen?: boolean;
+    isLast?: boolean;
   } = {},
 ) => {
+  const isLast = overrides.isLast ?? false;
   return {
     transactionId,
     senderId,
     receiverId,
     status:
       overrides.status ??
-      faker.helpers.arrayElement(Object.values(TransactionForwardStatus)),
+      (isLast
+        ? TransactionForwardStatus.WAITING
+        : faker.helpers.arrayElement(
+            Object.values(TransactionForwardStatus).filter(
+              (s) => s !== TransactionForwardStatus.WAITING,
+            ),
+          )),
     senderComment: faker.lorem.sentence(),
     receiverComment: faker.lorem.sentence(),
     senderSeen: overrides.senderSeen ?? true,
-    receiverSeen: overrides.receiverSeen ?? false,
+    receiverSeen: overrides.receiverSeen ?? !isLast,
   };
 };
