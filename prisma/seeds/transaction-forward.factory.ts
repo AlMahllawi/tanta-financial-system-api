@@ -10,16 +10,19 @@ export const transactionForwardFactory = (
     senderSeen?: boolean;
     receiverSeen?: boolean;
     isLast?: boolean;
+    isFulfilled?: boolean;
   } = {},
 ) => {
   const isLast = overrides.isLast ?? false;
+  const receiverResponded = isLast && faker.datatype.boolean();
+
   return {
     transactionId,
     senderId,
     receiverId,
     status:
       overrides.status ??
-      (isLast
+      (isLast && !receiverResponded && !overrides.isFulfilled
         ? TransactionForwardStatus.WAITING
         : faker.helpers.arrayElement(
             Object.values(TransactionForwardStatus).filter(
@@ -27,8 +30,23 @@ export const transactionForwardFactory = (
             ),
           )),
     senderComment: faker.lorem.sentence(),
-    receiverComment: faker.lorem.sentence(),
-    senderSeen: overrides.senderSeen ?? true,
-    receiverSeen: overrides.receiverSeen ?? !isLast,
+    receiverComment:
+      isLast && !receiverResponded && !overrides.isFulfilled
+        ? null
+        : faker.lorem.sentence(),
+    senderSeen:
+      overrides.senderSeen ??
+      (overrides.isFulfilled && isLast
+        ? true
+        : receiverResponded
+          ? false
+          : true),
+    receiverSeen:
+      overrides.receiverSeen ??
+      (overrides.isFulfilled && isLast
+        ? true
+        : receiverResponded
+          ? true
+          : !isLast),
   };
 };

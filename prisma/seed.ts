@@ -215,7 +215,7 @@ async function main() {
         tx.id,
         sender.id,
         receiver.id,
-        { isLast },
+        { isLast, isFulfilled: tx.fulfilled },
       );
 
       await prisma.transactionForward.create({ data: forwardData });
