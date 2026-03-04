@@ -161,9 +161,18 @@ async function main() {
     );
     await prisma.document.createMany({ data: docsData });
 
-    const userDocs = await prisma.document.findMany({
+    let userDocs = await prisma.document.findMany({
       where: { uploaderId: user.id },
     });
+
+    if (userDocs.length === 0) {
+      userDocs = await prisma.document.findMany({ take: 10 });
+    }
+
+    if (userDocs.length === 0) {
+      console.warn(`Skipping user ${user.name} as no documents are available.`);
+      continue;
+    }
 
     const typesData = manyTransactionTypesFactory(
       faker.number.int({ min: 1, max: 2 }),
@@ -174,9 +183,20 @@ async function main() {
       skipDuplicates: true,
     });
 
-    const userTypes = await prisma.transactionType.findMany({
+    let userTypes = await prisma.transactionType.findMany({
       where: { creatorId: user.id },
     });
+
+    if (userTypes.length === 0) {
+      userTypes = await prisma.transactionType.findMany();
+    }
+
+    if (userTypes.length === 0) {
+      console.warn(
+        `Skipping user ${user.name} as no transaction types are available.`,
+      );
+      continue;
+    }
 
     const txCount = faker.number.int({ min: 2, max: 4 });
     for (let i = 0; i < txCount; i++) {
