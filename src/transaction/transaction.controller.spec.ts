@@ -114,7 +114,13 @@ describe('TransactionController', () => {
     it('should successfully update a transaction', async () => {
       transactionService.update.mockResolvedValue(new Transaction());
       transactionService.isCreator.mockResolvedValue(true);
-      await controller.update(1, UserRole.USER, id, updateTransactionDto);
+      await controller.update(
+        1,
+        UserRole.USER,
+        'Administration',
+        id,
+        updateTransactionDto,
+      );
       expect(transactionService['update']).toHaveBeenCalledWith(
         id,
         updateTransactionDto,

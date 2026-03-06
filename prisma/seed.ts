@@ -18,6 +18,11 @@ interface EnvVars {
   DEFAULT_ADMIN_NAME: string;
   DEFAULT_ADMIN_PASSWORD: string;
   DEFAULT_ADMIN_DEPARTMENT: string;
+
+  DEFAULT_ACCOUNTANT_NAME: string;
+  DEFAULT_ACCOUNTANT_PASSWORD: string;
+  DEFAULT_ACCOUNTANT_DEPARTMENT: string;
+
   DATABASE_URL: string;
   NODE_ENV: string;
 }
@@ -26,6 +31,11 @@ const envSchema = Joi.object({
   DEFAULT_ADMIN_NAME: Joi.string().required(),
   DEFAULT_ADMIN_PASSWORD: Joi.string().required(),
   DEFAULT_ADMIN_DEPARTMENT: Joi.string().required(),
+
+  DEFAULT_ACCOUNTANT_NAME: Joi.string().required(),
+  DEFAULT_ACCOUNTANT_PASSWORD: Joi.string().required(),
+  DEFAULT_ACCOUNTANT_DEPARTMENT: Joi.string().required(),
+
   DATABASE_URL: Joi.string().required(),
   NODE_ENV: Joi.string()
     .valid('development', 'production', 'test')
@@ -77,6 +87,39 @@ async function main() {
   await prisma.department.update({
     where: { name: administrationDepartment.name },
     data: { managerId: admin.id },
+  });
+
+  const accountantDeptData = departmentFactory({
+    name: ENV.DEFAULT_ACCOUNTANT_DEPARTMENT,
+  });
+
+  const accountancyDepartment = await prisma.department.upsert({
+    where: { name: accountantDeptData.name },
+    update: {},
+    create: accountantDeptData,
+  });
+
+  console.log(
+    `Created accountancy "${accountancyDepartment.name}" department.`,
+  );
+
+  const accountantUserData = await userFactory(accountancyDepartment.name, {
+    name: ENV.DEFAULT_ACCOUNTANT_NAME,
+    password: ENV.DEFAULT_ACCOUNTANT_PASSWORD,
+    role: UserRole.USER,
+  });
+
+  const accountant = await prisma.user.upsert({
+    where: { name: accountantUserData.name },
+    update: {},
+    create: accountantUserData,
+  });
+
+  console.log(`Created accountant "${accountant.name}" user.`);
+
+  await prisma.department.update({
+    where: { name: accountancyDepartment.name },
+    data: { managerId: accountant.id },
   });
 
   console.log('Essential seed completed.');
@@ -149,7 +192,9 @@ async function main() {
   );
 
   console.log('Fetching created users to seed transactions and documents...');
-  const users = await prisma.user.findMany();
+  const users = await prisma.user.findMany({
+    where: { id: { not: accountant.id } },
+  });
 
   console.log(
     `Seeding documents, transaction types, and transactions for ${users.length} users...`,
@@ -223,6 +268,8 @@ async function main() {
   for (const tx of allTransactions) {
     const chainLength = faker.number.int({ min: 2, max: 10 });
     const chainUsers = faker.helpers.arrayElements(users, chainLength);
+
+    if (tx.fulfilled) chainUsers.push(accountant);
 
     if (chainUsers.length < 2) continue;
 

@@ -194,21 +194,51 @@ export class TransactionController {
       },
     },
   )
+  @ApiErrorResponses({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Only admin and accountant can update the fulfilled status',
+    errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
+    args: { fields: 'fulfilled' },
+  })
   async update(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
+    @CurrentUser('departmentName') departmentName: string,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
+    const isAccountant =
+      departmentName === process.env.DEFAULT_ACCOUNTANT_DEPARTMENT;
+    const updatingFields = Object.keys(updateTransactionDto).filter(
+      (key) =>
+        updateTransactionDto[key as keyof UpdateTransactionDto] !== undefined,
+    );
+    const isUpdatingOnlyFulfilled =
+      updatingFields.length === 1 && updatingFields[0] === 'fulfilled';
+
     if (
       role !== UserRole.ADMIN &&
+      !(isAccountant && isUpdatingOnlyFulfilled) &&
       !(await this.transactionService.isCreator(id, userId))
-    )
+    ) {
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_TRANSACTION_CREATOR,
         { transactionId: id },
       );
+    }
+
+    if (
+      updateTransactionDto.fulfilled !== undefined &&
+      role !== UserRole.ADMIN &&
+      !isAccountant
+    ) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.RESTRICTED_FIELD_UPDATE,
+        { fields: 'fulfilled' },
+      );
+    }
 
     return this.transactionService.update(id, updateTransactionDto);
   }
