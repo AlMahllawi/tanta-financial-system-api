@@ -71,12 +71,11 @@ export class TransactionTypeService {
         where: { name },
       });
 
-      if (transactionType.creatorId !== userId) {
+      if (transactionType.creatorId !== userId)
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.NOT_TRANSACTION_TYPE_CREATOR,
         );
-      }
     }
 
     transactionType = await this.prisma.transactionType.delete({

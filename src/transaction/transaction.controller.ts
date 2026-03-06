@@ -228,25 +228,23 @@ export class TransactionController {
       role !== UserRole.ADMIN &&
       !(isAccountant && isUpdatingOnlyFulfilled) &&
       !(await this.transactionService.isCreator(id, userId))
-    ) {
+    )
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_TRANSACTION_CREATOR,
         { transactionId: id },
       );
-    }
 
     if (
       updateTransactionDto.fulfilled !== undefined &&
       role !== UserRole.ADMIN &&
       !isAccountant
-    ) {
+    )
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.RESTRICTED_FIELD_UPDATE,
         { fields: 'fulfilled' },
       );
-    }
 
     return this.transactionService.update(id, updateTransactionDto);
   }
@@ -438,27 +436,24 @@ export class TransactionController {
     if (!latestForward) return;
 
     if (latestForward.senderId === userId) {
-      if (latestForward.receiverSeen) {
+      if (latestForward.receiverSeen)
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.FORWARD_ALREADY_SEEN,
           { transactionId },
         );
-      }
     } else if (latestForward.receiverId === userId) {
-      if (latestForward.status !== TransactionForwardStatus.WAITING) {
+      if (latestForward.status !== TransactionForwardStatus.WAITING)
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.FORWARD_ALREADY_RESPONDED,
           { transactionId },
         );
-      }
-    } else {
+    } else
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_TRANSACTION_PARTICIPANT,
         { transactionId },
       );
-    }
   }
 }

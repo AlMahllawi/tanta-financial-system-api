@@ -306,9 +306,7 @@ defineFeature(feature, (test) => {
 
     and('the status, type, and created_at fields are shown', () => {
       const body = response.body as { data: Record<string, unknown>[] };
-      if (body.data.length > 0) {
-        expect(body.data[0]).toHaveProperty('typeName');
-      }
+      if (body.data.length > 0) expect(body.data[0]).toHaveProperty('typeName');
     });
 
     shared.andSystemReturnsStatus(and, () => response);

@@ -41,28 +41,26 @@ export class PrismaExceptionFilter implements ExceptionFilter {
       if (def.prisma.error !== exception.code) return false;
 
       const prismaDef = def.prisma;
-      if (prismaDef.matcher) {
+      if (prismaDef.matcher)
         // Use the custom matcher function
         return prismaDef.matcher(
           (exception.meta as Record<string, unknown>) || {},
           exception,
         );
-      }
+
       return true;
     });
 
     if (errorDef) {
       // Extract args from request if they exist
       const args: Record<string, unknown> = {};
-      if (errorDef.args) {
-        for (const key of Object.keys(errorDef.args)) {
+      if (errorDef.args)
+        for (const key of Object.keys(errorDef.args))
           args[key] =
             (request.params as Record<string, unknown>)[key] ??
             (request.body as Record<string, unknown>)[key] ??
             (request.query as Record<string, unknown>)[key] ??
             errorDef.args[key];
-        }
-      }
 
       return response
         .status(errorDef.status)

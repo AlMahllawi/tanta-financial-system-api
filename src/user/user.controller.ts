@@ -98,13 +98,13 @@ export class UserController {
     @Query() queryDto: UserQueryDto,
     @CurrentUser('role') role: UserRole,
   ) {
-    if (role !== UserRole.ADMIN && queryDto.active !== undefined) {
+    if (role !== UserRole.ADMIN && queryDto.active !== undefined)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.RESTRICTED_FIELD_UPDATE,
         { fields: 'active' },
       );
-    }
+
     return this.userService.findAll(queryDto);
   }
 
@@ -197,13 +197,12 @@ export class UserController {
         (field) => !ALLOWED_USER_UPDATE_FIELDS.includes(field),
       );
 
-      if (forbiddenFields.length > 0) {
+      if (forbiddenFields.length > 0)
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.RESTRICTED_FIELD_UPDATE,
           { fields: forbiddenFields.join(', ') },
         );
-      }
     }
     return this.userService.update(id, updateUserDto);
   }

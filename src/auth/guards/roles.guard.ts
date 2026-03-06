@@ -47,9 +47,8 @@ export class RolesGuard implements CanActivate {
     if (
       exceptionCondition &&
       (await exceptionCondition(user, request, this.moduleRef, context))
-    ) {
+    )
       return true;
-    }
 
     throw new ApiException(HttpStatus.FORBIDDEN, ErrorCode.MISSING_ROLE, {
       roles: requiredRoles?.join(' | '),

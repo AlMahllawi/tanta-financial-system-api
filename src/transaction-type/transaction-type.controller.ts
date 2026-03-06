@@ -91,13 +91,13 @@ export class TransactionTypeController {
     @Query() queryDto: TransactionTypeQueryDto,
     @CurrentUser('role') role: UserRole,
   ) {
-    if (queryDto.creatorId !== undefined && role !== UserRole.ADMIN) {
+    if (queryDto.creatorId !== undefined && role !== UserRole.ADMIN)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.RESTRICTED_FIELD_UPDATE,
         { fields: 'creatorId' },
       );
-    }
+
     return this.transactionTypeService.findAll(queryDto);
   }
 

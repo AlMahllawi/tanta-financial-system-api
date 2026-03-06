@@ -59,15 +59,14 @@ export class DepartmentService {
         where: { id: updateDepartmentDto.managerId },
       });
 
-      if (!user) {
+      if (!user)
         throw new ApiException(
           HttpStatus.NOT_FOUND,
           ErrorCode.MANAGER_NOT_FOUND,
           { managerId: updateDepartmentDto.managerId },
         );
-      }
 
-      if (user.departmentName !== name) {
+      if (user.departmentName !== name)
         throw new ApiException(
           HttpStatus.CONFLICT,
           ErrorCode.MANAGER_NOT_MEMBER_OF_DEPARTMENT,
@@ -76,7 +75,6 @@ export class DepartmentService {
             departmentName: name,
           },
         );
-      }
     }
 
     const department = await this.prisma.department.update({

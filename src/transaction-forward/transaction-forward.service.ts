@@ -112,45 +112,40 @@ export class TransactionForwardService {
       },
     });
 
-    if (!forward) {
+    if (!forward)
       throw new ApiException(
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
         { id, transactionId },
       );
-    }
 
-    if (forward.transaction.fulfilled) {
+    if (forward.transaction.fulfilled)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.TRANSACTION_ALREADY_FULFILLED,
         { transactionId },
       );
-    }
 
-    if (forward.receiverId !== userId) {
+    if (forward.receiverId !== userId)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_FORWARD_RECEIVER,
         { id },
       );
-    }
 
-    if (forward.senderSeen && forward.receiverComment !== null) {
+    if (forward.senderSeen && forward.receiverComment !== null)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORWARD_ALREADY_SEEN,
         { id },
       );
-    }
 
-    if (forward.transaction.latestForward?.id !== id) {
+    if (forward.transaction.latestForward?.id !== id)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORWARD_ALREADY_RESPONDED,
         { id },
       );
-    }
 
     const updatedForward = await this.prisma.transactionForward.update({
       where: { id, transactionId },
@@ -184,37 +179,33 @@ export class TransactionForwardService {
       },
     });
 
-    if (!forward) {
+    if (!forward)
       throw new ApiException(
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
         { id, transactionId },
       );
-    }
 
-    if (forward.transaction.fulfilled) {
+    if (forward.transaction.fulfilled)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.TRANSACTION_ALREADY_FULFILLED,
         { transactionId },
       );
-    }
 
-    if (forward.senderId !== userId) {
+    if (forward.senderId !== userId)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_FORWARD_SENDER,
         { id },
       );
-    }
 
-    if (forward.status !== TransactionForwardStatus.WAITING) {
+    if (forward.status !== TransactionForwardStatus.WAITING)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORWARD_ALREADY_RESPONDED,
         { id },
       );
-    }
 
     const updatedForward = await this.prisma.transactionForward.update({
       where: { id, transactionId },
@@ -240,37 +231,33 @@ export class TransactionForwardService {
       },
     });
 
-    if (!forward) {
+    if (!forward)
       throw new ApiException(
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
         { id, transactionId },
       );
-    }
 
-    if (forward.transaction.fulfilled) {
+    if (forward.transaction.fulfilled)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.TRANSACTION_ALREADY_FULFILLED,
         { transactionId },
       );
-    }
 
-    if (forward.senderId !== userId) {
+    if (forward.senderId !== userId)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_FORWARD_SENDER,
         { id },
       );
-    }
 
-    if (forward.receiverSeen) {
+    if (forward.receiverSeen)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORWARD_ALREADY_SEEN,
         { id },
       );
-    }
 
     const removedForward = await this.prisma.transactionForward.delete({
       where: { id, transactionId },
@@ -293,21 +280,19 @@ export class TransactionForwardService {
       },
     });
 
-    if (!transaction) {
+    if (!transaction)
       throw new ApiException(
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_NOT_FOUND,
         { transactionId },
       );
-    }
 
-    if (transaction.fulfilled) {
+    if (transaction.fulfilled)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.TRANSACTION_ALREADY_FULFILLED,
         { transactionId },
       );
-    }
 
     const { latestForward } = transaction;
 

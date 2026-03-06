@@ -28,14 +28,13 @@ export function andSystemReturnsStatus(
   and(/^the system returns (?:response )?(\d+)$/, (status: string) => {
     const response = getResponse();
     const expected = parseInt(status, 10);
-    if (response.status !== expected) {
+    if (response.status !== expected)
       if (
         (expected === 400 || expected === 404 || expected === 409) &&
         response.status === 500
-      ) {
+      )
         return;
-      }
-    }
+
     expect(response.status).toBe(expected);
   });
 }

@@ -96,9 +96,9 @@ defineFeature(feature, (test) => {
     const type = await prisma.transactionType.findUnique({
       where: { name: 'Test Type' },
     });
-    if (type) {
+    if (type)
       await prisma.transactionType.delete({ where: { name: 'Test Type' } });
-    }
+
     await prisma.user.deleteMany({
       where: { departmentName: 'IT Department' },
     });

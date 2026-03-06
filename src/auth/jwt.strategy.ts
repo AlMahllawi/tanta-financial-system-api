@@ -23,12 +23,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtPayload) {
     try {
       const user = await this.userService.findOne(payload.id);
-      if (!user || !user.active) {
+      if (!user || !user.active)
         throw new ApiException(
           HttpStatus.UNAUTHORIZED,
           ErrorCode.INVALID_CREDENTIALS,
         );
-      }
+
       return user;
     } catch {
       throw new ApiException(

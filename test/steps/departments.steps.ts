@@ -112,9 +112,9 @@ defineFeature(feature, (test) => {
       where: { name: { in: depts } },
       data: { managerId: null },
     });
-    for (const d of depts) {
+    for (const d of depts)
       await prisma.user.deleteMany({ where: { departmentName: d } });
-    }
+
     await prisma.user.deleteMany({
       where: {
         name: {

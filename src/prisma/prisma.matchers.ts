@@ -28,9 +28,7 @@ export function matchConstraintField(field: string) {
 }
 
 export function matchConstraintIndex(index: string) {
-  return (meta: PrismaErrorMeta) => {
-    return getConstraintMeta(meta)?.index === index;
-  };
+  return (meta: PrismaErrorMeta) => getConstraintMeta(meta)?.index === index;
 }
 
 export function matchMessage(includes: string) {
@@ -41,7 +39,5 @@ export function matchMessage(includes: string) {
 }
 
 export function matchModelName(modelName: string) {
-  return (meta: Record<string, unknown>) => {
-    return meta?.modelName === modelName;
-  };
+  return (meta: Record<string, unknown>) => meta?.modelName === modelName;
 }

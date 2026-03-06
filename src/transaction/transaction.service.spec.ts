@@ -18,9 +18,8 @@ describe('TransactionService', () => {
   beforeEach(async () => {
     prismaMock = mockDeep<PrismaService>();
     prismaMock.$transaction.mockImplementation(async (arg: unknown) => {
-      if (Array.isArray(arg)) {
-        return Promise.all(arg) as Promise<never>;
-      }
+      if (Array.isArray(arg)) return Promise.all(arg) as Promise<never>;
+
       if (typeof arg === 'function') {
         const fn = arg as (p: PrismaService) => Promise<unknown>;
         return fn(prismaMock) as Promise<never>;

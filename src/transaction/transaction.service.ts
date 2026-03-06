@@ -117,22 +117,19 @@ export class TransactionService {
       lastForwardStatus,
     } = queryDto;
 
-    if (query && query !== TransactionQuery.ALL) {
-      if (query === TransactionQuery.INBOX) {
-        where = this.getInboxWhere(userId);
-      } else if (query === TransactionQuery.OUTGOING) {
+    if (query && query !== TransactionQuery.ALL)
+      if (query === TransactionQuery.INBOX) where = this.getInboxWhere(userId);
+      else if (query === TransactionQuery.OUTGOING)
         where = this.getOutgoingWhere(userId);
-      } else {
+      else
         where.NOT = {
           OR: [this.getInboxWhere(userId), this.getOutgoingWhere(userId)],
         };
-      }
-    } else if (!query) {
+    else if (!query)
       // Default behavior if query is absent: 'archive'
       where.NOT = {
         OR: [this.getInboxWhere(userId), this.getOutgoingWhere(userId)],
       };
-    }
 
     if (title) where.title = { contains: title, mode: 'insensitive' };
     if (description)
@@ -287,9 +284,9 @@ export class TransactionService {
   }
 
   async update(id: number, updateTransactionDto: UpdateTransactionDto) {
-    if (updateTransactionDto.fulfilled !== false) {
+    if (updateTransactionDto.fulfilled !== false)
       await this.checkIfFulfilled(id);
-    }
+
     const transaction = await this.prisma.transaction.update({
       where: { id },
       data: updateTransactionDto,
@@ -367,12 +364,11 @@ export class TransactionService {
       select: { fulfilled: true },
     });
 
-    if (transaction?.fulfilled) {
+    if (transaction?.fulfilled)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.TRANSACTION_ALREADY_FULFILLED,
         { transactionId: id },
       );
-    }
   }
 }
