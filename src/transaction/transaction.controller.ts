@@ -33,7 +33,6 @@ import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorato
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
-import { PrismaError } from 'prisma-error-enum';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { TransactionQueryDto } from './dto/transaction-query.dto.js';
 import {
@@ -43,9 +42,8 @@ import {
 import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
 import { PaginatedTransactionSummaryResponseDto } from './dto/paginated-transaction-summary-response.dto.js';
 import {
-  matchConstraintField,
-  matchConstraintIndex,
-  matchModelName,
+  matchForeignConstraint,
+  matchRecordsNotFound,
 } from '../prisma/prisma.matchers.js';
 
 @ApiTags('Transactions')
@@ -68,30 +66,21 @@ export class TransactionController {
       description: 'Transaction type not found',
       errorCode: ErrorCode.TRANSACTION_TYPE_FK_NOT_FOUND,
       args: { typeName: 'Unknown Type' },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintField('typeName'),
-      },
+      matchers: matchForeignConstraint('typeName'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Transaction creator not found',
       errorCode: ErrorCode.TRANSACTION_CREATOR_NOT_FOUND,
       args: { creatorId: 1 },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintField('creatorId'),
-      },
+      matchers: matchForeignConstraint('creatorId'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'One or more documents not found',
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
       args: { id: '1, 2' },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintField('TransactionDocument'),
-      },
+      matchers: matchForeignConstraint('TransactionDocument'),
     },
   )
   create(
@@ -135,10 +124,7 @@ export class TransactionController {
     description: 'No transaction was found with such id',
     errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
     args: { id: 1 },
-    prisma: {
-      error: PrismaError.RecordsNotFound,
-      matcher: matchModelName('Transaction'),
-    },
+    matchers: matchRecordsNotFound('Transaction'),
   })
   @ApiErrorResponses({
     status: HttpStatus.FORBIDDEN,
@@ -178,20 +164,14 @@ export class TransactionController {
       description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { id: 1 },
-      prisma: {
-        error: PrismaError.RecordsNotFound,
-        matcher: matchModelName('Transaction'),
-      },
+      matchers: matchRecordsNotFound('Transaction'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Transaction type not found',
       errorCode: ErrorCode.TRANSACTION_TYPE_FK_NOT_FOUND,
       args: { typeName: 'Unknown Type' },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintField('typeName'),
-      },
+      matchers: matchForeignConstraint('typeName'),
     },
   )
   @ApiErrorResponses(
@@ -261,20 +241,14 @@ export class TransactionController {
       description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { id: 1 },
-      prisma: {
-        error: PrismaError.RecordsNotFound,
-        matcher: matchModelName('Transaction'),
-      },
+      matchers: matchRecordsNotFound('Transaction'),
     },
     {
       status: HttpStatus.CONFLICT,
       description: 'Cannot delete a transaction that has forwards',
       errorCode: ErrorCode.TRANSACTION_HAS_FORWARDS,
       args: { id: 1 },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintIndex('fk_transaction_forward_transaction_id'),
-      },
+      matchers: matchForeignConstraint('fk_transaction_forward_transaction_id'),
     },
   )
   @ApiErrorResponses({
@@ -314,20 +288,14 @@ export class TransactionController {
       description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { id: 1 },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintField('transactionId'),
-      },
+      matchers: matchForeignConstraint('transactionId'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'No document was found with such id',
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
       args: { id: 1 },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintField('documentId'),
-      },
+      matchers: matchForeignConstraint('documentId'),
     },
   )
   @ApiErrorResponses(

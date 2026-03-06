@@ -37,18 +37,16 @@ export class PrismaExceptionFilter implements ExceptionFilter {
       : undefined;
 
     const errorDef = metadata?.find((def) => {
-      if (!def.prisma) return false;
-      if (def.prisma.error !== exception.code) return false;
+      if (!def.matchers) return false;
 
-      const prismaDef = def.prisma;
-      if (prismaDef.matcher)
-        // Use the custom matcher function
-        return prismaDef.matcher(
-          (exception.meta as Record<string, unknown>) || {},
-          exception,
-        );
+      const matchers = Array.isArray(def.matchers)
+        ? def.matchers
+        : [def.matchers];
+      if (matchers.length === 0) return false;
 
-      return true;
+      return matchers.some((matcher) =>
+        matcher((exception.meta as Record<string, unknown>) || {}, exception),
+      );
     });
 
     if (errorDef) {

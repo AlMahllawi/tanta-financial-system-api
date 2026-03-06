@@ -26,10 +26,10 @@ import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorato
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
-import { PrismaError } from 'prisma-error-enum';
 import {
-  matchConstraintField,
-  matchModelName,
+  matchUniqueConstraint,
+  matchForeignConstraint,
+  matchRecordsNotFound,
 } from '../prisma/prisma.matchers.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { TransactionTypeQueryDto } from './dto/transaction-type-query.dto.js';
@@ -58,20 +58,14 @@ export class TransactionTypeController {
       description: 'A transaction type already exists with the same name',
       errorCode: ErrorCode.TRANSACTION_TYPE_ALREADY_EXISTS,
       args: { name: 'Financial' },
-      prisma: {
-        error: PrismaError.UniqueConstraintViolation,
-        matcher: matchConstraintField('name'),
-      },
+      matchers: matchUniqueConstraint('name'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'The specified creator user was not found',
       errorCode: ErrorCode.TRANSACTION_TYPE_CREATOR_NOT_FOUND,
       args: { creatorId: 1 },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintField('creatorId'),
-      },
+      matchers: matchForeignConstraint('creatorId'),
     },
   )
   create(
@@ -112,10 +106,7 @@ export class TransactionTypeController {
     description: 'No transaction type was found with such name',
     errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
     args: { name: 'Unknown Type' },
-    prisma: {
-      error: PrismaError.RecordsNotFound,
-      matcher: matchModelName('TransactionType'),
-    },
+    matchers: matchRecordsNotFound('TransactionType'),
   })
   findOne(@Param('name') name: string) {
     return this.transactionTypeService.findOne(name);
@@ -132,10 +123,7 @@ export class TransactionTypeController {
     description: 'No transaction type was found with such name',
     errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
     args: { name: 'Unknown Type' },
-    prisma: {
-      error: PrismaError.RecordsNotFound,
-      matcher: matchModelName('TransactionType'),
-    },
+    matchers: matchRecordsNotFound('TransactionType'),
   })
   @ApiErrorResponses({
     status: HttpStatus.FORBIDDEN,

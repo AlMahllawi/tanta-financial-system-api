@@ -32,14 +32,13 @@ import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
 import { UserRole } from '../../prisma/generated/enums.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
-import { PrismaError } from 'prisma-error-enum';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { UserQueryDto } from './dto/user-query.dto.js';
 import {
-  matchConstraintField,
-  matchConstraintIndex,
-  matchModelName,
+  matchUniqueConstraint,
+  matchForeignConstraint,
+  matchRecordsNotFound,
 } from '../prisma/prisma.matchers.js';
 
 const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
@@ -65,20 +64,14 @@ export class UserController {
       description: 'A user already exists with the same name',
       errorCode: ErrorCode.USER_ALREADY_EXISTS,
       args: { name: 'John Doe' },
-      prisma: {
-        error: PrismaError.UniqueConstraintViolation,
-        matcher: matchConstraintField('name'),
-      },
+      matchers: matchUniqueConstraint('name'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Department not found',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
       args: { departmentName: 'Finance' },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintIndex('fk_user_department'),
-      },
+      matchers: matchForeignConstraint('fk_user_department'),
     },
   )
   create(@Body() createUserDto: CreateUserDto) {
@@ -129,10 +122,7 @@ export class UserController {
     description: 'No user was found with such id',
     errorCode: ErrorCode.USER_NOT_FOUND,
     args: { id: 1 },
-    prisma: {
-      error: PrismaError.RecordsNotFound,
-      matcher: matchModelName('User'),
-    },
+    matchers: matchRecordsNotFound('User'),
   })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(id);
@@ -152,30 +142,21 @@ export class UserController {
       description: 'A user already exists with the same name',
       errorCode: ErrorCode.USER_ALREADY_EXISTS,
       args: { name: 'John Doe' },
-      prisma: {
-        error: PrismaError.UniqueConstraintViolation,
-        matcher: matchConstraintField('name'),
-      },
+      matchers: matchUniqueConstraint('name'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
       args: { id: 1 },
-      prisma: {
-        error: PrismaError.RecordsNotFound,
-        matcher: matchModelName('User'),
-      },
+      matchers: matchRecordsNotFound('User'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Department not found',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
       args: { departmentName: 'Finance' },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintIndex('fk_user_department'),
-      },
+      matchers: matchForeignConstraint('fk_user_department'),
     },
   )
   @ApiErrorResponses({
@@ -220,20 +201,14 @@ export class UserController {
       description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
       args: { id: 1 },
-      prisma: {
-        error: PrismaError.RecordsNotFound,
-        matcher: matchModelName('User'),
-      },
+      matchers: matchRecordsNotFound('User'),
     },
     {
       status: HttpStatus.CONFLICT,
       description: 'Cannot delete a user who manages a department',
       errorCode: ErrorCode.USER_MANAGES_DEPARTMENT,
       args: { id: 1 },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintIndex('fk_department_manager'),
-      },
+      matchers: matchForeignConstraint('fk_department_manager'),
     },
   )
   remove(@Param('id', ParseIntPipe) id: number) {

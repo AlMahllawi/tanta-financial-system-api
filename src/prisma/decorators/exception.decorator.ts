@@ -5,16 +5,13 @@ import { ErrorResponseDef } from '../../common/interfaces/error-response.interfa
 
 export const PRISMA_ERROR_METADATA_KEY = 'prisma_error_metadata';
 
-export interface PrismaErrorDef {
-  error: string;
-  matcher?: (
-    meta: Record<string, unknown>,
-    error: Prisma.PrismaClientKnownRequestError,
-  ) => boolean;
-}
+export type PrismaMatcher = (
+  meta: Record<string, unknown>,
+  error: Prisma.PrismaClientKnownRequestError,
+) => boolean;
 
 export interface PrismaErrorResponseDef extends ErrorResponseDef {
-  prisma: PrismaErrorDef;
+  matchers: PrismaMatcher | PrismaMatcher[];
 }
 
 export function ApiPrismaErrorResponses(...errors: PrismaErrorResponseDef[]) {

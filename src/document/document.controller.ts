@@ -35,10 +35,9 @@ import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorato
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
-import { PrismaError } from 'prisma-error-enum';
 import {
-  matchConstraintField,
-  matchModelName,
+  matchForeignConstraint,
+  matchRecordsNotFound,
 } from '../prisma/prisma.matchers.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { PaginationDto } from '../common/dto/pagination.dto.js';
@@ -73,10 +72,7 @@ export class DocumentController {
     description: 'Uploader not found',
     errorCode: ErrorCode.DOCUMENT_UPLOADER_NOT_FOUND,
     args: { uploaderId: 1 },
-    prisma: {
-      error: PrismaError.ForeignConstraintViolation,
-      matcher: matchConstraintField('uploaderId'),
-    },
+    matchers: matchForeignConstraint('uploaderId'),
   })
   @UseInterceptors(FileInterceptor('file'))
   create(
@@ -116,10 +112,7 @@ export class DocumentController {
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
     args: { id: 1 },
-    prisma: {
-      error: PrismaError.RecordsNotFound,
-      matcher: matchModelName('Document'),
-    },
+    matchers: matchRecordsNotFound('Document'),
   })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.documentService.findOne(id);
@@ -135,10 +128,7 @@ export class DocumentController {
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
     args: { id: 1 },
-    prisma: {
-      error: PrismaError.RecordsNotFound,
-      matcher: matchModelName('Document'),
-    },
+    matchers: matchRecordsNotFound('Document'),
   })
   async download(
     @Param('id', ParseIntPipe) id: number,
@@ -165,10 +155,7 @@ export class DocumentController {
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
     args: { id: 1 },
-    prisma: {
-      error: PrismaError.RecordsNotFound,
-      matcher: matchModelName('Document'),
-    },
+    matchers: matchRecordsNotFound('Document'),
   })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.documentService.remove(id);

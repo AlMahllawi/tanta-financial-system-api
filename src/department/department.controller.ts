@@ -27,13 +27,12 @@ import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
-import { PrismaError } from 'prisma-error-enum';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { PaginationDto } from '../common/dto/pagination.dto.js';
 import {
-  matchConstraintField,
-  matchConstraintIndex,
-  matchModelName,
+  matchUniqueConstraint,
+  matchForeignConstraint,
+  matchRecordsNotFound,
 } from '../prisma/prisma.matchers.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
@@ -59,10 +58,7 @@ export class DepartmentController {
     description: 'A department already exists with the same name',
     errorCode: ErrorCode.DEPARTMENT_ALREADY_EXISTS,
     args: { name: 'Computer Science' },
-    prisma: {
-      error: PrismaError.UniqueConstraintViolation,
-      matcher: matchConstraintField('name'),
-    },
+    matchers: matchUniqueConstraint('name'),
   })
   create(@Body() createDepartmentDto: CreateDepartmentDto) {
     return this.departmentService.create(createDepartmentDto);
@@ -86,10 +82,7 @@ export class DepartmentController {
     description: 'No department was found with such name',
     errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
     args: { name: 'Unknown Department' },
-    prisma: {
-      error: PrismaError.RecordsNotFound,
-      matcher: matchModelName('Department'),
-    },
+    matchers: matchRecordsNotFound('Department'),
   })
   findOne(@Param('name') name: string) {
     return this.departmentService.findOne(name);
@@ -108,10 +101,7 @@ export class DepartmentController {
       description: 'A department already exists with the same name',
       errorCode: ErrorCode.DEPARTMENT_ALREADY_EXISTS,
       args: { name: 'Computer Science' },
-      prisma: {
-        error: PrismaError.UniqueConstraintViolation,
-        matcher: matchConstraintField('name'),
-      },
+      matchers: matchUniqueConstraint('name'),
     },
     {
       status: HttpStatus.CONFLICT,
@@ -119,30 +109,21 @@ export class DepartmentController {
         'The specified manager is already managing another department',
       errorCode: ErrorCode.MANAGER_ALREADY_MANAGES_DEPARTMENT,
       args: { managerId: 1 },
-      prisma: {
-        error: PrismaError.UniqueConstraintViolation,
-        matcher: matchConstraintField('managerId'),
-      },
+      matchers: matchUniqueConstraint('managerId'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'No department was found with such name',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
       args: { name: 'Unknown Department' },
-      prisma: {
-        error: PrismaError.RecordsNotFound,
-        matcher: matchModelName('Department'),
-      },
+      matchers: matchRecordsNotFound('Department'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'The specified manager user was not found',
       errorCode: ErrorCode.MANAGER_NOT_FOUND,
       args: { managerId: 1 },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintIndex('fk_department_manager'),
-      },
+      matchers: matchForeignConstraint('fk_department_manager'),
     },
   )
   @ApiErrorResponses({
@@ -171,20 +152,14 @@ export class DepartmentController {
       description: 'No department was found with such name',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
       args: { name: 'Unknown Department' },
-      prisma: {
-        error: PrismaError.RecordsNotFound,
-        matcher: matchModelName('Department'),
-      },
+      matchers: matchRecordsNotFound('Department'),
     },
     {
       status: HttpStatus.CONFLICT,
       description: 'Cannot delete department with existing members',
       errorCode: ErrorCode.DEPARTMENT_HAS_MEMBERS,
       args: { name: 'Computer Science' },
-      prisma: {
-        error: PrismaError.ForeignConstraintViolation,
-        matcher: matchConstraintIndex('fk_user_department'),
-      },
+      matchers: matchForeignConstraint('fk_user_department'),
     },
   )
   remove(@Param('name') name: string) {
