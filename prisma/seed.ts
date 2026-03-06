@@ -228,24 +228,23 @@ async function main() {
       skipDuplicates: true,
     });
 
-    let userTypes = await prisma.transactionType.findMany({
-      where: { creatorId: user.id },
-    });
+    const allTypes = await prisma.transactionType.findMany();
 
-    if (userTypes.length === 0) {
-      userTypes = await prisma.transactionType.findMany();
-    }
-
-    if (userTypes.length === 0) {
+    if (allTypes.length === 0) {
       console.warn(
         `Skipping user ${user.name} as no transaction types are available.`,
       );
       continue;
     }
 
-    const txCount = faker.number.int({ min: 2, max: 4 });
-    for (let i = 0; i < txCount; i++) {
-      const type = faker.helpers.arrayElement(userTypes);
+    const txCount = faker.number.int({ min: 2, max: 5 });
+    const typesToUse = allTypes.filter((type) => type.creatorId === user.id);
+
+    while (typesToUse.length < txCount)
+      typesToUse.push(faker.helpers.arrayElement(allTypes));
+
+    for (let i = 0; i < typesToUse.length; i++) {
+      const type = typesToUse[i];
       const txData = manyTransactionsFactory(1, user.id, type.name)[0];
       const tx = await prisma.transaction.create({ data: txData });
 
