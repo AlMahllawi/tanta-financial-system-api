@@ -37,6 +37,7 @@ describe('TransactionForwardService', () => {
     forwardedAt: new Date(),
     updatedAt: new Date(),
     transactionId: 1,
+    transaction: { fulfilled: false },
     sender: mockUser,
     receiver: { ...mockUser, id: 2, name: 'Receiver User' },
   };

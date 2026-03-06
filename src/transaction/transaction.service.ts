@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
 import { Transaction } from './entities/transaction.entity.js';
@@ -13,8 +13,9 @@ import { Document } from '../document/entities/document.entity.js';
 import { getDownloadURI } from '../common/utils/document.util.js';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { Prisma } from '../../prisma/generated/client.js';
-
 import { TransactionQueryDto } from './dto/transaction-query.dto.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 import {
   createPaginatedResult,
   createPaginator,
@@ -286,6 +287,9 @@ export class TransactionService {
   }
 
   async update(id: number, updateTransactionDto: UpdateTransactionDto) {
+    if (updateTransactionDto.fulfilled !== false) {
+      await this.checkIfFulfilled(id);
+    }
     const transaction = await this.prisma.transaction.update({
       where: { id },
       data: updateTransactionDto,
@@ -296,6 +300,7 @@ export class TransactionService {
   }
 
   async remove(id: number) {
+    await this.checkIfFulfilled(id);
     const transaction = await this.prisma.transaction.delete({
       where: { id },
       include: TRANSACTION_INCLUDE,
@@ -309,6 +314,7 @@ export class TransactionService {
     documentId: number,
     userId: number,
   ) {
+    await this.checkIfFulfilled(transactionId);
     await this.prisma.transactionDocument.upsert({
       where: {
         transactionId_documentId: {
@@ -328,6 +334,7 @@ export class TransactionService {
   }
 
   async detachDocument(transactionId: number, documentId: number) {
+    await this.checkIfFulfilled(transactionId);
     await this.prisma.transactionDocument.deleteMany({
       where: {
         transactionId,
@@ -352,5 +359,20 @@ export class TransactionService {
     };
 
     return plainToInstance(Transaction, result);
+  }
+
+  private async checkIfFulfilled(id: number) {
+    const transaction = await this.prisma.transaction.findUnique({
+      where: { id },
+      select: { fulfilled: true },
+    });
+
+    if (transaction?.fulfilled) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+        { transactionId: id },
+      );
+    }
   }
 }

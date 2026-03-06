@@ -194,12 +194,20 @@ export class TransactionController {
       },
     },
   )
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Only admin and accountant can update the fulfilled status',
-    errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
-    args: { fields: 'fulfilled' },
-  })
+  @ApiErrorResponses(
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Only admin and accountant can update the fulfilled status',
+      errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
+      args: { fields: 'fulfilled' },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction is already fulfilled and cannot be mutated',
+      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+      args: { transactionId: 1 },
+    },
+  )
   async update(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
@@ -271,6 +279,12 @@ export class TransactionController {
       },
     },
   )
+  @ApiErrorResponses({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Transaction is already fulfilled and cannot be mutated',
+    errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+    args: { transactionId: 1 },
+  })
   async remove(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
@@ -339,6 +353,12 @@ export class TransactionController {
       errorCode: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
       args: { transactionId: 1 },
     },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction is already fulfilled and cannot be mutated',
+      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+      args: { transactionId: 1 },
+    },
   )
   async attachDocument(
     @CurrentUser('id') userId: number,
@@ -383,6 +403,12 @@ export class TransactionController {
       description: 'Only the user who attached the document can detach it',
       errorCode: ErrorCode.NOT_DOCUMENT_ATTACHER,
       args: { transactionId: 1, documentId: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction is already fulfilled and cannot be mutated',
+      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+      args: { transactionId: 1 },
     },
   )
   async detachDocument(

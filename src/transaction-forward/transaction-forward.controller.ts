@@ -111,6 +111,12 @@ export class TransactionForwardController {
       errorCode: ErrorCode.FORWARD_NOT_RESPONDED,
       args: { transactionId: 1 },
     },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction is already fulfilled and cannot be mutated',
+      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+      args: { transactionId: 1 },
+    },
   )
   create(
     @CurrentUser('id') senderId: number,
@@ -189,6 +195,12 @@ export class TransactionForwardController {
       errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
       args: { id: 1 },
     },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction is already fulfilled and cannot be mutated',
+      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+      args: { transactionId: 1 },
+    },
   )
   updateSender(
     @CurrentUser('id') userId: number,
@@ -240,6 +252,12 @@ export class TransactionForwardController {
       errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
       args: { id: 1 },
     },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction is already fulfilled and cannot be mutated',
+      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+      args: { transactionId: 1 },
+    },
   )
   respond(
     @CurrentUser('id') userId: number,
@@ -290,6 +308,12 @@ export class TransactionForwardController {
       errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
       args: { id: 1 },
     },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction is already fulfilled and cannot be mutated',
+      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+      args: { transactionId: 1 },
+    },
   )
   updateResponse(
     @CurrentUser('id') userId: number,
@@ -334,6 +358,12 @@ export class TransactionForwardController {
         'Cannot undo a forward that has already been seen by the receiver',
       errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
       args: { id: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction is already fulfilled and cannot be mutated',
+      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+      args: { transactionId: 1 },
     },
   )
   remove(

@@ -106,6 +106,7 @@ export class TransactionForwardService {
         transaction: {
           select: {
             latestForward: true,
+            fulfilled: true,
           },
         },
       },
@@ -116,6 +117,14 @@ export class TransactionForwardService {
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
         { id, transactionId },
+      );
+    }
+
+    if (forward.transaction.fulfilled) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+        { transactionId },
       );
     }
 
@@ -168,6 +177,11 @@ export class TransactionForwardService {
   ) {
     const forward = await this.prisma.transactionForward.findUnique({
       where: { id, transactionId },
+      include: {
+        transaction: {
+          select: { fulfilled: true },
+        },
+      },
     });
 
     if (!forward) {
@@ -175,6 +189,14 @@ export class TransactionForwardService {
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
         { id, transactionId },
+      );
+    }
+
+    if (forward.transaction.fulfilled) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+        { transactionId },
       );
     }
 
@@ -211,6 +233,11 @@ export class TransactionForwardService {
   async remove(userId: number, transactionId: number, id: number) {
     const forward = await this.prisma.transactionForward.findUnique({
       where: { id, transactionId },
+      include: {
+        transaction: {
+          select: { fulfilled: true },
+        },
+      },
     });
 
     if (!forward) {
@@ -218,6 +245,14 @@ export class TransactionForwardService {
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
         { id, transactionId },
+      );
+    }
+
+    if (forward.transaction.fulfilled) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+        { transactionId },
       );
     }
 
@@ -254,6 +289,7 @@ export class TransactionForwardService {
       select: {
         creatorId: true,
         latestForward: true,
+        fulfilled: true,
       },
     });
 
@@ -261,6 +297,14 @@ export class TransactionForwardService {
       throw new ApiException(
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_NOT_FOUND,
+        { transactionId },
+      );
+    }
+
+    if (transaction.fulfilled) {
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.TRANSACTION_ALREADY_FULFILLED,
         { transactionId },
       );
     }
