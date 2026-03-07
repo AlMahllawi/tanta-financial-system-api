@@ -210,9 +210,8 @@ async function main() {
       where: { uploaderId: user.id },
     });
 
-    if (userDocs.length === 0) {
+    if (userDocs.length === 0)
       userDocs = await prisma.document.findMany({ take: 10 });
-    }
 
     if (userDocs.length === 0) {
       console.warn(`Skipping user ${user.name} as no documents are available.`);
