@@ -191,12 +191,10 @@ export class TransactionController {
   async update(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
-    @CurrentUser('departmentName') departmentName: string,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
-    const isAccountant =
-      departmentName === process.env.DEFAULT_ACCOUNTANT_DEPARTMENT;
+    const isAccountant = role === UserRole.ACCOUNTANT;
     const updatingFields = Object.keys(updateTransactionDto).filter(
       (key) =>
         updateTransactionDto[key as keyof UpdateTransactionDto] !== undefined,

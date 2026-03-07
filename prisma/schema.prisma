@@ -19,6 +19,7 @@ model Department {
 enum UserRole {
   ADMIN
   USER
+  ACCOUNTANT
 }
 
 model User {

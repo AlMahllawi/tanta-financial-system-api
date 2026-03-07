@@ -106,7 +106,7 @@ async function main() {
   const accountantUserData = await userFactory(accountancyDepartment.name, {
     name: ENV.DEFAULT_ACCOUNTANT_NAME,
     password: ENV.DEFAULT_ACCOUNTANT_PASSWORD,
-    role: UserRole.USER,
+    role: UserRole.ACCOUNTANT,
   });
 
   const accountant = await prisma.user.upsert({

@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER');
+CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER', 'ACCOUNTANT');
 
 -- CreateEnum
 CREATE TYPE "TransactionPriority" AS ENUM ('HIGH', 'MEDIUM', 'LOW');
