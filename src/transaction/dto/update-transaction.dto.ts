@@ -1,6 +1,12 @@
 import { ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
 import { CreateTransactionDto } from './create-transaction.dto.js';
-import { IsBoolean, IsOptional } from 'class-validator';
+import {
+  IsBoolean,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class UpdateTransactionDto extends PartialType(
   OmitType(CreateTransactionDto, ['documentsIds'] as const),
@@ -9,4 +15,19 @@ export class UpdateTransactionDto extends PartialType(
   @IsOptional()
   @IsBoolean()
   fulfilled?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Can only be updated by admin and accountant.',
+  })
+  @IsOptional()
+  @IsString()
+  budgetName?: string;
+
+  @ApiPropertyOptional({
+    description: 'Can only be updated by admin and accountant.',
+  })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  budgetAllocation?: number;
 }

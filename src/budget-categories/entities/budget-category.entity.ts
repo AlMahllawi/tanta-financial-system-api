@@ -1,0 +1,41 @@
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  BudgetCategoryModel,
+  BudgetEntryModel,
+} from '../../../prisma/generated/models.js';
+
+export class BudgetEntry implements BudgetEntryModel {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  inputterId: number;
+
+  @ApiProperty()
+  amount: number;
+
+  @ApiProperty()
+  budgetName: string;
+
+  @ApiProperty()
+  createdAt: Date;
+}
+
+export class BudgetCategory implements BudgetCategoryModel {
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty({
+    description: 'The absolute total amount assigned to this budget',
+  })
+  budget: number;
+
+  @ApiProperty({
+    description:
+      'The sum of all fulfilled transactions that are tied to this budget',
+  })
+  allocated: number;
+
+  @ApiProperty({ description: 'budget - allocated' })
+  available: number;
+}

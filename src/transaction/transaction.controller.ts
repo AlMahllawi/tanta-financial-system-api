@@ -85,9 +85,14 @@ export class TransactionController {
   )
   create(
     @CurrentUser('id') creatorId: number,
+    @CurrentUser('role') role: UserRole,
     @Body() createTransactionDto: CreateTransactionDto,
   ) {
-    return this.transactionService.create(creatorId, createTransactionDto);
+    return this.transactionService.create(
+      creatorId,
+      role,
+      createTransactionDto,
+    );
   }
 
   @Get()
@@ -108,9 +113,10 @@ export class TransactionController {
   @ApiOkResponse({ type: PaginatedTransactionSummaryResponseDto })
   findAll(
     @CurrentUser('id') userId: number,
+    @CurrentUser('role') role: UserRole,
     @Query() queryDto: TransactionQueryDto,
   ) {
-    return this.transactionService.findAll(userId, queryDto);
+    return this.transactionService.findAll(userId, role, queryDto);
   }
 
   @Get(':id')
@@ -149,7 +155,7 @@ export class TransactionController {
 
     void this.transactionService.markAsSeen(id, userId);
 
-    return this.transactionService.findOne(id);
+    return this.transactionService.findOne(id, role);
   }
 
   @Patch(':id')
@@ -173,13 +179,21 @@ export class TransactionController {
       args: { typeName: 'Unknown Type' },
       matchers: matchForeignConstraint('typeName'),
     },
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'Budget category not found',
+      errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
+      args: { budgetName: 'Unknown Budget' },
+      matchers: matchForeignConstraint('budgetName'),
+    },
   )
   @ApiErrorResponses(
     {
       status: HttpStatus.FORBIDDEN,
-      description: 'Only admin and accountant can update the fulfilled status',
+      description:
+        'Only admin and accountant can update the fulfilled and budget status',
       errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
-      args: { fields: 'fulfilled' },
+      args: { fields: 'fulfilled, budgetName, budgetAllocation' },
     },
     {
       status: HttpStatus.FORBIDDEN,
@@ -199,12 +213,15 @@ export class TransactionController {
       (key) =>
         updateTransactionDto[key as keyof UpdateTransactionDto] !== undefined,
     );
-    const isUpdatingOnlyFulfilled =
-      updatingFields.length === 1 && updatingFields[0] === 'fulfilled';
+    const isUpdatingOnlyAccountantFields =
+      updatingFields.length > 0 &&
+      updatingFields.every((field) =>
+        ['fulfilled', 'budgetName', 'budgetAllocation'].includes(field),
+      );
 
     if (
       role !== UserRole.ADMIN &&
-      !(isAccountant && isUpdatingOnlyFulfilled) &&
+      !(isAccountant && isUpdatingOnlyAccountantFields) &&
       !(await this.transactionService.isCreator(id, userId))
     )
       throw new ApiException(
@@ -214,17 +231,30 @@ export class TransactionController {
       );
 
     if (
-      updateTransactionDto.fulfilled !== undefined &&
+      (updateTransactionDto.fulfilled !== undefined ||
+        updateTransactionDto.budgetName !== undefined ||
+        updateTransactionDto.budgetAllocation !== undefined) &&
       role !== UserRole.ADMIN &&
       !isAccountant
     )
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.RESTRICTED_FIELD_UPDATE,
-        { fields: 'fulfilled' },
+        { fields: 'fulfilled, budgetName, budgetAllocation' },
       );
 
-    return this.transactionService.update(id, updateTransactionDto);
+    if (updateTransactionDto.fulfilled)
+      if (
+        !updateTransactionDto.budgetName ||
+        updateTransactionDto.budgetAllocation === undefined
+      )
+        throw new ApiException(
+          HttpStatus.BAD_REQUEST,
+          ErrorCode.MISSING_BUDGET_INFO,
+          { required: 'budgetName, budgetAllocation' },
+        );
+
+    return this.transactionService.update(id, role, updateTransactionDto);
   }
 
   @Delete(':id')
@@ -270,7 +300,7 @@ export class TransactionController {
         { transactionId: id },
       );
 
-    return this.transactionService.remove(id);
+    return this.transactionService.remove(id, role);
   }
 
   @Post(':id/document/:documentId')
@@ -332,7 +362,7 @@ export class TransactionController {
   ) {
     if (role !== UserRole.ADMIN) await this.checkRestriction(userId, id);
 
-    return this.transactionService.attachDocument(id, documentId, userId);
+    return this.transactionService.attachDocument(id, documentId, userId, role);
   }
 
   @Delete(':id/document/:documentId')
@@ -392,7 +422,7 @@ export class TransactionController {
         );
     }
 
-    return this.transactionService.detachDocument(id, documentId);
+    return this.transactionService.detachDocument(id, documentId, role);
   }
 
   private async checkRestriction(userId: number, transactionId: number) {

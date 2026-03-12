@@ -6,6 +6,7 @@ import { TransactionSummary } from './entities/transaction-summary.entity.js';
 import {
   TransactionPriority,
   TransactionForwardStatus,
+  UserRole,
 } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
@@ -79,7 +80,11 @@ export class TransactionService {
     };
   }
 
-  async create(creatorId: number, createTransactionDto: CreateTransactionDto) {
+  async create(
+    creatorId: number,
+    role: UserRole,
+    createTransactionDto: CreateTransactionDto,
+  ) {
     const transaction = await this.prisma.transaction.create({
       data: {
         title: createTransactionDto.title,
@@ -98,10 +103,10 @@ export class TransactionService {
       include: TRANSACTION_INCLUDE,
     });
 
-    return this.mapToTransaction(transaction);
+    return this.mapToTransaction(transaction, role);
   }
 
-  async findAll(userId: number, queryDto: TransactionQueryDto) {
+  async findAll(userId: number, role: UserRole, queryDto: TransactionQueryDto) {
     const { skip, take, page, perPage } = createPaginator(queryDto);
 
     let where: Prisma.TransactionWhereInput = {};
@@ -151,6 +156,8 @@ export class TransactionService {
             title: true,
             typeName: true,
             fulfilled: true,
+            budgetName: true,
+            budgetAllocation: true,
             priority: true,
             createdAt: true,
             latestForward: {
@@ -183,13 +190,17 @@ export class TransactionService {
 
     const transactionsPaginated = createPaginatedResult(
       transactions.map((t) =>
-        plainToInstance(TransactionSummary, {
-          ...t,
-          documentsCount: t._count.documents,
-          lastForwardStatus: t.latestForward?.status,
-          latestForward: undefined,
-          _count: undefined,
-        }),
+        plainToInstance(
+          TransactionSummary,
+          {
+            ...t,
+            documentsCount: t._count.documents,
+            lastForwardStatus: t.latestForward?.status,
+            latestForward: undefined,
+            _count: undefined,
+          },
+          { groups: [role] },
+        ),
       ),
       total,
       page,
@@ -202,13 +213,13 @@ export class TransactionService {
     };
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, role: UserRole) {
     const transaction = await this.prisma.transaction.findUniqueOrThrow({
       where: { id },
       include: TRANSACTION_INCLUDE,
     });
 
-    return this.mapToTransaction(transaction);
+    return this.mapToTransaction(transaction, role);
   }
 
   async isCreator(id: number, userId: number) {
@@ -283,7 +294,11 @@ export class TransactionService {
     ]);
   }
 
-  async update(id: number, updateTransactionDto: UpdateTransactionDto) {
+  async update(
+    id: number,
+    role: UserRole,
+    updateTransactionDto: UpdateTransactionDto,
+  ) {
     if (updateTransactionDto.fulfilled !== false)
       await this.checkIfFulfilled(id);
 
@@ -293,23 +308,24 @@ export class TransactionService {
       include: TRANSACTION_INCLUDE,
     });
 
-    return this.mapToTransaction(transaction);
+    return this.mapToTransaction(transaction, role);
   }
 
-  async remove(id: number) {
+  async remove(id: number, role: UserRole) {
     await this.checkIfFulfilled(id);
     const transaction = await this.prisma.transaction.delete({
       where: { id },
       include: TRANSACTION_INCLUDE,
     });
 
-    return this.mapToTransaction(transaction);
+    return this.mapToTransaction(transaction, role);
   }
 
   async attachDocument(
     transactionId: number,
     documentId: number,
     userId: number,
+    role: UserRole,
   ) {
     await this.checkIfFulfilled(transactionId);
     await this.prisma.transactionDocument.upsert({
@@ -327,10 +343,14 @@ export class TransactionService {
       update: {},
     });
 
-    return this.findOne(transactionId);
+    return this.findOne(transactionId, role);
   }
 
-  async detachDocument(transactionId: number, documentId: number) {
+  async detachDocument(
+    transactionId: number,
+    documentId: number,
+    role: UserRole,
+  ) {
     await this.checkIfFulfilled(transactionId);
     await this.prisma.transactionDocument.deleteMany({
       where: {
@@ -339,10 +359,13 @@ export class TransactionService {
       },
     });
 
-    return this.findOne(transactionId);
+    return this.findOne(transactionId, role);
   }
 
-  private mapToTransaction(transaction: TransactionWithDocuments) {
+  private mapToTransaction(
+    transaction: TransactionWithDocuments,
+    role: UserRole,
+  ) {
     const result = {
       ...transaction,
       documents: transaction.documents.map((td) =>
@@ -355,7 +378,7 @@ export class TransactionService {
       latestForward: undefined,
     };
 
-    return plainToInstance(Transaction, result);
+    return plainToInstance(Transaction, result, { groups: [role] });
   }
 
   private async checkIfFulfilled(id: number) {

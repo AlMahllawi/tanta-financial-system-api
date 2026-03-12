@@ -48,6 +48,8 @@ CREATE TABLE "Transaction" (
     "typeName" TEXT NOT NULL,
     "fulfilled" BOOLEAN NOT NULL DEFAULT false,
     "priority" "TransactionPriority" NOT NULL DEFAULT 'LOW',
+    "budgetName" TEXT,
+    "budgetAllocation" DOUBLE PRECISION,
     "creatorId" INTEGER NOT NULL,
     "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -89,6 +91,24 @@ CREATE TABLE "TransactionForward" (
     CONSTRAINT "TransactionForward_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "BudgetCategory" (
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "BudgetCategory_pkey" PRIMARY KEY ("name")
+);
+
+-- CreateTable
+CREATE TABLE "BudgetEntry" (
+    "id" SERIAL NOT NULL,
+    "inputterId" INTEGER NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "budgetName" TEXT NOT NULL,
+    "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "BudgetEntry_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Department_managerId_key" ON "Department"("managerId");
 
@@ -111,6 +131,9 @@ ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_typeName_fkey" FOREIGN KEY
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_budgetName_fkey" FOREIGN KEY ("budgetName") REFERENCES "BudgetCategory"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_transactionId_fkey" FOREIGN KEY ("transactionId") REFERENCES "Transaction"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -131,6 +154,12 @@ ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_senderId_fke
 -- AddForeignKey
 ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
+-- AddForeignKey
+ALTER TABLE "BudgetEntry" ADD CONSTRAINT "BudgetEntry_inputterId_fkey" FOREIGN KEY ("inputterId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "BudgetEntry" ADD CONSTRAINT "BudgetEntry_budgetName_fkey" FOREIGN KEY ("budgetName") REFERENCES "BudgetCategory"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+
 -- AddView
 CREATE OR REPLACE VIEW "TransactionLatestForward" AS
 SELECT DISTINCT ON ("transactionId")
@@ -141,3 +170,23 @@ SELECT DISTINCT ON ("transactionId")
   "transactionId"
 FROM "TransactionForward"
 ORDER BY "transactionId", "id" DESC;
+
+-- AddView
+CREATE OR REPLACE VIEW "BudgetCategoryDetails" AS
+SELECT 
+  c."name" AS "budgetName",
+  COALESCE(e."budget", 0) AS "budget",
+  COALESCE(t."allocated", 0) AS "allocated",
+  COALESCE(e."budget", 0) - COALESCE(t."allocated", 0) AS "available"
+FROM "BudgetCategory" c
+LEFT JOIN (
+  SELECT "budgetName", SUM("amount") AS "budget"
+  FROM "BudgetEntry"
+  GROUP BY "budgetName"
+) e ON c."name" = e."budgetName"
+LEFT JOIN (
+  SELECT "budgetName", SUM("budgetAllocation") AS "allocated"
+  FROM "Transaction"
+  WHERE "fulfilled" = true AND "budgetAllocation" IS NOT NULL
+  GROUP BY "budgetName"
+) t ON c."name" = t."budgetName";

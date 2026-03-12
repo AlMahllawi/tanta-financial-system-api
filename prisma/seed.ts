@@ -13,6 +13,8 @@ import { manyDocumentsFactory } from './seeds/document.factory.js';
 import { manyTransactionTypesFactory } from './seeds/transaction-type.factory.js';
 import { manyTransactionsFactory } from './seeds/transaction.factory.js';
 import { transactionForwardFactory } from './seeds/transaction-forward.factory.js';
+import { manyBudgetCategoriesFactory } from './seeds/budget-category.factory.js';
+import { manyBudgetEntriesFactory } from './seeds/budget-entry.factory.js';
 
 interface EnvVars {
   DEFAULT_ADMIN_NAME: string;
@@ -196,6 +198,30 @@ async function main() {
     where: { id: { not: accountant.id } },
   });
 
+  console.log('Creating budget categories and entries...');
+  const budgetCategories = manyBudgetCategoriesFactory(
+    faker.number.int({ min: 4, max: 8 }),
+  );
+
+  await prisma.budgetCategory.createMany({
+    data: budgetCategories,
+    skipDuplicates: true,
+  });
+
+  for (const category of budgetCategories) {
+    const entries = manyBudgetEntriesFactory(
+      faker.number.int({ min: 3, max: 8 }),
+      category.name,
+      admin.id,
+    );
+
+    await prisma.budgetEntry.createMany({ data: entries });
+  }
+
+  console.log(
+    `Created ${budgetCategories.length} budget categories with entries.`,
+  );
+
   console.log(
     `Seeding documents, transaction types, and transactions for ${users.length} users...`,
   );
@@ -260,6 +286,28 @@ async function main() {
       });
     }
   }
+
+  console.log('Linking some fulfilled transactions to budget categories...');
+  const createdCategories = await prisma.budgetCategory.findMany();
+  const fulfilledTransactions = await prisma.transaction.findMany({
+    where: { fulfilled: true },
+  });
+
+  for (const tx of fulfilledTransactions)
+    if (faker.datatype.boolean(0.6)) {
+      const category = faker.helpers.arrayElement(createdCategories);
+      await prisma.transaction.update({
+        where: { id: tx.id },
+        data: {
+          budgetName: category.name,
+          budgetAllocation: parseFloat(
+            faker.finance.amount({ min: 50, max: 5000, dec: 2 }),
+          ),
+        },
+      });
+    }
+
+  console.log('Linked fulfilled transactions to budget categories.');
 
   console.log('Seeding transaction forwards (chains)...');
   const allTransactions = await prisma.transaction.findMany();

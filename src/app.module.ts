@@ -10,6 +10,7 @@ import { DocumentModule } from './document/document.module.js';
 import { TransactionTypeModule } from './transaction-type/transaction-type.module.js';
 import { TransactionModule } from './transaction/transaction.module.js';
 import { TransactionForwardModule } from './transaction-forward/transaction-forward.module.js';
+import { BudgetCategoriesModule } from './budget-categories/budget-categories.module.js';
 import { LookupModule } from './common/lookup/lookup.module.js';
 import { DURATION_REGEX } from './common/constants/regex.constants.js';
 import Joi from 'joi';
@@ -50,6 +51,7 @@ import Joi from 'joi';
     TransactionTypeModule,
     TransactionModule,
     TransactionForwardModule,
+    BudgetCategoriesModule,
     LookupModule,
   ],
   controllers: [AppController],

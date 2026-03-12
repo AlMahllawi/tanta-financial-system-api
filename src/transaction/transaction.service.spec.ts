@@ -6,6 +6,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import {
   TransactionPriority,
   TransactionForwardStatus,
+  UserRole,
 } from '../../prisma/generated/enums.js';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
@@ -106,7 +107,11 @@ describe('TransactionService', () => {
         transactionWithDocs as never,
       );
 
-      const result = await service.create(creatorId, createTransactionDto);
+      const result = await service.create(
+        creatorId,
+        UserRole.USER,
+        createTransactionDto,
+      );
 
       expect(prismaMock.transaction['create']).toHaveBeenCalledWith({
         data: {
@@ -145,7 +150,9 @@ describe('TransactionService', () => {
         transactionSummaryPayload as never,
       ]);
 
-      const result = await service.findAll(1, { query: TransactionQuery.ALL });
+      const result = await service.findAll(1, UserRole.USER, {
+        query: TransactionQuery.ALL,
+      });
 
       expect(prismaMock.transaction['findMany']).toHaveBeenCalledTimes(1);
       expect(result['data']).toHaveLength(1);
@@ -158,21 +165,21 @@ describe('TransactionService', () => {
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
 
-      const result = await service.findAll(1, {});
+      const result = await service.findAll(1, UserRole.USER, {});
       expect(result['data']).toHaveLength(0);
 
       prismaMock.$queryRaw.mockResolvedValue([{ id: tx.id }]);
       prismaMock.transaction.findMany.mockResolvedValue([
         transactionSummaryPayload as never,
       ]);
-      const resultInbox = await service.findAll(1, {
+      const resultInbox = await service.findAll(1, UserRole.USER, {
         query: TransactionQuery.INBOX,
       });
       expect(resultInbox['data']).toHaveLength(1);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
-      const resultOutgoing = await service.findAll(1, {
+      const resultOutgoing = await service.findAll(1, UserRole.USER, {
         query: TransactionQuery.OUTGOING,
       });
       expect(resultOutgoing['data']).toHaveLength(0);
@@ -195,19 +202,19 @@ describe('TransactionService', () => {
         transactionSummaryPayload as never,
       ]);
 
-      const result = await service.findAll(1, {
+      const result = await service.findAll(1, UserRole.USER, {
         query: TransactionQuery.INBOX,
       });
       expect(result['data']).toHaveLength(1);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
-      const resultDefault = await service.findAll(1, {});
+      const resultDefault = await service.findAll(1, UserRole.USER, {});
       expect(resultDefault['data']).toHaveLength(0);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
-      const resultOutgoing = await service.findAll(1, {
+      const resultOutgoing = await service.findAll(1, UserRole.USER, {
         query: TransactionQuery.OUTGOING,
       });
       expect(resultOutgoing['data']).toHaveLength(0);
@@ -230,19 +237,19 @@ describe('TransactionService', () => {
         transactionSummaryPayload as never,
       ]);
 
-      const result = await service.findAll(1, {
+      const result = await service.findAll(1, UserRole.USER, {
         query: TransactionQuery.OUTGOING,
       });
       expect(result['data']).toHaveLength(1);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
-      const resultDefault = await service.findAll(1, {});
+      const resultDefault = await service.findAll(1, UserRole.USER, {});
       expect(resultDefault['data']).toHaveLength(0);
 
       prismaMock.$queryRaw.mockResolvedValue([]);
       prismaMock.transaction.findMany.mockResolvedValue([]);
-      const resultInbox = await service.findAll(1, {
+      const resultInbox = await service.findAll(1, UserRole.USER, {
         query: TransactionQuery.INBOX,
       });
       expect(resultInbox['data']).toHaveLength(0);
@@ -265,7 +272,7 @@ describe('TransactionService', () => {
         transactionSummaryPayload as never,
       ]);
 
-      const result = await service.findAll(1, {});
+      const result = await service.findAll(1, UserRole.USER, {});
       expect(result['data']).toHaveLength(1);
     });
   });
@@ -278,7 +285,7 @@ describe('TransactionService', () => {
         transactionWithDocs as never,
       );
 
-      const result = await service.findOne(id);
+      const result = await service.findOne(id, UserRole.USER);
 
       expect(prismaMock.transaction['findUniqueOrThrow']).toHaveBeenCalledWith({
         where: { id },
@@ -309,7 +316,7 @@ describe('TransactionService', () => {
         updatedTransaction as never,
       );
 
-      await service.update(id, updateTransactionDto);
+      await service.update(id, UserRole.USER, updateTransactionDto);
 
       expect(prismaMock.transaction['update']).toHaveBeenCalledWith({
         where: { id },
@@ -332,7 +339,7 @@ describe('TransactionService', () => {
         transactionWithDocs as never,
       );
 
-      await service.remove(id);
+      await service.remove(id, UserRole.USER);
 
       expect(prismaMock.transaction['delete']).toHaveBeenCalledWith({
         where: { id },
@@ -357,7 +364,12 @@ describe('TransactionService', () => {
         transactionWithDocs as never,
       );
 
-      await service.attachDocument(transactionId, documentId, userId);
+      await service.attachDocument(
+        transactionId,
+        documentId,
+        userId,
+        UserRole.USER,
+      );
 
       expect(prismaMock.transactionDocument['upsert']).toHaveBeenCalledWith({
         where: {
@@ -396,7 +408,7 @@ describe('TransactionService', () => {
         transactionWithDocs as never,
       );
 
-      await service.detachDocument(transactionId, documentId);
+      await service.detachDocument(transactionId, documentId, UserRole.USER);
 
       expect(prismaMock.transactionDocument['deleteMany']).toHaveBeenCalledWith(
         {

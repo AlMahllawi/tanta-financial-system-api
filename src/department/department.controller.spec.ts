@@ -51,8 +51,18 @@ describe('DepartmentController', () => {
 
   describe('findAll', () => {
     it('should return an array of departments', async () => {
-      departmentService.findAll.mockResolvedValue([new Department()]);
-      await controller.findAll();
+      departmentService.findAll.mockResolvedValue({
+        data: [new Department()],
+        pagination: {
+          total: 1,
+          lastPage: 1,
+          currentPage: 1,
+          perPage: 10,
+          prev: null,
+          next: null,
+        },
+      });
+      await controller.findAll({ page: 1, perPage: 10 });
       expect(departmentService['findAll']).toHaveBeenCalled();
     });
   });

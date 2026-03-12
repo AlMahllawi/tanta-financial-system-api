@@ -40,6 +40,7 @@ model User {
   attachedDocuments   TransactionDocument[]
   sentForwards        TransactionForward[]  @relation("SentForwards")
   receivedForwards    TransactionForward[]  @relation("ReceivedForwards")
+  budgetEntries       BudgetEntry[]
 }
 
 model Document {
@@ -60,17 +61,20 @@ enum TransactionPriority {
 }
 
 model Transaction {
-  id          Int                 @id @default(autoincrement())
-  title       String
-  description String
-  typeName    String
-  fulfilled   Boolean             @default(false)
-  priority    TransactionPriority @default(LOW)
-  creatorId   Int
-  createdAt   DateTime            @default(now()) @db.Timestamptz
+  id               Int                 @id @default(autoincrement())
+  title            String
+  description      String
+  typeName         String
+  fulfilled        Boolean             @default(false)
+  priority         TransactionPriority @default(LOW)
+  budgetName       String?
+  budgetAllocation Float?
+  creatorId        Int
+  createdAt        DateTime            @default(now()) @db.Timestamptz
 
   type          TransactionType           @relation(fields: [typeName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   creator       User                      @relation(fields: [creatorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  budget        BudgetCategory?           @relation(fields: [budgetName], references: [name], onDelete: Restrict, onUpdate: Cascade)
   documents     TransactionDocument[]
   forwards      TransactionForward[]
   latestForward TransactionLatestForward?
@@ -134,4 +138,33 @@ model TransactionForward {
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   sender      User        @relation("SentForwards", fields: [senderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   receiver    User        @relation("ReceivedForwards", fields: [receiverId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+}
+
+model BudgetCategory {
+  name String @id
+
+  entries      BudgetEntry[]
+  transactions Transaction[]
+  details      BudgetCategoryDetails?
+}
+
+model BudgetEntry {
+  id         Int      @id @default(autoincrement())
+  inputterId Int
+  amount     Float
+  budgetName String
+  createdAt  DateTime @default(now()) @db.Timestamptz
+
+  inputter User           @relation(fields: [inputterId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  budget   BudgetCategory @relation(fields: [budgetName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+}
+
+// TODO: This view is manually created in the migration since `view` is a prisma preview feature atm
+view BudgetCategoryDetails {
+  budgetName String @unique
+  budget     Float
+  allocated  Float
+  available  Float
+
+  category BudgetCategory @relation(fields: [budgetName], references: [name])
 }
