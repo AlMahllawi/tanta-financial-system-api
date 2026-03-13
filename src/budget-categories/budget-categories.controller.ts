@@ -33,6 +33,7 @@ import {
 } from './entities/budget-category.entity.js';
 import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import {
   matchRecordsNotFound,
@@ -186,6 +187,12 @@ export class BudgetCategoriesController {
     errorCode: ErrorCode.BUDGET_ENTRY_NOT_FOUND,
     args: { id: 1 },
     matchers: matchRecordsNotFound('BudgetEntry'),
+  })
+  @ApiErrorResponses({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Only the last entry can be removed',
+    errorCode: ErrorCode.NOT_LATEST_BUDGET_ENTRY,
+    args: { id: 1 },
   })
   removeEntry(
     @Param('name') name: string,

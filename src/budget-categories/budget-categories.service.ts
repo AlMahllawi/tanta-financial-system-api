@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { UpdateBudgetCategoryDto } from './dto/update-budget-category.dto.js';
 import { CreateBudgetEntryDto } from './dto/create-budget-entry.dto.js';
@@ -14,6 +14,8 @@ import {
   createPaginator,
 } from '../common/utils/pagination.util.js';
 import { Prisma } from '../../prisma/generated/client.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 
 @Injectable()
 export class BudgetCategoriesService {
@@ -102,10 +104,26 @@ export class BudgetCategoriesService {
   }
 
   async removeEntry(name: string, id: number) {
-    const entry = await this.prisma.budgetEntry.delete({
-      where: { budgetName: name, id },
+    return this.prisma.$transaction(async (tx) => {
+      const lastEntry = await tx.budgetEntry.findFirst({
+        where: { budgetName: name },
+        orderBy: { id: 'desc' },
+        select: { id: true },
+      });
+
+      if (!lastEntry || lastEntry.id !== id)
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.NOT_LATEST_BUDGET_ENTRY,
+          { id },
+        );
+
+      const deletedEntry = await tx.budgetEntry.delete({
+        where: { id },
+      });
+
+      return plainToInstance(BudgetEntry, deletedEntry);
     });
-    return plainToInstance(BudgetEntry, entry);
   }
 
   private formatCategory(category: {

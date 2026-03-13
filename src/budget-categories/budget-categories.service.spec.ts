@@ -204,16 +204,33 @@ describe('BudgetCategoriesService', () => {
         inputterId: 1,
         createdAt: new Date(),
       };
+      prismaMock.budgetEntry.findFirst.mockResolvedValue(entryMock);
       prismaMock.budgetEntry.delete.mockResolvedValue(entryMock);
 
       const result = await service.removeEntry('Engineering', 1);
 
-      expect(() => prismaMock.budgetEntry.delete).not.toThrow();
+      expect(prismaMock.budgetEntry.findFirst).toHaveBeenCalled();
       expect(prismaMock.budgetEntry.delete).toHaveBeenCalledWith({
-        where: { budgetName: 'Engineering', id: 1 },
+        where: { id: 1 },
       });
       expect(result).toBeInstanceOf(BudgetEntry);
       expect(result.id).toBe(1);
+    });
+
+    it('should throw ErrorCode.NOT_LATEST_BUDGET_ENTRY if not the latest', async () => {
+      const latestEntryMock: Prisma.BudgetEntryGetPayload<
+        Record<string, never>
+      > = {
+        id: 2,
+        budgetName: 'Engineering',
+        amount: 500,
+        inputterId: 1,
+        createdAt: new Date(),
+      };
+
+      prismaMock.budgetEntry.findFirst.mockResolvedValue(latestEntryMock);
+
+      await expect(service.removeEntry('Engineering', 1)).rejects.toThrow();
     });
   });
 
