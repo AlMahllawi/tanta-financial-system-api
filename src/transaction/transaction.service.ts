@@ -156,8 +156,6 @@ export class TransactionService {
             title: true,
             typeName: true,
             fulfilled: true,
-            budgetName: true,
-            budgetAllocation: true,
             priority: true,
             createdAt: true,
             latestForward: {
