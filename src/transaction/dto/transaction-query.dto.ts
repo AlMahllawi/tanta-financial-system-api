@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsDate,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -69,4 +70,24 @@ export class TransactionQueryDto extends PaginationDto {
   @IsOptional()
   @IsEnum(TransactionForwardStatus)
   lastForwardStatus?: TransactionForwardStatus;
+
+  @ApiPropertyOptional({
+    description: 'Filter transactions from this date (inclusive)',
+    type: String,
+    example: '2026-01-01',
+  })
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  from?: Date;
+
+  @ApiPropertyOptional({
+    description: 'Filter transactions up to this date (inclusive)',
+    type: String,
+    example: '2026-12-31',
+  })
+  @IsOptional()
+  @Type(() => Date)
+  @IsDate()
+  to?: Date;
 }

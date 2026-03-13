@@ -9,7 +9,8 @@ import {
   BudgetCategory,
   BudgetEntry,
 } from './entities/budget-category.entity.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
+import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
 
 describe('BudgetCategoriesController', () => {
   let controller: BudgetCategoriesController;
@@ -55,13 +56,24 @@ describe('BudgetCategoriesController', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of budget categories', async () => {
-      const expectedResult = [new BudgetCategory()];
+    it('should return a paginated list of budget categories', async () => {
+      const queryDto: BudgetCategoryQueryDto = { page: 1, perPage: 10 };
+      const expectedResult = {
+        data: [new BudgetCategory()],
+        pagination: {
+          total: 1,
+          lastPage: 1,
+          currentPage: 1,
+          perPage: 10,
+          prev: null,
+          next: null,
+        },
+      };
       service.findAll.mockResolvedValue(expectedResult);
 
-      const result = await controller.findAll();
+      const result = await controller.findAll(queryDto);
 
-      expect(() => service.findAll()).not.toThrow();
+      expect(() => service.findAll(queryDto)).not.toThrow();
       expect(result).toBe(expectedResult);
     });
   });
@@ -109,7 +121,7 @@ describe('BudgetCategoriesController', () => {
   describe('findAllEntries', () => {
     it('should return an array of budget entries', async () => {
       const name = 'Engineering';
-      const paginationDto: PaginationDto = { page: 1, perPage: 10 };
+      const queryDto: BudgetEntryQueryDto = { page: 1, perPage: 10 };
       const expectedResult = {
         data: [new BudgetEntry()],
         pagination: {
@@ -123,9 +135,9 @@ describe('BudgetCategoriesController', () => {
       };
       service.findAllEntries.mockResolvedValue(expectedResult);
 
-      const result = await controller.findAllEntries(name, paginationDto);
+      const result = await controller.findAllEntries(name, queryDto);
 
-      expect(() => service.findAllEntries(name, paginationDto)).not.toThrow();
+      expect(() => service.findAllEntries(name, queryDto)).not.toThrow();
       expect(result).toBe(expectedResult);
     });
   });

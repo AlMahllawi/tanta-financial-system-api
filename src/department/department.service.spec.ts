@@ -6,6 +6,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateDepartmentDto } from './dto/create-department.dto.js';
 import { UpdateDepartmentDto } from './dto/update-department.dto.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
+import { DepartmentQueryDto } from './dto/department-query.dto.js';
 
 describe('DepartmentService', () => {
   let service: DepartmentService;
@@ -55,6 +56,7 @@ describe('DepartmentService', () => {
 
   describe('findAll', () => {
     it('should return an array of departments', async () => {
+      const queryDto: DepartmentQueryDto = { page: 1, perPage: 10 };
       const departments = [
         {
           name: 'Computer Science',
@@ -66,9 +68,10 @@ describe('DepartmentService', () => {
       prismaMock.department.count.mockResolvedValue(1);
       prismaMock.$transaction.mockResolvedValue([departments, 1]);
 
-      await service.findAll({ page: 1, perPage: 10 });
+      await service.findAll(queryDto);
 
       expect(prismaMock.department['findMany']).toHaveBeenCalledWith({
+        where: {},
         skip: 0,
         take: 10,
       });

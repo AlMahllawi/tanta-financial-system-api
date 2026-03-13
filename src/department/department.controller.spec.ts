@@ -6,6 +6,7 @@ import { CreateDepartmentDto } from './dto/create-department.dto.js';
 import { UpdateDepartmentDto } from './dto/update-department.dto.js';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { Department } from './entities/department.entity.js';
+import { DepartmentQueryDto } from './dto/department-query.dto.js';
 
 describe('DepartmentController', () => {
   let controller: DepartmentController;
@@ -51,6 +52,7 @@ describe('DepartmentController', () => {
 
   describe('findAll', () => {
     it('should return an array of departments', async () => {
+      const queryDto: DepartmentQueryDto = { page: 1, perPage: 10 };
       departmentService.findAll.mockResolvedValue({
         data: [new Department()],
         pagination: {
@@ -62,8 +64,8 @@ describe('DepartmentController', () => {
           next: null,
         },
       });
-      await controller.findAll({ page: 1, perPage: 10 });
-      expect(departmentService['findAll']).toHaveBeenCalled();
+      await controller.findAll(queryDto);
+      expect(departmentService['findAll']).toHaveBeenCalledWith(queryDto);
     });
   });
 

@@ -7,7 +7,13 @@ import {
   BudgetEntry,
 } from './entities/budget-category.entity.js';
 import { plainToInstance } from 'class-transformer';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
+import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
+import {
+  createPaginatedResult,
+  createPaginator,
+} from '../common/utils/pagination.util.js';
+import { Prisma } from '../../prisma/generated/client.js';
 
 @Injectable()
 export class BudgetCategoriesService {
@@ -25,11 +31,24 @@ export class BudgetCategoriesService {
     });
   }
 
-  async findAll() {
-    const categories = await this.prisma.budgetCategory.findMany({
-      include: { details: true },
-    });
-    return categories.map((category) => {
+  async findAll(queryDto: BudgetCategoryQueryDto) {
+    const { skip, take, page, perPage } = createPaginator(queryDto);
+
+    const where: Prisma.BudgetCategoryWhereInput = {};
+    if (queryDto.name)
+      where.name = { contains: queryDto.name, mode: 'insensitive' };
+
+    const [categories, total] = await this.prisma.$transaction([
+      this.prisma.budgetCategory.findMany({
+        where,
+        skip,
+        take,
+        include: { details: true },
+      }),
+      this.prisma.budgetCategory.count({ where }),
+    ]);
+
+    const data = categories.map((category) => {
       const { budget, allocated, available } = category.details || {
         budget: 0,
         allocated: 0,
@@ -42,6 +61,8 @@ export class BudgetCategoriesService {
         available,
       });
     });
+
+    return createPaginatedResult(data, total, page, perPage);
   }
 
   async findOne(name: string) {
@@ -105,39 +126,47 @@ export class BudgetCategoriesService {
     });
   }
 
-  async findAllEntries(
-    budgetName: string,
-    { page = 1, perPage = 10 }: PaginationDto,
-  ) {
-    const skip = (page - 1) * perPage;
-    const take = perPage;
+  async findAllEntries(budgetName: string, queryDto: BudgetEntryQueryDto) {
+    const { skip, take, page, perPage } = createPaginator(queryDto);
 
-    const [, data, total] = await this.prisma.$transaction([
+    const where: Prisma.BudgetEntryWhereInput = { budgetName };
+
+    if (queryDto.inputter)
+      where.inputter = {
+        name: { contains: queryDto.inputter, mode: 'insensitive' },
+      };
+
+    if (queryDto.minAmount !== undefined || queryDto.maxAmount !== undefined) {
+      where.amount = {};
+      if (queryDto.minAmount !== undefined)
+        where.amount.gte = queryDto.minAmount;
+      if (queryDto.maxAmount !== undefined)
+        where.amount.lte = queryDto.maxAmount;
+    }
+
+    if (queryDto.from || queryDto.to) {
+      where.createdAt = {};
+      if (queryDto.from) where.createdAt.gte = queryDto.from;
+      if (queryDto.to) where.createdAt.lte = queryDto.to;
+    }
+
+    const [, entries, total] = await this.prisma.$transaction([
       this.prisma.budgetCategory.findUniqueOrThrow({
         where: { name: budgetName },
       }),
       this.prisma.budgetEntry.findMany({
-        where: { budgetName },
+        where,
         skip,
         take,
       }),
-      this.prisma.budgetEntry.count({
-        where: { budgetName },
-      }),
+      this.prisma.budgetEntry.count({ where }),
     ]);
 
-    const lastPage = Math.ceil(total / perPage);
-
-    return {
-      data,
-      pagination: {
-        total,
-        lastPage,
-        currentPage: page,
-        perPage,
-        prev: page > 1 ? page - 1 : null,
-        next: page < lastPage ? page + 1 : null,
-      },
-    };
+    return createPaginatedResult(
+      plainToInstance(BudgetEntry, entries),
+      total,
+      page,
+      perPage,
+    );
   }
 }

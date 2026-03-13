@@ -10,7 +10,8 @@ import {
   BudgetCategory,
   BudgetEntry,
 } from './entities/budget-category.entity.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
+import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
 import { Prisma } from '../../prisma/generated/client.js';
 
 describe('BudgetCategoriesService', () => {
@@ -86,21 +87,29 @@ describe('BudgetCategoriesService', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of formatted budget categories', async () => {
+    it('should return a paginated list of formatted budget categories', async () => {
+      const queryDto: BudgetCategoryQueryDto = { page: 1, perPage: 10 };
+
       prismaMock.budgetCategory.findMany.mockResolvedValue([
         categoryDetailsMock,
       ]);
+      prismaMock.budgetCategory.count.mockResolvedValue(1);
 
-      const result = await service.findAll();
+      const result = await service.findAll(queryDto);
 
-      expect(() => prismaMock.budgetCategory.findMany).not.toThrow();
-      expect(prismaMock.budgetCategory.findMany).toHaveBeenCalledWith({
-        include: { details: true },
+      expect(prismaMock.$transaction).toHaveBeenCalled();
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0]).toBeInstanceOf(BudgetCategory);
+      expect(result.data[0].name).toBe('Engineering');
+      expect(result.data[0].budget).toBe(1000);
+      expect(result.pagination).toEqual({
+        total: 1,
+        lastPage: 1,
+        currentPage: 1,
+        perPage: 10,
+        prev: null,
+        next: null,
       });
-      expect(result).toHaveLength(1);
-      expect(result[0]).toBeInstanceOf(BudgetCategory);
-      expect(result[0].name).toBe('Engineering');
-      expect(result[0].budget).toBe(1000);
     });
   });
 
@@ -210,7 +219,7 @@ describe('BudgetCategoriesService', () => {
 
   describe('findAllEntries', () => {
     it('should return paginated budget entries via transaction', async () => {
-      const paginationDto: PaginationDto = { page: 1, perPage: 10 };
+      const queryDto: BudgetEntryQueryDto = { page: 1, perPage: 10 };
       const entryMock: Prisma.BudgetEntryGetPayload<Record<string, never>> = {
         id: 1,
         budgetName: 'Engineering',
@@ -225,12 +234,13 @@ describe('BudgetCategoriesService', () => {
       prismaMock.budgetEntry.findMany.mockResolvedValue([entryMock]);
       prismaMock.budgetEntry.count.mockResolvedValue(1);
 
-      const result = await service.findAllEntries('Engineering', paginationDto);
+      const result = await service.findAllEntries('Engineering', queryDto);
 
       expect(() => prismaMock.$transaction).not.toThrow();
       expect(prismaMock.$transaction).toHaveBeenCalled();
 
       expect(result.data).toHaveLength(1);
+      expect(result.data[0]).toBeInstanceOf(BudgetEntry);
       expect(result.pagination).toEqual({
         total: 1,
         lastPage: 1,

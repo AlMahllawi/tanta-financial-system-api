@@ -120,6 +120,8 @@ export class TransactionService {
       priority,
       creatorId,
       lastForwardStatus,
+      from,
+      to,
     } = queryDto;
 
     if (query && query !== TransactionQuery.ALL)
@@ -144,6 +146,12 @@ export class TransactionService {
     if (priority) where.priority = priority;
     if (creatorId) where.creatorId = creatorId;
     if (lastForwardStatus) where.latestForward = { status: lastForwardStatus };
+
+    if (from || to) {
+      where.createdAt = {};
+      if (from) where.createdAt.gte = from;
+      if (to) where.createdAt.lte = to;
+    }
 
     const [transactions, total, ...statusCounts] =
       await this.prisma.$transaction([

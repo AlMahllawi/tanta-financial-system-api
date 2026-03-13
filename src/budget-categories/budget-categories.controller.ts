@@ -39,8 +39,9 @@ import {
   matchForeignConstraint,
   matchUniqueConstraint,
 } from '../prisma/prisma.matchers.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
+import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
+import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
 
 @ApiTags('Budget Categories')
 @ApiBearerAuth()
@@ -73,8 +74,8 @@ export class BudgetCategoriesController {
   @Get()
   @ApiOperation({ summary: 'Get all budget categories' })
   @ApiPaginatedResponse(BudgetCategory, 'Paged list of budget categories')
-  findAll() {
-    return this.budgetCategoriesService.findAll();
+  findAll(@Query() queryDto: BudgetCategoryQueryDto) {
+    return this.budgetCategoriesService.findAll(queryDto);
   }
 
   @Get(':name')
@@ -145,9 +146,9 @@ export class BudgetCategoriesController {
   })
   findAllEntries(
     @Param('name') name: string,
-    @Query() paginationDto: PaginationDto,
+    @Query() queryDto: BudgetEntryQueryDto,
   ) {
-    return this.budgetCategoriesService.findAllEntries(name, paginationDto);
+    return this.budgetCategoriesService.findAllEntries(name, queryDto);
   }
 
   @Post(':name/entry')

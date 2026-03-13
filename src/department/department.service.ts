@@ -10,7 +10,8 @@ import {
   createPaginatedResult,
   createPaginator,
 } from '../common/utils/pagination.util.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { DepartmentQueryDto } from './dto/department-query.dto.js';
+import { Prisma } from '../../prisma/generated/client.js';
 
 @Injectable()
 export class DepartmentService {
@@ -26,15 +27,25 @@ export class DepartmentService {
     return plainToInstance(Department, department);
   }
 
-  async findAll(paginationDto: PaginationDto) {
-    const { skip, take, page, perPage } = createPaginator(paginationDto);
+  async findAll(queryDto: DepartmentQueryDto) {
+    const { skip, take, page, perPage } = createPaginator(queryDto);
+
+    const where: Prisma.DepartmentWhereInput = {};
+    if (queryDto.name)
+      where.name = { contains: queryDto.name, mode: 'insensitive' };
+
+    if (queryDto.manager)
+      where.manager = {
+        name: { contains: queryDto.manager, mode: 'insensitive' },
+      };
 
     const [departments, total] = await this.prisma.$transaction([
       this.prisma.department.findMany({
+        where,
         skip,
         take,
       }),
-      this.prisma.department.count(),
+      this.prisma.department.count({ where }),
     ]);
 
     return createPaginatedResult(
