@@ -1,4 +1,3 @@
-import { applyDecorators, SetMetadata } from '@nestjs/common';
 import { Prisma } from '../../../prisma/generated/client.js';
 import { ApiErrorResponses } from '../../common/decorators/api-error.decorator.js';
 import { ErrorResponseDef } from '../../common/interfaces/error-response.interface.js';
@@ -15,8 +14,24 @@ export interface PrismaErrorResponseDef extends ErrorResponseDef {
 }
 
 export function ApiPrismaErrorResponses(...errors: PrismaErrorResponseDef[]) {
-  return applyDecorators(
-    ApiErrorResponses(...errors),
-    SetMetadata(PRISMA_ERROR_METADATA_KEY, errors),
-  );
+  return (
+    target: object,
+    key: string | symbol,
+    descriptor: TypedPropertyDescriptor<unknown>,
+  ) => {
+    ApiErrorResponses(...errors)(target, key, descriptor);
+
+    const existing = (Reflect.getOwnMetadata(
+      PRISMA_ERROR_METADATA_KEY,
+      target,
+      key,
+    ) || []) as PrismaErrorResponseDef[];
+
+    Reflect.defineMetadata(
+      PRISMA_ERROR_METADATA_KEY,
+      [...existing, ...errors],
+      target,
+      key,
+    );
+  };
 }
