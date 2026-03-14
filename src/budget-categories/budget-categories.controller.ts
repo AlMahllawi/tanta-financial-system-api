@@ -9,7 +9,6 @@ import {
   UseGuards,
   ParseIntPipe,
   HttpStatus,
-  UseFilters,
   Query,
 } from '@nestjs/common';
 import { BudgetCategoriesService } from './budget-categories.service.js';
@@ -31,7 +30,6 @@ import {
   BudgetCategory,
   BudgetEntry,
 } from './entities/budget-category.entity.js';
-import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
@@ -47,7 +45,6 @@ import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
 @ApiTags('Budget Categories')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@UseFilters(PrismaExceptionFilter)
 @Controller('budget-categories')
 export class BudgetCategoriesController {
   constructor(

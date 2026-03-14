@@ -9,7 +9,6 @@ import {
   HttpStatus,
   UseGuards,
   ParseIntPipe,
-  UseFilters,
   Query,
 } from '@nestjs/common';
 import {
@@ -31,7 +30,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
 import { UserRole } from '../../prisma/generated/enums.js';
-import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { UserQueryDto } from './dto/user-query.dto.js';
@@ -46,7 +44,6 @@ const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
 @ApiTags('Users')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@UseFilters(PrismaExceptionFilter)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}

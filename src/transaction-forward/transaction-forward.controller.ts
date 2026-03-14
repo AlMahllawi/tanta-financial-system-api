@@ -9,7 +9,6 @@ import {
   HttpStatus,
   UseGuards,
   ParseIntPipe,
-  UseFilters,
   Query,
 } from '@nestjs/common';
 import { TransactionForwardService } from './transaction-forward.service.js';
@@ -29,7 +28,6 @@ import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import {
   matchForeignConstraint,
   matchRecordsNotFound,
@@ -40,7 +38,6 @@ import { PaginationDto } from '../common/dto/pagination.dto.js';
 @ApiTags('Transaction Forwards')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@UseFilters(PrismaExceptionFilter)
 @Controller('transaction/:transactionId/forward')
 export class TransactionForwardController {
   constructor(

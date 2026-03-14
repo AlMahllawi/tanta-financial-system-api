@@ -8,7 +8,6 @@ import {
   Delete,
   HttpStatus,
   UseGuards,
-  UseFilters,
   Query,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service.js';
@@ -26,7 +25,6 @@ import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { DepartmentQueryDto } from './dto/department-query.dto.js';
 import {
@@ -41,7 +39,6 @@ import { UserRole } from '../../prisma/generated/enums.js';
 @ApiTags('Departments')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@UseFilters(PrismaExceptionFilter)
 @Controller('departments')
 export class DepartmentController {
   constructor(private readonly departmentService: DepartmentService) {}

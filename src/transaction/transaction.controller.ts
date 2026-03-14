@@ -10,7 +10,6 @@ import {
   UseGuards,
   ParseIntPipe,
   HttpCode,
-  UseFilters,
   Query,
 } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
@@ -32,7 +31,6 @@ import { ApiException } from '../common/exceptions/api.exception.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { TransactionQueryDto } from './dto/transaction-query.dto.js';
 import {
@@ -49,7 +47,6 @@ import {
 @ApiTags('Transactions')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@UseFilters(PrismaExceptionFilter)
 @Controller('transactions')
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}

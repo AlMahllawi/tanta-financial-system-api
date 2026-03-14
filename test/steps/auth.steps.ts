@@ -5,8 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module.js';
 import * as shared from './shared.js';
 import { PrismaService } from '../../src/prisma/prisma.service.js';
-import { PrismaExceptionFilter } from '../../src/prisma/filters/exception.filter.js';
-import { Reflector } from '@nestjs/core';
 import { hash } from 'argon2';
 import * as http from 'http';
 
@@ -25,7 +23,6 @@ defineFeature(feature, (test) => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
-    app.useGlobalFilters(new PrismaExceptionFilter(app.get(Reflector)));
     prisma = moduleFixture.get<PrismaService>(PrismaService);
     await app.init();
     httpServer = app.getHttpServer() as http.Server;

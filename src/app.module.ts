@@ -14,6 +14,8 @@ import { BudgetCategoriesModule } from './budget-categories/budget-categories.mo
 import { LookupModule } from './common/lookup/lookup.module.js';
 import { DURATION_REGEX } from './common/constants/regex.constants.js';
 import Joi from 'joi';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { PrismaInterceptor } from './prisma/interceptors/prisma.interceptor.js';
 
 @Module({
   imports: [
@@ -55,6 +57,12 @@ import Joi from 'joi';
     LookupModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: PrismaInterceptor,
+    },
+  ],
 })
 export class AppModule {}

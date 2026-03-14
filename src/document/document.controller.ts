@@ -14,7 +14,6 @@ import {
   HttpStatus,
   UseGuards,
   ParseIntPipe,
-  UseFilters,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { contentType } from 'mime-types';
@@ -34,7 +33,6 @@ import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import {
   matchForeignConstraint,
   matchRecordsNotFound,
@@ -46,7 +44,6 @@ import { Query } from '@nestjs/common';
 @ApiTags('Documents')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@UseFilters(PrismaExceptionFilter)
 @Controller('documents')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}

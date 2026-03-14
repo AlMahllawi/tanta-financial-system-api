@@ -6,8 +6,6 @@ import { AppModule } from '../../src/app.module.js';
 import * as shared from './shared.js';
 import { PrismaService } from '../../src/prisma/prisma.service.js';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaExceptionFilter } from '../../src/prisma/filters/exception.filter.js';
-import { Reflector } from '@nestjs/core';
 import * as http from 'http';
 
 const feature = loadFeature('./test/features/transaction-types.feature');
@@ -29,7 +27,6 @@ defineFeature(feature, (test) => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
-    app.useGlobalFilters(new PrismaExceptionFilter(app.get(Reflector)));
     prisma = moduleFixture.get<PrismaService>(PrismaService);
     jwtService = moduleFixture.get<JwtService>(JwtService);
     await app.init();

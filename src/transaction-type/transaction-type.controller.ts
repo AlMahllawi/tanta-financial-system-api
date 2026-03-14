@@ -7,7 +7,6 @@ import {
   Delete,
   HttpStatus,
   UseGuards,
-  UseFilters,
   Query,
 } from '@nestjs/common';
 import { TransactionTypeService } from './transaction-type.service.js';
@@ -25,7 +24,6 @@ import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { PrismaExceptionFilter } from '../prisma/filters/exception.filter.js';
 import {
   matchUniqueConstraint,
   matchForeignConstraint,
@@ -39,7 +37,6 @@ import { ApiException } from '../common/exceptions/api.exception.js';
 @ApiTags('Transaction Types')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@UseFilters(PrismaExceptionFilter)
 @Controller('transactions/types')
 export class TransactionTypeController {
   constructor(
