@@ -122,43 +122,43 @@ ALTER TABLE "Department" ADD CONSTRAINT "fk_department_manager" FOREIGN KEY ("ma
 ALTER TABLE "User" ADD CONSTRAINT "fk_user_department" FOREIGN KEY ("departmentName") REFERENCES "Department"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Document" ADD CONSTRAINT "Document_uploaderId_fkey" FOREIGN KEY ("uploaderId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Document" ADD CONSTRAINT "fk_document_uploader" FOREIGN KEY ("uploaderId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_typeName_fkey" FOREIGN KEY ("typeName") REFERENCES "TransactionType"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Transaction" ADD CONSTRAINT "fk_transaction_type" FOREIGN KEY ("typeName") REFERENCES "TransactionType"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Transaction" ADD CONSTRAINT "fk_transaction_creator" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_budgetName_fkey" FOREIGN KEY ("budgetName") REFERENCES "BudgetCategory"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Transaction" ADD CONSTRAINT "fk_transaction_budget" FOREIGN KEY ("budgetName") REFERENCES "BudgetCategory"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_transactionId_fkey" FOREIGN KEY ("transactionId") REFERENCES "Transaction"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "TransactionDocument" ADD CONSTRAINT "fk_transaction_document" FOREIGN KEY ("transactionId") REFERENCES "Transaction"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_documentId_fkey" FOREIGN KEY ("documentId") REFERENCES "Document"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TransactionDocument" ADD CONSTRAINT "fk_document_transaction" FOREIGN KEY ("documentId") REFERENCES "Document"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionDocument" ADD CONSTRAINT "TransactionDocument_attachedBy_fkey" FOREIGN KEY ("attachedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TransactionDocument" ADD CONSTRAINT "fk_transaction_document_attacher" FOREIGN KEY ("attachedBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionType" ADD CONSTRAINT "TransactionType_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TransactionType" ADD CONSTRAINT "fk_transaction_type_creator" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_transactionId_fkey" FOREIGN KEY ("transactionId") REFERENCES "Transaction"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TransactionForward" ADD CONSTRAINT "fk_transaction_forward" FOREIGN KEY ("transactionId") REFERENCES "Transaction"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_senderId_fkey" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TransactionForward" ADD CONSTRAINT "fk_transaction_forward_sender" FOREIGN KEY ("senderId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "TransactionForward" ADD CONSTRAINT "TransactionForward_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "TransactionForward" ADD CONSTRAINT "fk_transaction_forward_receiver" FOREIGN KEY ("receiverId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BudgetEntry" ADD CONSTRAINT "BudgetEntry_inputterId_fkey" FOREIGN KEY ("inputterId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "BudgetEntry" ADD CONSTRAINT "fk_budget_entry_inputter" FOREIGN KEY ("inputterId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BudgetEntry" ADD CONSTRAINT "BudgetEntry_budgetName_fkey" FOREIGN KEY ("budgetName") REFERENCES "BudgetCategory"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "BudgetEntry" ADD CONSTRAINT "fk_budget_entry" FOREIGN KEY ("budgetName") REFERENCES "BudgetCategory"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddView
 CREATE OR REPLACE VIEW "TransactionLatestForward" AS

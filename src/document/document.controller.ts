@@ -69,7 +69,7 @@ export class DocumentController {
     description: 'Uploader not found',
     errorCode: ErrorCode.DOCUMENT_UPLOADER_NOT_FOUND,
     args: { uploaderId: 1 },
-    matchers: matchForeignConstraint('uploaderId'),
+    matchers: matchForeignConstraint('fk_document_uploader'),
   })
   @UseInterceptors(FileInterceptor('file'))
   create(

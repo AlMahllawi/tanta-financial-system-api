@@ -11,6 +11,7 @@ import { Reflector } from '@nestjs/core';
 import { Prisma } from '../../../prisma/generated/client.js';
 import { HttpExceptionResponse } from '../../common/responses/http-exception.response.js';
 import {
+  DriverAdapterError,
   PrismaErrorResponseDef,
   PRISMA_ERROR_METADATA_KEY,
 } from '../decorators/exception.decorator.js';
@@ -26,9 +27,14 @@ export class PrismaInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
-      catchError((exception) => {
-        if (!(exception instanceof Prisma.PrismaClientKnownRequestError))
-          return throwError(() => exception as Error);
+      catchError((exception: Error) => {
+        if (
+          !(
+            exception instanceof Prisma.PrismaClientKnownRequestError ||
+            exception.name === 'DriverAdapterError'
+          )
+        )
+          return throwError(() => exception);
 
         const httpContext = context.switchToHttp();
         const request = httpContext.getRequest<Request>();
@@ -57,8 +63,9 @@ export class PrismaInterceptor implements NestInterceptor {
 
           return matchers.some((matcher) =>
             matcher(
-              (exception.meta as Record<string, unknown>) || {},
-              exception,
+              exception as
+                | Prisma.PrismaClientKnownRequestError
+                | DriverAdapterError,
             ),
           );
         });
@@ -87,15 +94,11 @@ export class PrismaInterceptor implements NestInterceptor {
           );
         }
 
-        this.logger.error(
-          `Unhandled Prisma error: ${exception.code}`,
-          exception.stack,
-          {
-            meta: exception.meta,
-            path: request.url,
-            method: request.method,
-          },
-        );
+        this.logger.error(`Unhandled Prisma error`, {
+          method: request.method,
+          path: request.url,
+          error: exception,
+        });
 
         // Default fallback for unhandled Prisma errors
         const status = HttpStatus.INTERNAL_SERVER_ERROR;

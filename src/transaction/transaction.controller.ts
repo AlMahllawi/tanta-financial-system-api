@@ -40,6 +40,7 @@ import {
 import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
 import { PaginatedTransactionSummaryResponseDto } from './dto/paginated-transaction-summary-response.dto.js';
 import {
+  matchDriverAdapter,
   matchForeignConstraint,
   matchRecordsNotFound,
 } from '../prisma/prisma.matchers.js';
@@ -61,23 +62,16 @@ export class TransactionController {
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Transaction type not found',
-      errorCode: ErrorCode.TRANSACTION_TYPE_FK_NOT_FOUND,
+      errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
       args: { typeName: 'Unknown Type' },
-      matchers: matchForeignConstraint('typeName'),
-    },
-    {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Transaction creator not found',
-      errorCode: ErrorCode.TRANSACTION_CREATOR_NOT_FOUND,
-      args: { creatorId: 1 },
-      matchers: matchForeignConstraint('creatorId'),
+      matchers: matchForeignConstraint('fk_transaction_type'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'One or more documents not found',
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
       args: { id: '1, 2' },
-      matchers: matchForeignConstraint('TransactionDocument'),
+      matchers: matchForeignConstraint('fk_document_transaction'),
     },
   )
   create(
@@ -172,16 +166,16 @@ export class TransactionController {
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Transaction type not found',
-      errorCode: ErrorCode.TRANSACTION_TYPE_FK_NOT_FOUND,
+      errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
       args: { typeName: 'Unknown Type' },
-      matchers: matchForeignConstraint('typeName'),
+      matchers: matchForeignConstraint('fk_transaction_type'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Budget category not found',
       errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
       args: { budgetName: 'Unknown Budget' },
-      matchers: matchForeignConstraint('budgetName'),
+      matchers: matchForeignConstraint('fk_transaction_budget'),
     },
   )
   @ApiErrorResponses(
@@ -273,7 +267,7 @@ export class TransactionController {
       description: 'Cannot delete a transaction that has forwards',
       errorCode: ErrorCode.TRANSACTION_HAS_FORWARDS,
       args: { id: 1 },
-      matchers: matchForeignConstraint('fk_transaction_forward_transaction_id'),
+      matchers: matchDriverAdapter('23001', 'fk_transaction_forward'),
     },
   )
   @ApiErrorResponses({
@@ -313,14 +307,14 @@ export class TransactionController {
       description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { id: 1 },
-      matchers: matchForeignConstraint('transactionId'),
+      matchers: matchForeignConstraint('fk_transaction_document'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'No document was found with such id',
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
       args: { id: 1 },
-      matchers: matchForeignConstraint('documentId'),
+      matchers: matchForeignConstraint('fk_document_transaction'),
     },
   )
   @ApiErrorResponses(
@@ -367,6 +361,13 @@ export class TransactionController {
   @ApiOkResponse({
     type: Transaction,
     description: 'Document detached from transaction successfully',
+  })
+  @ApiPrismaErrorResponses({
+    status: HttpStatus.NOT_FOUND,
+    description: 'No transaction was found with such id',
+    errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
+    args: { id: 1 },
+    matchers: matchRecordsNotFound('Transaction'),
   })
   @ApiErrorResponses(
     {

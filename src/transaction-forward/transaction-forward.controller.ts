@@ -56,21 +56,21 @@ export class TransactionForwardController {
       description: 'Transaction not found',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { transactionId: 1 },
-      matchers: matchForeignConstraint('transactionId'),
+      matchers: matchForeignConstraint('fk_transaction_forward'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Sender not found',
       errorCode: ErrorCode.TRANSACTION_FORWARD_SENDER_NOT_FOUND,
       args: { senderId: 1 },
-      matchers: matchForeignConstraint('senderId'),
+      matchers: matchForeignConstraint('fk_transaction_forward_sender'),
     },
     {
       status: HttpStatus.NOT_FOUND,
       description: 'Receiver not found',
       errorCode: ErrorCode.TRANSACTION_FORWARD_RECEIVER_NOT_FOUND,
       args: { receiverId: 1 },
-      matchers: matchForeignConstraint('receiverId'),
+      matchers: matchForeignConstraint('fk_transaction_forward_receiver'),
     },
   )
   @ApiErrorResponses(

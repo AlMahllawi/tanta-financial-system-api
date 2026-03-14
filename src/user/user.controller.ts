@@ -37,6 +37,7 @@ import {
   matchUniqueConstraint,
   matchForeignConstraint,
   matchRecordsNotFound,
+  matchDriverAdapter,
 } from '../prisma/prisma.matchers.js';
 
 const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
@@ -202,10 +203,13 @@ export class UserController {
     },
     {
       status: HttpStatus.CONFLICT,
-      description: 'Cannot delete a user who manages a department',
-      errorCode: ErrorCode.USER_MANAGES_DEPARTMENT,
+      description: 'Cannot delete a user who is engaged in the system',
+      errorCode: ErrorCode.USER_ENGAGED_IN_SYSTEM,
       args: { id: 1 },
-      matchers: matchForeignConstraint('fk_department_manager'),
+      matchers: [
+        matchForeignConstraint('fk_department_manager'),
+        matchDriverAdapter('23001', 'fk_document_uploader'),
+      ], // TODO: handle other cases
     },
   )
   remove(@Param('id', ParseIntPipe) id: number) {

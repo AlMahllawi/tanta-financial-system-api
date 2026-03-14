@@ -161,7 +161,7 @@ export class BudgetCategoriesController {
     description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
     args: { budgetName: 'Unknown' },
-    matchers: matchForeignConstraint('budgetName'),
+    matchers: matchForeignConstraint('fk_budget_entry'),
   })
   addEntry(
     @Param('name') name: string,

@@ -26,7 +26,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import {
   matchUniqueConstraint,
-  matchForeignConstraint,
   matchRecordsNotFound,
 } from '../prisma/prisma.matchers.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
@@ -49,22 +48,13 @@ export class TransactionTypeController {
     type: TransactionType,
     description: 'Transaction type created successfully',
   })
-  @ApiPrismaErrorResponses(
-    {
-      status: HttpStatus.CONFLICT,
-      description: 'A transaction type already exists with the same name',
-      errorCode: ErrorCode.TRANSACTION_TYPE_ALREADY_EXISTS,
-      args: { name: 'Financial' },
-      matchers: matchUniqueConstraint('name'),
-    },
-    {
-      status: HttpStatus.NOT_FOUND,
-      description: 'The specified creator user was not found',
-      errorCode: ErrorCode.TRANSACTION_TYPE_CREATOR_NOT_FOUND,
-      args: { creatorId: 1 },
-      matchers: matchForeignConstraint('creatorId'),
-    },
-  )
+  @ApiPrismaErrorResponses({
+    status: HttpStatus.CONFLICT,
+    description: 'A transaction type already exists with the same name',
+    errorCode: ErrorCode.TRANSACTION_TYPE_ALREADY_EXISTS,
+    args: { name: 'Financial' },
+    matchers: matchUniqueConstraint('name'),
+  })
   create(
     @CurrentUser('id') creatorId: number,
     @Body() createTransactionTypeDto: CreateTransactionTypeDto,

@@ -4,9 +4,29 @@ import { ErrorResponseDef } from '../../common/interfaces/error-response.interfa
 
 export const PRISMA_ERROR_METADATA_KEY = 'prisma_error_metadata';
 
+export interface PrismaErrorConstraintMeta {
+  fields?: string[];
+  index?: string;
+}
+
+export interface DriverAdapterErrorData {
+  code?: string;
+  meta?: Record<string, unknown>;
+  cause?: {
+    message?: string;
+    code?: string;
+    constraint?: PrismaErrorConstraintMeta;
+  };
+}
+
+export interface DriverAdapterError
+  extends Omit<Error, 'cause'>, DriverAdapterErrorData {
+  name: 'DriverAdapterError';
+  message: string;
+}
+
 export type PrismaMatcher = (
-  meta: Record<string, unknown>,
-  error: Prisma.PrismaClientKnownRequestError,
+  error: Prisma.PrismaClientKnownRequestError | DriverAdapterError,
 ) => boolean;
 
 export interface PrismaErrorResponseDef extends ErrorResponseDef {

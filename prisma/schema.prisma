@@ -50,7 +50,7 @@ model Document {
   uploaderId Int
   uploadedAt DateTime @default(now()) @db.Timestamptz
 
-  uploader     User                  @relation(fields: [uploaderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  uploader     User                  @relation(fields: [uploaderId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_document_uploader")
   transactions TransactionDocument[]
 }
 
@@ -72,9 +72,9 @@ model Transaction {
   creatorId        Int
   createdAt        DateTime            @default(now()) @db.Timestamptz
 
-  type          TransactionType           @relation(fields: [typeName], references: [name], onDelete: Restrict, onUpdate: Cascade)
-  creator       User                      @relation(fields: [creatorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  budget        BudgetCategory?           @relation(fields: [budgetName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  type          TransactionType           @relation(fields: [typeName], references: [name], onDelete: Restrict, onUpdate: Cascade, map: "fk_transaction_type")
+  creator       User                      @relation(fields: [creatorId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_transaction_creator")
+  budget        BudgetCategory?           @relation(fields: [budgetName], references: [name], onDelete: Restrict, onUpdate: Cascade, map: "fk_transaction_budget")
   documents     TransactionDocument[]
   forwards      TransactionForward[]
   latestForward TransactionLatestForward?
@@ -100,9 +100,9 @@ model TransactionDocument {
   attachedBy    Int
   attachedAt    DateTime @default(now()) @db.Timestamptz
 
-  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  document    Document    @relation(fields: [documentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  attacher    User        @relation(fields: [attachedBy], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "fk_transaction_document")
+  document    Document    @relation(fields: [documentId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_document_transaction")
+  attacher    User        @relation(fields: [attachedBy], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_transaction_document_attacher")
 
   @@id([transactionId, documentId], map: "pk_transaction_document")
 }
@@ -111,7 +111,7 @@ model TransactionType {
   name      String @id
   creatorId Int
 
-  creator      User          @relation(fields: [creatorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  creator      User          @relation(fields: [creatorId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_transaction_type_creator")
   transactions Transaction[]
 }
 
@@ -135,9 +135,9 @@ model TransactionForward {
   updatedAt       DateTime                 @updatedAt @db.Timestamptz
   transactionId   Int
 
-  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  sender      User        @relation("SentForwards", fields: [senderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  receiver    User        @relation("ReceivedForwards", fields: [receiverId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_transaction_forward")
+  sender      User        @relation("SentForwards", fields: [senderId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_transaction_forward_sender")
+  receiver    User        @relation("ReceivedForwards", fields: [receiverId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_transaction_forward_receiver")
 }
 
 model BudgetCategory {
@@ -155,8 +155,8 @@ model BudgetEntry {
   budgetName String
   createdAt  DateTime @default(now()) @db.Timestamptz
 
-  inputter User           @relation(fields: [inputterId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  budget   BudgetCategory @relation(fields: [budgetName], references: [name], onDelete: Restrict, onUpdate: Cascade)
+  inputter User           @relation(fields: [inputterId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_budget_entry_inputter")
+  budget   BudgetCategory @relation(fields: [budgetName], references: [name], onDelete: Restrict, onUpdate: Cascade, map: "fk_budget_entry")
 }
 
 // TODO: This view is manually created in the migration since `view` is a prisma preview feature atm
