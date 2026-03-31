@@ -1,5 +1,8 @@
 {
     "recommendations": [
-        "alexkrechik.cucumberautocomplete"
+        "alexkrechik.cucumberautocomplete",
+        "prisma.prisma",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
     ]
 }
