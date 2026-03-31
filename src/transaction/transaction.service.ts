@@ -237,26 +237,24 @@ export class TransactionService {
   }
 
   async isParticipant(id: number, userId: number) {
-    const transaction = await this.prisma.transaction.findUnique({
-      where: { id },
-      select: {
-        creatorId: true,
-        latestForward: {
-          select: {
-            senderId: true,
-            receiverId: true,
+    const transaction = await this.prisma.transaction.findFirst({
+      where: {
+        id,
+        OR: [
+          { creatorId: userId },
+          {
+            forwards: {
+              some: {
+                OR: [{ senderId: userId }, { receiverId: userId }],
+              },
+            },
           },
-        },
+        ],
       },
+      select: { id: true },
     });
 
-    if (!transaction) return false;
-
-    return (
-      transaction.creatorId === userId ||
-      transaction.latestForward?.senderId === userId ||
-      transaction.latestForward?.receiverId === userId
-    );
+    return transaction !== null;
   }
 
   async isAttacher(transactionId: number, documentId: number, userId: number) {
@@ -372,8 +370,15 @@ export class TransactionService {
     transaction: TransactionWithDocuments,
     role: UserRole,
   ) {
+    const isRestricted =
+      role !== UserRole.ADMIN && role !== UserRole.ACCOUNTANT;
+
     const result = {
       ...transaction,
+      ...(isRestricted && {
+        budgetName: undefined,
+        budgetAllocation: undefined,
+      }),
       documents: transaction.documents.map((td) =>
         plainToInstance(Document, {
           ...td.document,

@@ -34,6 +34,7 @@ import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorato
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import {
+  matchDriverAdapter,
   matchForeignConstraint,
   matchRecordsNotFound,
 } from '../prisma/prisma.matchers.js';
@@ -147,13 +148,22 @@ export class DocumentController {
     type: Document,
     description: 'Document deleted successfully',
   })
-  @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No document was found with such id',
-    errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
-    args: { id: 1 },
-    matchers: matchRecordsNotFound('Document'),
-  })
+  @ApiPrismaErrorResponses(
+    {
+      status: HttpStatus.NOT_FOUND,
+      description: 'No document was found with such id',
+      errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
+      args: { id: 1 },
+      matchers: matchRecordsNotFound('Document'),
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'This document is already used in a transaction',
+      errorCode: ErrorCode.DOCUMENT_ALREADY_USED,
+      args: { id: 1 },
+      matchers: matchDriverAdapter('23001', 'fk_document_transaction'),
+    },
+  )
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.documentService.remove(id);
   }
