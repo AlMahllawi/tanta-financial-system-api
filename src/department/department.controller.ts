@@ -29,8 +29,8 @@ import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.
 import { DepartmentQueryDto } from './dto/department-query.dto.js';
 import {
   matchUniqueConstraint,
-  matchForeignConstraint,
   matchRecordsNotFound,
+  matchDriverAdapter,
 } from '../prisma/prisma.matchers.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
@@ -106,7 +106,7 @@ export class DepartmentController {
         'The specified manager is already managing another department',
       errorCode: ErrorCode.MANAGER_ALREADY_MANAGES_DEPARTMENT,
       args: { managerId: 1 },
-      matchers: matchUniqueConstraint('managerId'),
+      matchers: [matchUniqueConstraint('"managerId"')],
     },
     {
       status: HttpStatus.NOT_FOUND,
@@ -120,7 +120,7 @@ export class DepartmentController {
       description: 'The specified manager user was not found',
       errorCode: ErrorCode.MANAGER_NOT_FOUND,
       args: { managerId: 1 },
-      matchers: matchForeignConstraint('fk_department_manager'),
+      matchers: [matchDriverAdapter('23503', 'fk_department_manager')],
     },
   )
   @ApiErrorResponses({
@@ -156,7 +156,7 @@ export class DepartmentController {
       description: 'Cannot delete department with existing members',
       errorCode: ErrorCode.DEPARTMENT_HAS_MEMBERS,
       args: { name: 'Computer Science' },
-      matchers: matchForeignConstraint('fk_user_department'),
+      matchers: [matchDriverAdapter('23001', 'fk_user_department')],
     },
   )
   remove(@Param('name') name: string) {
