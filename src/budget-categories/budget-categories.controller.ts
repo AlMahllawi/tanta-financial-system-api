@@ -37,6 +37,7 @@ import {
   matchRecordsNotFound,
   matchForeignConstraint,
   matchUniqueConstraint,
+  matchDriverAdapter,
 } from '../prisma/prisma.matchers.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
@@ -127,6 +128,13 @@ export class BudgetCategoriesController {
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
     args: { name: 'Unknown' },
     matchers: matchRecordsNotFound('BudgetCategory'),
+  })
+  @ApiPrismaErrorResponses({
+    status: HttpStatus.CONFLICT,
+    description: 'Budget category is in use',
+    errorCode: ErrorCode.BUDGET_CATEGORY_IN_USE,
+    args: { name: 'Engineering' },
+    matchers: matchDriverAdapter('23001', 'fk_transaction_budget'),
   })
   remove(@Param('name') name: string) {
     return this.budgetCategoriesService.remove(name);

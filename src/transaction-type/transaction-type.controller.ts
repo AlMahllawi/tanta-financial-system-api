@@ -27,6 +27,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import {
   matchUniqueConstraint,
   matchRecordsNotFound,
+  matchDriverAdapter,
 } from '../prisma/prisma.matchers.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { TransactionTypeQueryDto } from './dto/transaction-type-query.dto.js';
@@ -111,6 +112,13 @@ export class TransactionTypeController {
     errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
     args: { name: 'Unknown Type' },
     matchers: matchRecordsNotFound('TransactionType'),
+  })
+  @ApiPrismaErrorResponses({
+    status: HttpStatus.CONFLICT,
+    description: 'Transaction type is in use',
+    errorCode: ErrorCode.TRANSACTION_TYPE_IN_USE,
+    args: { name: 'Financial' },
+    matchers: matchDriverAdapter('23001', 'fk_transaction_type'),
   })
   @ApiErrorResponses({
     status: HttpStatus.FORBIDDEN,
