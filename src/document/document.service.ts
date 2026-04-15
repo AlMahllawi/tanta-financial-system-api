@@ -1,13 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { Document } from './entities/document.entity.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
 import { getDownloadURI } from '../common/utils/document.util.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 import {
   createPaginatedResult,
   createPaginator,
 } from '../common/utils/pagination.util.js';
 import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { UserRole } from '../../prisma/generated/enums.js';
 
 @Injectable()
 export class DocumentService {
@@ -73,8 +76,19 @@ export class DocumentService {
     });
   }
 
-  async remove(id: number) {
-    const document = await this.prisma.document.delete({
+  async remove(id: number, userId: number, role: UserRole) {
+    const document = await this.prisma.document.findUniqueOrThrow({
+      where: { id },
+    });
+
+    if (role !== UserRole.ADMIN && document.uploaderId !== userId)
+      throw new ApiException(
+        HttpStatus.FORBIDDEN,
+        ErrorCode.NOT_DOCUMENT_UPLOADER,
+        { documentId: id },
+      );
+
+    await this.prisma.document.delete({
       where: { id },
     });
 

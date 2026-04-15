@@ -4,6 +4,7 @@ import { DocumentController } from './document.controller.js';
 import { DocumentService } from './document.service.js';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { Document } from './entities/document.entity.js';
+import { UserRole } from '../../prisma/generated/enums.js';
 
 describe('DocumentController', () => {
   let controller: DocumentController;
@@ -74,8 +75,12 @@ describe('DocumentController', () => {
 
     it('should successfully remove a document', async () => {
       documentService.remove.mockResolvedValue(new Document());
-      await controller.remove(id);
-      expect(documentService['remove']).toHaveBeenCalledWith(id);
+      await controller.remove(id, 1, UserRole.USER);
+      expect(documentService['remove']).toHaveBeenCalledWith(
+        id,
+        1,
+        UserRole.USER,
+      );
     });
   });
 });

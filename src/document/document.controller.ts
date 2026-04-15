@@ -30,6 +30,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Document } from './entities/document.entity.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
@@ -41,6 +42,7 @@ import {
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
 import { PaginationDto } from '../common/dto/pagination.dto.js';
 import { Query } from '@nestjs/common';
+import { UserRole } from '../../prisma/generated/enums.js';
 
 @ApiTags('Documents')
 @ApiBearerAuth()
@@ -164,7 +166,17 @@ export class DocumentController {
       matchers: matchDriverAdapter('23001', 'fk_document_transaction'),
     },
   )
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.documentService.remove(id);
+  @ApiErrorResponses({
+    status: HttpStatus.FORBIDDEN,
+    description: 'You do not have permission to delete this document',
+    errorCode: ErrorCode.NOT_DOCUMENT_UPLOADER,
+    args: { documentId: 1 },
+  })
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser('id') userId: number,
+    @CurrentUser('role') role: UserRole,
+  ) {
+    return this.documentService.remove(id, userId, role);
   }
 }

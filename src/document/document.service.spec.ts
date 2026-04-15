@@ -3,6 +3,8 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DocumentService } from './document.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { UserRole } from '../../prisma/generated/enums.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 
 describe('DocumentService', () => {
   let service: DocumentService;
@@ -114,7 +116,8 @@ describe('DocumentService', () => {
   describe('remove', () => {
     const id = 1;
 
-    it('should successfully remove a document', async () => {
+    it('should successfully remove a document if user is uploader', async () => {
+      const authUser = { id: 1, role: UserRole.USER };
       const deletedDocument = {
         id,
         title: 'test.pdf',
@@ -123,13 +126,51 @@ describe('DocumentService', () => {
         uploadedAt: new Date(),
       };
 
+      prismaMock.document.findUniqueOrThrow.mockResolvedValue(deletedDocument);
       prismaMock.document.delete.mockResolvedValue(deletedDocument);
 
-      await service.remove(id);
+      await service.remove(id, authUser.id, authUser.role);
 
       expect(prismaMock.document['delete']).toHaveBeenCalledWith({
         where: { id },
       });
+    });
+
+    it('should successfully remove a document if user is admin', async () => {
+      const authUser = { id: 99, role: UserRole.ADMIN };
+      const deletedDocument = {
+        id,
+        title: 'test.pdf',
+        content: Buffer.from('test content'),
+        uploaderId: 1,
+        uploadedAt: new Date(),
+      };
+
+      prismaMock.document.findUniqueOrThrow.mockResolvedValue(deletedDocument);
+      prismaMock.document.delete.mockResolvedValue(deletedDocument);
+
+      await service.remove(id, authUser.id, authUser.role);
+
+      expect(prismaMock.document['delete']).toHaveBeenCalledWith({
+        where: { id },
+      });
+    });
+
+    it('should throw ApiException if user is not uploader and not admin', async () => {
+      const authUser = { id: 2, role: UserRole.USER };
+      const document = {
+        id,
+        title: 'test.pdf',
+        content: Buffer.from('test content'),
+        uploaderId: 1,
+        uploadedAt: new Date(),
+      };
+
+      prismaMock.document.findUniqueOrThrow.mockResolvedValue(document);
+
+      await expect(
+        service.remove(id, authUser.id, authUser.role),
+      ).rejects.toThrow(ApiException);
     });
   });
 });
