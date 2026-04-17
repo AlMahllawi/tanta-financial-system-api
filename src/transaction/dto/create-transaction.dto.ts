@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { TransactionPriority } from '../../../prisma/generated/enums.js';
 import { IsName } from '../../common/decorators/is-name.js';
 
@@ -25,5 +31,8 @@ export class CreateTransactionDto {
   priority: TransactionPriority = TransactionPriority.LOW;
 
   @ApiPropertyOptional({ type: [Number] })
+  @IsOptional()
+  @IsArray()
+  @IsNumber({}, { each: true })
   documentsIds?: number[];
 }

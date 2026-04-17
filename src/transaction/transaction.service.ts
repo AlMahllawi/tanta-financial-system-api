@@ -93,11 +93,10 @@ export class TransactionService {
         priority: createTransactionDto.priority ?? TransactionPriority.LOW,
         creatorId,
         documents: {
-          create:
-            createTransactionDto.documentsIds?.map((docId) => ({
-              documentId: docId,
-              attachedBy: creatorId,
-            })) || [],
+          create: (createTransactionDto.documentsIds || []).map((docId) => ({
+            documentId: docId,
+            attachedBy: creatorId,
+          })),
         },
       },
       include: TRANSACTION_INCLUDE,
