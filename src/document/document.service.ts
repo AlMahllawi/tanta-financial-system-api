@@ -59,6 +59,38 @@ export class DocumentService {
     );
   }
 
+  async isVisibleToUser(id: number, userId: number) {
+    const document = await this.prisma.document.findFirst({
+      where: {
+        id,
+        OR: [
+          { uploaderId: userId },
+          {
+            transactions: {
+              some: {
+                transaction: {
+                  OR: [
+                    { creatorId: userId },
+                    {
+                      forwards: {
+                        some: {
+                          OR: [{ senderId: userId }, { receiverId: userId }],
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        ],
+      },
+      select: { id: true },
+    });
+
+    return document !== null;
+  }
+
   async findOneWithContent(id: number) {
     return this.prisma.document.findUniqueOrThrow({
       where: { id },
