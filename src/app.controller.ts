@@ -17,10 +17,10 @@ export class AppController {
     type: SystemStatusResponse,
     description: 'System status retrieved successfully',
   })
-  getSystemInfo(): SystemStatusResponse {
+  async getSystemInfo(): Promise<SystemStatusResponse> {
     return {
       ...this.appService.getApiMetadata(),
-      health: this.appService.getHealthStatus(),
+      health: await this.appService.getHealthStatus(),
     };
   }
 }

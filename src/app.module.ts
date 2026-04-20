@@ -16,9 +16,11 @@ import { DURATION_REGEX } from './common/constants/regex.constants.js';
 import Joi from 'joi';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { PrismaInterceptor } from './prisma/interceptors/prisma.interceptor.js';
+import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
   imports: [
+    TerminusModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
