@@ -20,5 +20,5 @@ export class Document implements DocumentModel {
   uploaderId: number;
 
   @ApiProperty()
-  downloadURI: string; // TODO: replace with downloadURL for separated storage rather than database
+  downloadURI: string;
 }

@@ -80,7 +80,7 @@ model Transaction {
   latestForward TransactionLatestForward?
 }
 
-// TODO: This view is manually created in the migration since `view` is a prisma preview feature atm
+// FIXME: This view is manually created in the migration since `view` is a prisma preview feature atm
 view TransactionLatestForward {
   id            Int                      @unique
   status        TransactionForwardStatus
@@ -90,7 +90,7 @@ view TransactionLatestForward {
 
   transaction Transaction @relation(fields: [transactionId], references: [id])
 
-  // TODO: ORDER BY "transactionId", "id" DESC (not available in prisma atm)
+  // FIXME: ORDER BY "transactionId", "id" DESC (not available in prisma atm)
   @@unique([transactionId])
 }
 
@@ -159,7 +159,7 @@ model BudgetEntry {
   budget   BudgetCategory @relation(fields: [budgetName], references: [name], onDelete: Restrict, onUpdate: Cascade, map: "fk_budget_entry")
 }
 
-// TODO: This view is manually created in the migration since `view` is a prisma preview feature atm
+// FIXME: This view is manually created in the migration since `view` is a prisma preview feature atm
 view BudgetCategoryDetails {
   budgetName String @unique
   budget     Float

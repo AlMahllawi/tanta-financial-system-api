@@ -125,7 +125,3 @@ pnpm run test:cov
 When generating new resources using the Nest CLI (`nest generate resource`), the automatically created DTOs and entities will **not** appear in the Swagger documentation by default.  
 Add the `@ApiProperty()` decorator to each property in DTO and Entity classes.  
 `@nestjs/swagger` plugin in `nest-cli.json` is not used due to a compatibility issue with ESM.
-
-### TODO
-
-- TODOs comments

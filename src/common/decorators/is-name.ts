@@ -8,7 +8,6 @@ import {
 } from 'class-validator';
 import { NAME_REGEX } from '../constants/regex.constants.js';
 
-// TODO: Move to utils?
 const toLowerSpaceCase = (camelCase: string) =>
   camelCase.replace(/([A-Z])/g, ' $1').toLowerCase();
 
