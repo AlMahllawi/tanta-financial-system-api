@@ -64,6 +64,7 @@ export class TransactionController {
       description: 'Transaction type not found',
       errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
       args: { typeName: 'Unknown Type' },
+      argExtractor: (_params, body) => ({ typeName: body.typeName }),
       matchers: matchForeignConstraint('fk_transaction_type'),
     },
     {
@@ -71,6 +72,9 @@ export class TransactionController {
       description: 'One or more documents not found',
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
       args: { id: '1, 2' },
+      argExtractor: (_params, body) => ({
+        id: (body.documentIds as number[])?.join(', '),
+      }),
       matchers: matchForeignConstraint('fk_document_transaction'),
     },
   )
@@ -121,6 +125,7 @@ export class TransactionController {
     description: 'No transaction was found with such id',
     errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
     args: { id: 1 },
+    argExtractor: (params) => ({ id: params.id }),
     matchers: matchRecordsNotFound('Transaction'),
   })
   @ApiErrorResponses({
@@ -161,6 +166,7 @@ export class TransactionController {
       description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { id: 1 },
+      argExtractor: (params) => ({ id: params.id }),
       matchers: matchRecordsNotFound('Transaction'),
     },
     {
@@ -168,6 +174,7 @@ export class TransactionController {
       description: 'Transaction type not found',
       errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
       args: { typeName: 'Unknown Type' },
+      argExtractor: (_params, body) => ({ typeName: body.typeName }),
       matchers: matchForeignConstraint('fk_transaction_type'),
     },
     {
@@ -175,6 +182,7 @@ export class TransactionController {
       description: 'Budget category not found',
       errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
       args: { budgetName: 'Unknown Budget' },
+      argExtractor: (_params, body) => ({ budgetName: body.budgetName }),
       matchers: matchForeignConstraint('fk_transaction_budget'),
     },
   )
@@ -260,6 +268,7 @@ export class TransactionController {
       description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { id: 1 },
+      argExtractor: (params) => ({ id: params.id }),
       matchers: matchRecordsNotFound('Transaction'),
     },
     {
@@ -267,6 +276,7 @@ export class TransactionController {
       description: 'Cannot delete a transaction that has forwards',
       errorCode: ErrorCode.TRANSACTION_HAS_FORWARDS,
       args: { id: 1 },
+      argExtractor: (params) => ({ id: params.id }),
       matchers: matchDriverAdapter('23001', 'fk_transaction_forward'),
     },
   )
@@ -307,6 +317,7 @@ export class TransactionController {
       description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { id: 1 },
+      argExtractor: (params) => ({ id: params.id }),
       matchers: matchForeignConstraint('fk_transaction_document'),
     },
     {
@@ -314,6 +325,7 @@ export class TransactionController {
       description: 'No document was found with such id',
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
       args: { id: 1 },
+      argExtractor: (params) => ({ id: params.documentId }),
       matchers: matchForeignConstraint('fk_document_transaction'),
     },
   )
@@ -367,6 +379,7 @@ export class TransactionController {
     description: 'No transaction was found with such id',
     errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
     args: { id: 1 },
+    argExtractor: (params) => ({ id: params.id }),
     matchers: matchRecordsNotFound('Transaction'),
   })
   @ApiErrorResponses(

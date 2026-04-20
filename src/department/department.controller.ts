@@ -55,6 +55,9 @@ export class DepartmentController {
     description: 'A department already exists with the same name',
     errorCode: ErrorCode.DEPARTMENT_ALREADY_EXISTS,
     args: { name: 'Computer Science' },
+    argExtractor: (_params, body) => ({
+      name: body.name,
+    }),
     matchers: matchUniqueConstraint('name'),
   })
   create(@Body() createDepartmentDto: CreateDepartmentDto) {
@@ -79,6 +82,7 @@ export class DepartmentController {
     description: 'No department was found with such name',
     errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
     args: { name: 'Unknown Department' },
+    argExtractor: (params) => ({ name: params.name }),
     matchers: matchRecordsNotFound('Department'),
   })
   findOne(@Param('name') name: string) {
@@ -98,6 +102,9 @@ export class DepartmentController {
       description: 'A department already exists with the same name',
       errorCode: ErrorCode.DEPARTMENT_ALREADY_EXISTS,
       args: { name: 'Computer Science' },
+      argExtractor: (_params, body) => ({
+        name: body.name,
+      }),
       matchers: matchUniqueConstraint('name'),
     },
     {
@@ -106,6 +113,9 @@ export class DepartmentController {
         'The specified manager is already managing another department',
       errorCode: ErrorCode.MANAGER_ALREADY_MANAGES_DEPARTMENT,
       args: { managerId: 1 },
+      argExtractor: (_params, body) => ({
+        managerId: body.managerId,
+      }),
       matchers: [matchUniqueConstraint('"managerId"')],
     },
     {
@@ -113,6 +123,7 @@ export class DepartmentController {
       description: 'No department was found with such name',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
       args: { name: 'Unknown Department' },
+      argExtractor: (params) => ({ name: params.name }),
       matchers: matchRecordsNotFound('Department'),
     },
     {
@@ -120,6 +131,9 @@ export class DepartmentController {
       description: 'The specified manager user was not found',
       errorCode: ErrorCode.MANAGER_NOT_FOUND,
       args: { managerId: 1 },
+      argExtractor: (_params, body) => ({
+        managerId: body.managerId,
+      }),
       matchers: [matchDriverAdapter('23503', 'fk_department_manager')],
     },
   )
@@ -149,6 +163,7 @@ export class DepartmentController {
       description: 'No department was found with such name',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
       args: { name: 'Unknown Department' },
+      argExtractor: (params) => ({ name: params.name }),
       matchers: matchRecordsNotFound('Department'),
     },
     {
@@ -156,6 +171,7 @@ export class DepartmentController {
       description: 'Cannot delete department with existing members',
       errorCode: ErrorCode.DEPARTMENT_HAS_MEMBERS,
       args: { name: 'Computer Science' },
+      argExtractor: (params) => ({ name: params.name }),
       matchers: [matchDriverAdapter('23001', 'fk_user_department')],
     },
   )

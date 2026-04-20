@@ -64,6 +64,7 @@ export class BudgetCategoriesController {
     description: 'A budget category already exists with the same name',
     errorCode: ErrorCode.BUDGET_CATEGORY_ALREADY_EXISTS,
     args: { name: 'Engineering' },
+    argExtractor: (params) => ({ name: params.name }),
     matchers: matchUniqueConstraint('name'),
   })
   create(@Param('name') name: string) {
@@ -88,6 +89,7 @@ export class BudgetCategoriesController {
     description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
     args: { name: 'Unknown' },
+    argExtractor: (params) => ({ name: params.name }),
     matchers: matchRecordsNotFound('BudgetCategory'),
   })
   findOne(@Param('name') name: string) {
@@ -106,6 +108,7 @@ export class BudgetCategoriesController {
     description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
     args: { name: 'Unknown' },
+    argExtractor: (params) => ({ name: params.name }),
     matchers: matchRecordsNotFound('BudgetCategory'),
   })
   update(
@@ -127,6 +130,7 @@ export class BudgetCategoriesController {
     description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
     args: { name: 'Unknown' },
+    argExtractor: (params) => ({ name: params.name }),
     matchers: matchRecordsNotFound('BudgetCategory'),
   })
   @ApiPrismaErrorResponses({
@@ -134,6 +138,7 @@ export class BudgetCategoriesController {
     description: 'Budget category is in use',
     errorCode: ErrorCode.BUDGET_CATEGORY_IN_USE,
     args: { name: 'Engineering' },
+    argExtractor: (params) => ({ name: params.name }),
     matchers: matchDriverAdapter('23001', 'fk_transaction_budget'),
   })
   remove(@Param('name') name: string) {
@@ -148,6 +153,7 @@ export class BudgetCategoriesController {
     description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
     args: { name: 'Unknown' },
+    argExtractor: (params) => ({ name: params.name }),
     matchers: matchRecordsNotFound('BudgetCategory'),
   })
   findAllEntries(
@@ -169,6 +175,7 @@ export class BudgetCategoriesController {
     description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
     args: { budgetName: 'Unknown' },
+    argExtractor: (params) => ({ budgetName: params.name }),
     matchers: matchForeignConstraint('fk_budget_entry'),
   })
   addEntry(
@@ -191,6 +198,7 @@ export class BudgetCategoriesController {
     description: 'Budget entry not found',
     errorCode: ErrorCode.BUDGET_ENTRY_NOT_FOUND,
     args: { id: 1 },
+    argExtractor: (params) => ({ id: params.id }),
     matchers: matchRecordsNotFound('BudgetEntry'),
   })
   @ApiErrorResponses({

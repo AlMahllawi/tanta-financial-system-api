@@ -31,6 +31,22 @@ export type PrismaMatcher = (
 
 export interface PrismaErrorResponseDef extends ErrorResponseDef {
   matchers: PrismaMatcher | PrismaMatcher[];
+  /**
+   * Optional callback to extract arguments for the error message from the request
+   * and the prisma exception.
+   *
+   * @param params - The request parameters
+   * @param body - The request body
+   * @param query - The request query
+   * @param exception - The Prisma exception that occurred
+   * @returns A record of arguments for the error message
+   */
+  argExtractor: (
+    params: Record<string, unknown>,
+    body: Record<string, unknown>,
+    query: Record<string, unknown>,
+    exception: Prisma.PrismaClientKnownRequestError | DriverAdapterError,
+  ) => Record<string, unknown>;
 }
 
 export function ApiPrismaErrorResponses(...errors: PrismaErrorResponseDef[]) {

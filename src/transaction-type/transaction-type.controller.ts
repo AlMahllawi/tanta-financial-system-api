@@ -54,6 +54,7 @@ export class TransactionTypeController {
     description: 'A transaction type already exists with the same name',
     errorCode: ErrorCode.TRANSACTION_TYPE_ALREADY_EXISTS,
     args: { name: 'Financial' },
+    argExtractor: (_params, body) => ({ name: body.name }),
     matchers: matchUniqueConstraint('name'),
   })
   create(
@@ -94,6 +95,7 @@ export class TransactionTypeController {
     description: 'No transaction type was found with such name',
     errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
     args: { name: 'Unknown Type' },
+    argExtractor: (params) => ({ name: params.name }),
     matchers: matchRecordsNotFound('TransactionType'),
   })
   findOne(@Param('name') name: string) {
@@ -111,6 +113,7 @@ export class TransactionTypeController {
     description: 'No transaction type was found with such name',
     errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
     args: { name: 'Unknown Type' },
+    argExtractor: (params) => ({ name: params.name }),
     matchers: matchRecordsNotFound('TransactionType'),
   })
   @ApiPrismaErrorResponses({
@@ -118,6 +121,7 @@ export class TransactionTypeController {
     description: 'Transaction type is in use',
     errorCode: ErrorCode.TRANSACTION_TYPE_IN_USE,
     args: { name: 'Financial' },
+    argExtractor: (params) => ({ name: params.name }),
     matchers: matchDriverAdapter('23001', 'fk_transaction_type'),
   })
   @ApiErrorResponses({

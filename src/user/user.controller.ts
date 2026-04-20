@@ -62,6 +62,7 @@ export class UserController {
       description: 'A user already exists with the same name',
       errorCode: ErrorCode.USER_ALREADY_EXISTS,
       args: { name: 'John Doe' },
+      argExtractor: (_params, body) => ({ name: body.name }),
       matchers: matchUniqueConstraint('name'),
     },
     {
@@ -69,6 +70,9 @@ export class UserController {
       description: 'Department not found',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
       args: { departmentName: 'Finance' },
+      argExtractor: (_params, body) => ({
+        departmentName: body.departmentName,
+      }),
       matchers: matchForeignConstraint('fk_user_department'),
     },
   )
@@ -120,6 +124,7 @@ export class UserController {
     description: 'No user was found with such id',
     errorCode: ErrorCode.USER_NOT_FOUND,
     args: { id: 1 },
+    argExtractor: (params) => ({ id: params.id }),
     matchers: matchRecordsNotFound('User'),
   })
   findOne(@Param('id', ParseIntPipe) id: number) {
@@ -140,6 +145,7 @@ export class UserController {
       description: 'A user already exists with the same name',
       errorCode: ErrorCode.USER_ALREADY_EXISTS,
       args: { name: 'John Doe' },
+      argExtractor: (_params, body) => ({ name: body.name }),
       matchers: matchUniqueConstraint('name'),
     },
     {
@@ -147,6 +153,7 @@ export class UserController {
       description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
       args: { id: 1 },
+      argExtractor: (params) => ({ id: params.id }),
       matchers: matchRecordsNotFound('User'),
     },
     {
@@ -154,6 +161,9 @@ export class UserController {
       description: 'Department not found',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
       args: { departmentName: 'Finance' },
+      argExtractor: (_params, body) => ({
+        departmentName: body.departmentName,
+      }),
       matchers: matchForeignConstraint('fk_user_department'),
     },
   )
@@ -199,6 +209,7 @@ export class UserController {
       description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
       args: { id: 1 },
+      argExtractor: (params) => ({ id: params.id }),
       matchers: matchRecordsNotFound('User'),
     },
     {
@@ -206,6 +217,7 @@ export class UserController {
       description: 'Cannot delete a user who is engaged in the system',
       errorCode: ErrorCode.USER_ENGAGED_IN_SYSTEM,
       args: { id: 1 },
+      argExtractor: (params) => ({ id: params.id }),
       matchers: [
         matchForeignConstraint('fk_department_manager'),
         matchForeignConstraint('fk_document_uploader'),

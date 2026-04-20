@@ -71,15 +71,16 @@ export class PrismaInterceptor implements NestInterceptor {
         });
 
         if (errorDef) {
-          // Extract args from request if they exist
-          const args: Record<string, unknown> = {};
-          if (errorDef.args)
-            for (const key of Object.keys(errorDef.args))
-              args[key] =
-                (request.params as Record<string, unknown>)[key] ??
-                (request.body as Record<string, unknown>)[key] ??
-                (request.query as Record<string, unknown>)[key] ??
-                errorDef.args[key];
+          const args = errorDef.argExtractor
+            ? errorDef.argExtractor(
+                request.params as Record<string, unknown>,
+                request.body as Record<string, unknown>,
+                request.query as Record<string, unknown>,
+                exception as
+                  | Prisma.PrismaClientKnownRequestError
+                  | DriverAdapterError,
+              )
+            : (errorDef.args ?? {});
 
           return throwError(
             () =>

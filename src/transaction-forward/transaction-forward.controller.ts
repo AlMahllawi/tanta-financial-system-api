@@ -56,6 +56,7 @@ export class TransactionForwardController {
       description: 'Transaction not found',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
       args: { transactionId: 1 },
+      argExtractor: (params) => ({ transactionId: params.transactionId }),
       matchers: matchForeignConstraint('fk_transaction_forward'),
     },
     {
@@ -63,6 +64,7 @@ export class TransactionForwardController {
       description: 'Sender not found',
       errorCode: ErrorCode.TRANSACTION_FORWARD_SENDER_NOT_FOUND,
       args: { senderId: 1 },
+      argExtractor: (_params, body) => ({ senderId: body.senderId }),
       matchers: matchForeignConstraint('fk_transaction_forward_sender'),
     },
     {
@@ -70,6 +72,7 @@ export class TransactionForwardController {
       description: 'Receiver not found',
       errorCode: ErrorCode.TRANSACTION_FORWARD_RECEIVER_NOT_FOUND,
       args: { receiverId: 1 },
+      argExtractor: (_params, body) => ({ receiverId: body.receiverId }),
       matchers: matchForeignConstraint('fk_transaction_forward_receiver'),
     },
   )
@@ -138,6 +141,10 @@ export class TransactionForwardController {
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
     args: { id: 1, transactionId: 1 },
+    argExtractor: (params) => ({
+      id: params.id,
+      transactionId: params.transactionId,
+    }),
     matchers: matchRecordsNotFound('TransactionForward'),
   })
   findOne(
@@ -161,6 +168,10 @@ export class TransactionForwardController {
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
     args: { id: 1, transactionId: 1 },
+    argExtractor: (params) => ({
+      id: params.id,
+      transactionId: params.transactionId,
+    }),
     matchers: matchRecordsNotFound('TransactionForward'),
   })
   @ApiErrorResponses(
@@ -209,6 +220,10 @@ export class TransactionForwardController {
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
     args: { id: 1, transactionId: 1 },
+    argExtractor: (params) => ({
+      id: params.id,
+      transactionId: params.transactionId,
+    }),
     matchers: matchRecordsNotFound('TransactionForward'),
   })
   @ApiErrorResponses(
@@ -262,6 +277,10 @@ export class TransactionForwardController {
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
     args: { id: 1, transactionId: 1 },
+    argExtractor: (params) => ({
+      id: params.id,
+      transactionId: params.transactionId,
+    }),
     matchers: matchRecordsNotFound('TransactionForward'),
   })
   @ApiErrorResponses(
@@ -315,6 +334,10 @@ export class TransactionForwardController {
     description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
     args: { id: 1, transactionId: 1 },
+    argExtractor: (params) => ({
+      id: params.id,
+      transactionId: params.transactionId,
+    }),
     matchers: matchRecordsNotFound('TransactionForward'),
   })
   @ApiErrorResponses(

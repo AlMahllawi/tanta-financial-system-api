@@ -73,6 +73,7 @@ export class DocumentController {
     description: 'Uploader not found',
     errorCode: ErrorCode.DOCUMENT_UPLOADER_NOT_FOUND,
     args: { uploaderId: 1 },
+    argExtractor: () => ({ uploaderId: 1 }),
     matchers: matchForeignConstraint('fk_document_uploader'),
   })
   @UseInterceptors(FileInterceptor('file'))
@@ -113,6 +114,7 @@ export class DocumentController {
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
     args: { id: 1 },
+    argExtractor: (params) => ({ id: params.id }),
     matchers: matchRecordsNotFound('Document'),
   })
   @ApiErrorResponses({
@@ -149,6 +151,7 @@ export class DocumentController {
     description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
     args: { id: 1 },
+    argExtractor: (params) => ({ id: params.id }),
     matchers: matchRecordsNotFound('Document'),
   })
   @ApiErrorResponses({
@@ -195,6 +198,7 @@ export class DocumentController {
       description: 'No document was found with such id',
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
       args: { id: 1 },
+      argExtractor: (params) => ({ id: params.id }),
       matchers: matchRecordsNotFound('Document'),
     },
     {
@@ -202,6 +206,7 @@ export class DocumentController {
       description: 'This document is already used in a transaction',
       errorCode: ErrorCode.DOCUMENT_ALREADY_USED,
       args: { id: 1 },
+      argExtractor: (params) => ({ id: params.id }),
       matchers: matchDriverAdapter('23001', 'fk_document_transaction'),
     },
   )
