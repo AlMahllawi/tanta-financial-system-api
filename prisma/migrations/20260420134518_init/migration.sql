@@ -110,7 +110,7 @@ CREATE TABLE "BudgetEntry" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Department_managerId_key" ON "Department"("managerId");
+CREATE UNIQUE INDEX "uq_department_manager" ON "Department"("managerId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "uq_user_name" ON "User"("name");

@@ -208,8 +208,22 @@ export class UserController {
       args: { id: 1 },
       matchers: [
         matchForeignConstraint('fk_department_manager'),
+        matchForeignConstraint('fk_document_uploader'),
+        matchForeignConstraint('fk_transaction_creator'),
+        matchForeignConstraint('fk_transaction_document_attacher'),
+        matchForeignConstraint('fk_transaction_type_creator'),
+        matchForeignConstraint('fk_transaction_forward_sender'),
+        matchForeignConstraint('fk_transaction_forward_receiver'),
+        matchForeignConstraint('fk_budget_entry_inputter'),
+        matchDriverAdapter('23001', 'fk_department_manager'),
         matchDriverAdapter('23001', 'fk_document_uploader'),
-      ], // TODO: handle other cases
+        matchDriverAdapter('23001', 'fk_transaction_creator'),
+        matchDriverAdapter('23001', 'fk_transaction_document_attacher'),
+        matchDriverAdapter('23001', 'fk_transaction_type_creator'),
+        matchDriverAdapter('23001', 'fk_transaction_forward_sender'),
+        matchDriverAdapter('23001', 'fk_transaction_forward_receiver'),
+        matchDriverAdapter('23001', 'fk_budget_entry_inputter'),
+      ],
     },
   )
   remove(@Param('id', ParseIntPipe) id: number) {

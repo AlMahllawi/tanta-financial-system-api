@@ -10,7 +10,7 @@ datasource db {
 
 model Department {
   name      String @id
-  managerId Int?   @unique
+  managerId Int?   @unique(map: "uq_department_manager")
 
   manager User?  @relation("Manages", fields: [managerId], references: [id], onDelete: Restrict, onUpdate: Cascade, map: "fk_department_manager")
   members User[] @relation("BelongsTo")
