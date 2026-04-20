@@ -30,13 +30,13 @@ interface EnvVars {
 }
 
 const envSchema = Joi.object({
-  DEFAULT_ADMIN_NAME: Joi.string().required(),
+  DEFAULT_ADMIN_NAME: Joi.string().min(5).required(),
   DEFAULT_ADMIN_PASSWORD: Joi.string().required(),
-  DEFAULT_ADMIN_DEPARTMENT: Joi.string().required(),
+  DEFAULT_ADMIN_DEPARTMENT: Joi.string().min(5).required(),
 
-  DEFAULT_ACCOUNTANT_NAME: Joi.string().required(),
+  DEFAULT_ACCOUNTANT_NAME: Joi.string().min(5).required(),
   DEFAULT_ACCOUNTANT_PASSWORD: Joi.string().required(),
-  DEFAULT_ACCOUNTANT_DEPARTMENT: Joi.string().required(),
+  DEFAULT_ACCOUNTANT_DEPARTMENT: Joi.string().min(5).required(),
 
   DATABASE_URL: Joi.string().required(),
   NODE_ENV: Joi.string()

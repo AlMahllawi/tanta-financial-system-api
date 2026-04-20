@@ -12,8 +12,11 @@ const _userFactory = (
   hashedPassword: string,
   overrides: { name?: string; role?: UserRole } = {},
 ) => {
+  let name = overrides.name ?? faker.person.fullName();
+  while (name.length < 5) name += ` ${faker.person.firstName()}`;
+
   return {
-    name: overrides.name ?? faker.person.fullName(),
+    name,
     hashedPassword,
     role: overrides.role ?? UserRole.USER,
     departmentName,
@@ -23,13 +26,12 @@ const _userFactory = (
 export const userFactory = async (
   departmentName: string,
   overrides: { name?: string; role?: UserRole; password?: string } = {},
-) => {
-  return _userFactory(
+) =>
+  _userFactory(
     departmentName,
     await hash(overrides.password ?? DEFAULT_USER_PASSWORD),
     overrides,
   );
-};
 
 export const manyUsersFactory = async (
   count: number,

@@ -6,7 +6,9 @@ export const budgetCategoryFactory = (
     name?: string;
   } = {},
 ) => {
-  const name = overrides.name ?? faker.commerce.department();
+  let name = overrides.name ?? faker.commerce.department();
+  while (name.length < 5) name += ` ${faker.commerce.department()}`;
+
   return {
     name,
   };

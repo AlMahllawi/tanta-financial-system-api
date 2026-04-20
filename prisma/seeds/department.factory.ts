@@ -6,12 +6,13 @@ export const departmentFactory = (
     name?: string;
   } = {},
 ) => {
-  const name = overrides.name ?? faker.commerce.department();
+  let name = overrides.name ?? faker.commerce.department();
+  while (name.length < 5) name += ` ${faker.commerce.department()}`;
+
   return {
     name,
   };
 };
 
-export const manyDepartmentsFactory = (count: number) => {
-  return uniqueFactory(count, departmentFactory, 'name');
-};
+export const manyDepartmentsFactory = (count: number) =>
+  uniqueFactory(count, departmentFactory, 'name');
