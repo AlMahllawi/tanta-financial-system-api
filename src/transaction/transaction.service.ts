@@ -41,6 +41,21 @@ type TransactionWithDocuments = Prisma.TransactionGetPayload<{
 export class TransactionService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private getParticipantWhere(userId: number): Prisma.TransactionWhereInput {
+    return {
+      OR: [
+        { creatorId: userId },
+        {
+          forwards: {
+            some: {
+              OR: [{ senderId: userId }, { receiverId: userId }],
+            },
+          },
+        },
+      ],
+    };
+  }
+
   private getInboxWhere(userId: number): Prisma.TransactionWhereInput {
     return {
       OR: [
@@ -75,6 +90,19 @@ export class TransactionService {
         {
           latestForward: null,
           creatorId: userId,
+        },
+      ],
+    };
+  }
+
+  private getArchiveWhere(userId: number): Prisma.TransactionWhereInput {
+    return {
+      AND: [
+        this.getParticipantWhere(userId),
+        {
+          NOT: {
+            OR: [this.getInboxWhere(userId), this.getOutgoingWhere(userId)],
+          },
         },
       ],
     };
@@ -127,15 +155,8 @@ export class TransactionService {
       if (query === TransactionQuery.INBOX) where = this.getInboxWhere(userId);
       else if (query === TransactionQuery.OUTGOING)
         where = this.getOutgoingWhere(userId);
-      else
-        where.NOT = {
-          OR: [this.getInboxWhere(userId), this.getOutgoingWhere(userId)],
-        };
-    else if (!query)
-      // Default behavior if query is absent: 'archive'
-      where.NOT = {
-        OR: [this.getInboxWhere(userId), this.getOutgoingWhere(userId)],
-      };
+      else where = this.getArchiveWhere(userId);
+    else where = this.getArchiveWhere(userId);
 
     if (title) where.title = { contains: title, mode: 'insensitive' };
     if (description)
@@ -239,16 +260,7 @@ export class TransactionService {
     const transaction = await this.prisma.transaction.findFirst({
       where: {
         id,
-        OR: [
-          { creatorId: userId },
-          {
-            forwards: {
-              some: {
-                OR: [{ senderId: userId }, { receiverId: userId }],
-              },
-            },
-          },
-        ],
+        ...this.getParticipantWhere(userId),
       },
       select: { id: true },
     });
