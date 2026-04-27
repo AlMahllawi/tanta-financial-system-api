@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto.js';
-import { UpdateUserDto } from './dto/update-user.dto.js';
-import { User } from './entities/user.entity.js';
-import { UserRole } from '../../prisma/generated/enums.js';
-import { PrismaService } from '../prisma/prisma.service.js';
-import { plainToInstance } from 'class-transformer';
 import { hash } from 'argon2';
+import { plainToInstance } from 'class-transformer';
+
+import { Prisma } from '../../prisma/generated/client.js';
+import { UserRole } from '../../prisma/generated/enums.js';
 import {
   createPaginatedResult,
   createPaginator,
 } from '../common/utils/pagination.util.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateUserDto } from './dto/create-user.dto.js';
+import { UpdateUserDto } from './dto/update-user.dto.js';
 import { UserQueryDto } from './dto/user-query.dto.js';
-import { Prisma } from '../../prisma/generated/client.js';
+import { User } from './entities/user.entity.js';
 
 @Injectable()
 export class UserService {

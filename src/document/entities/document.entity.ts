@@ -1,5 +1,6 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+
 import { DocumentModel } from '../../../prisma/generated/models.js';
 
 export class Document implements DocumentModel {

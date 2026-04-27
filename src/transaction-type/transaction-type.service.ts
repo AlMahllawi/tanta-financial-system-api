@@ -1,17 +1,18 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
-import { TransactionType } from './entities/transaction-type.entity.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
+
+import { Prisma } from '../../prisma/generated/client.js';
+import { UserRole } from '../../prisma/generated/enums.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 import {
   createPaginatedResult,
   createPaginator,
 } from '../common/utils/pagination.util.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
 import { TransactionTypeQueryDto } from './dto/transaction-type-query.dto.js';
-import { Prisma } from '../../prisma/generated/client.js';
-import { UserRole } from '../../prisma/generated/enums.js';
-import { ApiException } from '../common/exceptions/api.exception.js';
-import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { TransactionType } from './entities/transaction-type.entity.js';
 
 @Injectable()
 export class TransactionTypeService {

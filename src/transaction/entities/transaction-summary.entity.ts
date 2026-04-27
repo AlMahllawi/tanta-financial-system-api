@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import {
-  TransactionPriority,
   TransactionForwardStatus,
+  TransactionPriority,
 } from '../../../prisma/generated/enums.js';
 
 export class TransactionSummary {

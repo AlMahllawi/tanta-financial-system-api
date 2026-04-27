@@ -1,6 +1,7 @@
 import { ApiExtraModels, ApiResponse, getSchemaPath } from '@nestjs/swagger';
-import { HttpExceptionResponse } from '../responses/http-exception.response.js';
+
 import { ErrorResponseDef } from '../interfaces/error-response.interface.js';
+import { HttpExceptionResponse } from '../responses/http-exception.response.js';
 
 export const API_ERROR_METADATA_KEY = 'api_error_metadata';
 

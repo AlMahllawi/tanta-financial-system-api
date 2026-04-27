@@ -1,14 +1,15 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TransactionController } from './transaction.controller.js';
-import { TransactionService } from './transaction.service.js';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
+import { TransactionPriority, UserRole } from '../../prisma/generated/enums.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { Transaction } from './entities/transaction.entity.js';
-import { TransactionPriority, UserRole } from '../../prisma/generated/enums.js';
-import { TransactionQuery } from './enums/transaction-query.enum.js';
 import { TransactionSummary } from './entities/transaction-summary.entity.js';
+import { TransactionQuery } from './enums/transaction-query.enum.js';
+import { TransactionController } from './transaction.controller.js';
+import { TransactionService } from './transaction.service.js';
 
 describe('TransactionController', () => {
   let controller: TransactionController;

@@ -1,10 +1,11 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
+import { UserRole } from '../../prisma/generated/enums.js';
 import { DocumentController } from './document.controller.js';
 import { DocumentService } from './document.service.js';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { Document } from './entities/document.entity.js';
-import { UserRole } from '../../prisma/generated/enums.js';
 
 describe('DocumentController', () => {
   let controller: DocumentController;

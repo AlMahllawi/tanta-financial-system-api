@@ -1,18 +1,15 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
   HttpStatus,
-  UseGuards,
+  Param,
+  Patch,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { DepartmentService } from './department.service.js';
-import { CreateDepartmentDto } from './dto/create-department.dto.js';
-import { UpdateDepartmentDto } from './dto/update-department.dto.js';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -20,21 +17,25 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Department } from './entities/department.entity.js';
-import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
-import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
-import { DepartmentQueryDto } from './dto/department-query.dto.js';
-import {
-  matchUniqueConstraint,
-  matchRecordsNotFound,
-  matchDriverAdapter,
-} from '../prisma/prisma.matchers.js';
-import { RolesGuard } from '../auth/guards/roles.guard.js';
-import { Roles } from '../auth/decorators/roles.decorator.js';
+
 import { UserRole } from '../../prisma/generated/enums.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
+import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
+import {
+  matchDriverAdapter,
+  matchRecordsNotFound,
+  matchUniqueConstraint,
+} from '../prisma/prisma.matchers.js';
+import { DepartmentService } from './department.service.js';
+import { CreateDepartmentDto } from './dto/create-department.dto.js';
+import { DepartmentQueryDto } from './dto/department-query.dto.js';
+import { UpdateDepartmentDto } from './dto/update-department.dto.js';
+import { Department } from './entities/department.entity.js';
 
 @ApiTags('Departments')
 @ApiBearerAuth()

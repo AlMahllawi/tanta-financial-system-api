@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+
+import { TransactionForwardStatus } from '../../../prisma/generated/enums.js';
 import { PaginatedDto } from '../../common/dto/pagination.dto.js';
 import { TransactionSummary } from '../entities/transaction-summary.entity.js';
-import { TransactionForwardStatus } from '../../../prisma/generated/enums.js';
 
 export class PaginatedTransactionSummaryResponseDto extends PaginatedDto<TransactionSummary> {
   @ApiProperty({ type: [TransactionSummary] })

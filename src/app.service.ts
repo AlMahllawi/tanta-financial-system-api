@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { HealthCheckService, PrismaHealthIndicator } from '@nestjs/terminus';
+
 import packageJson from '../package.json' with { type: 'json' };
+import { SWAGGER_PATH } from './common/constants/app.constants.js';
 import { ApiMetadata, HealthStatus } from './common/dto/app.dto.js';
 import { HealthState } from './common/enums/app.enum.js';
-import { SWAGGER_PATH } from './common/constants/app.constants.js';
-import { HealthCheckService, PrismaHealthIndicator } from '@nestjs/terminus';
 import { PrismaService } from './prisma/prisma.service.js';
 
 @Injectable()

@@ -1,15 +1,15 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
   HttpStatus,
-  UseGuards,
+  Param,
   ParseIntPipe,
+  Patch,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -18,27 +18,28 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserService } from './user.service.js';
-import { CreateUserDto } from './dto/create-user.dto.js';
-import { UpdateUserDto } from './dto/update-user.dto.js';
-import { User } from './entities/user.entity.js';
-import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
-import { ApiException } from '../common/exceptions/api.exception.js';
-import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import { RolesGuard } from '../auth/guards/roles.guard.js';
-import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
+
 import { UserRole } from '../../prisma/generated/enums.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import { Roles, RolesException } from '../auth/decorators/roles.decorator.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
 import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
-import { UserQueryDto } from './dto/user-query.dto.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
+import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import {
-  matchUniqueConstraint,
+  matchDriverAdapter,
   matchForeignConstraint,
   matchRecordsNotFound,
-  matchDriverAdapter,
+  matchUniqueConstraint,
 } from '../prisma/prisma.matchers.js';
+import { CreateUserDto } from './dto/create-user.dto.js';
+import { UpdateUserDto } from './dto/update-user.dto.js';
+import { UserQueryDto } from './dto/user-query.dto.js';
+import { User } from './entities/user.entity.js';
+import { UserService } from './user.service.js';
 
 const ALLOWED_USER_UPDATE_FIELDS = ['name', 'password'];
 

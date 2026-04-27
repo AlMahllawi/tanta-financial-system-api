@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsDate,
@@ -7,12 +8,12 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
-import { PaginationDto } from '../../common/dto/pagination.dto.js';
+
 import {
-  TransactionPriority,
   TransactionForwardStatus,
+  TransactionPriority,
 } from '../../../prisma/generated/enums.js';
+import { PaginationDto } from '../../common/dto/pagination.dto.js';
 import { TransactionQuery } from '../enums/transaction-query.enum.js';
 
 export class TransactionQueryDto extends PaginationDto {

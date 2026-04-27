@@ -1,12 +1,13 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from './user.controller.js';
-import { UserService } from './user.service.js';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
+import { UserRole } from '../../prisma/generated/enums.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
-import { UserRole } from '../../prisma/generated/enums.js';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { User } from './entities/user.entity.js';
+import { UserController } from './user.controller.js';
+import { UserService } from './user.service.js';
 
 describe('UserController', () => {
   let controller: UserController;

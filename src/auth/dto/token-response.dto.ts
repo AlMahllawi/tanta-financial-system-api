@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { User } from '../../user/entities/user.entity.js';
 
 export class TokenResponseDto {

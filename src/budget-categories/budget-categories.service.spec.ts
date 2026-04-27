@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BudgetCategoriesService } from './budget-categories.service.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
+import { Prisma } from '../../prisma/generated/client.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { BudgetCategoriesService } from './budget-categories.service.js';
+import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
+import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
 import { CreateBudgetEntryDto } from './dto/create-budget-entry.dto.js';
 import { UpdateBudgetCategoryDto } from './dto/update-budget-category.dto.js';
 import {
   BudgetCategory,
   BudgetEntry,
 } from './entities/budget-category.entity.js';
-import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
-import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
-import { Prisma } from '../../prisma/generated/client.js';
 
 describe('BudgetCategoriesService', () => {
   let service: BudgetCategoriesService;

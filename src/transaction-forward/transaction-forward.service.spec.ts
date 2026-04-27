@@ -1,14 +1,15 @@
 import { jest } from '@jest/globals';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TransactionForwardService } from './transaction-forward.service.js';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
 import {
   TransactionForwardStatus,
   UserRole,
 } from '../../prisma/generated/enums.js';
-import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
+import { TransactionForwardService } from './transaction-forward.service.js';
 
 describe('TransactionForwardService', () => {
   let service: TransactionForwardService;

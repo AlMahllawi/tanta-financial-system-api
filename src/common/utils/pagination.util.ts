@@ -1,4 +1,4 @@
-import { PaginationDto, PaginatedDto } from '../dto/pagination.dto.js';
+import { PaginatedDto, PaginationDto } from '../dto/pagination.dto.js';
 
 export const createPaginator = (
   paginationDto: PaginationDto,

@@ -1,12 +1,13 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
 import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RefreshTokenDto } from './dto/refresh-token.dto.js';
 import { TokenResponseDto } from './dto/token-response.dto.js';
-import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
-import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
-import { ApiException } from '../common/exceptions/api.exception.js';
 
 @ApiTags('Authentication')
 @Controller('auth')

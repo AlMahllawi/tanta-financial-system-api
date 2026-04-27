@@ -1,8 +1,9 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { PaginationDto } from '../../common/dto/pagination.dto.js';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+
 import { UserRole } from '../../../prisma/generated/enums.js';
+import { PaginationDto } from '../../common/dto/pagination.dto.js';
 
 export class UserQueryDto extends PaginationDto {
   @ApiPropertyOptional({ description: 'Filter by user name' })

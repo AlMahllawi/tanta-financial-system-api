@@ -1,5 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { STATUS_CODES } from 'node:http';
+
+import { ApiProperty } from '@nestjs/swagger';
+
 import { ErrorCode } from '../enums/error-codes.enum.js';
 
 export class I18nMessage {

@@ -1,12 +1,13 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
 import { DepartmentController } from './department.controller.js';
 import { DepartmentService } from './department.service.js';
 import { CreateDepartmentDto } from './dto/create-department.dto.js';
-import { UpdateDepartmentDto } from './dto/update-department.dto.js';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { Department } from './entities/department.entity.js';
 import { DepartmentQueryDto } from './dto/department-query.dto.js';
+import { UpdateDepartmentDto } from './dto/update-department.dto.js';
+import { Department } from './entities/department.entity.js';
 
 describe('DepartmentController', () => {
   let controller: DepartmentController;

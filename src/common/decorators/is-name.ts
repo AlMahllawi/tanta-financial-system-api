@@ -1,11 +1,12 @@
 import { applyDecorators } from '@nestjs/common';
 import {
   IsString,
-  MinLength,
-  MaxLength,
   Matches,
+  MaxLength,
+  MinLength,
   ValidationArguments,
 } from 'class-validator';
+
 import { NAME_REGEX } from '../constants/regex.constants.js';
 
 const toLowerSpaceCase = (camelCase: string) =>

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 import { HealthState } from '../enums/app.enum.js';
 
 export class HealthStatus {

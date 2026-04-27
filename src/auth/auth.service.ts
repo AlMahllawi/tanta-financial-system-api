@@ -1,11 +1,12 @@
 import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from '../user/user.service.js';
-import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { verify } from 'argon2';
-import { JwtPayload } from './interfaces/auth.interface.js';
+
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
+import { UserService } from '../user/user.service.js';
+import { JwtPayload } from './interfaces/auth.interface.js';
 
 @Injectable()
 export class AuthService {

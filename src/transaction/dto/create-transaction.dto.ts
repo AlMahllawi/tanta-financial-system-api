@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+
 import { TransactionPriority } from '../../../prisma/generated/enums.js';
 import { IsName } from '../../common/decorators/is-name.js';
 

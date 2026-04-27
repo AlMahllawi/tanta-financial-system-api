@@ -1,11 +1,12 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PassportStrategy } from '@nestjs/passport';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtPayload } from './interfaces/auth.interface.js';
-import { UserService } from '../user/user.service.js';
-import { ApiException } from '../common/exceptions/api.exception.js';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
+import { UserService } from '../user/user.service.js';
+import { JwtPayload } from './interfaces/auth.interface.js';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

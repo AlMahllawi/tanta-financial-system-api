@@ -1,22 +1,23 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TerminusModule } from '@nestjs/terminus';
+import Joi from 'joi';
+
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { BudgetCategoriesModule } from './budget-categories/budget-categories.module.js';
+import { DURATION_REGEX } from './common/constants/regex.constants.js';
+import { LookupModule } from './common/lookup/lookup.module.js';
 import { DepartmentModule } from './department/department.module.js';
-import { UserModule } from './user/user.module.js';
 import { DocumentModule } from './document/document.module.js';
-import { TransactionTypeModule } from './transaction-type/transaction-type.module.js';
+import { PrismaInterceptor } from './prisma/interceptors/prisma.interceptor.js';
+import { PrismaModule } from './prisma/prisma.module.js';
 import { TransactionModule } from './transaction/transaction.module.js';
 import { TransactionForwardModule } from './transaction-forward/transaction-forward.module.js';
-import { BudgetCategoriesModule } from './budget-categories/budget-categories.module.js';
-import { LookupModule } from './common/lookup/lookup.module.js';
-import { DURATION_REGEX } from './common/constants/regex.constants.js';
-import Joi from 'joi';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { PrismaInterceptor } from './prisma/interceptors/prisma.interceptor.js';
-import { TerminusModule } from '@nestjs/terminus';
+import { TransactionTypeModule } from './transaction-type/transaction-type.module.js';
+import { UserModule } from './user/user.module.js';
 
 @Module({
   imports: [

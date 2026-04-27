@@ -1,47 +1,48 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  ParseIntPipe,
+  Get,
   HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { BudgetCategoriesService } from './budget-categories.service.js';
-import { UpdateBudgetCategoryDto } from './dto/update-budget-category.dto.js';
-import { CreateBudgetEntryDto } from './dto/create-budget-entry.dto.js';
-import { RolesGuard } from '../auth/guards/roles.guard.js';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
-import { Roles } from '../auth/decorators/roles.decorator.js';
-import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
-import { UserRole } from '../../prisma/generated/enums.js';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
-  ApiOkResponse,
-  ApiCreatedResponse,
 } from '@nestjs/swagger';
+
+import { UserRole } from '../../prisma/generated/enums.js';
+import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import { Roles } from '../auth/decorators/roles.decorator.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../auth/guards/roles.guard.js';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
+import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
+import {
+  matchDriverAdapter,
+  matchForeignConstraint,
+  matchRecordsNotFound,
+  matchUniqueConstraint,
+} from '../prisma/prisma.matchers.js';
+import { BudgetCategoriesService } from './budget-categories.service.js';
+import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
+import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
+import { CreateBudgetEntryDto } from './dto/create-budget-entry.dto.js';
+import { UpdateBudgetCategoryDto } from './dto/update-budget-category.dto.js';
 import {
   BudgetCategory,
   BudgetEntry,
 } from './entities/budget-category.entity.js';
-import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
-import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
-import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import {
-  matchRecordsNotFound,
-  matchForeignConstraint,
-  matchUniqueConstraint,
-  matchDriverAdapter,
-} from '../prisma/prisma.matchers.js';
-import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
-import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
-import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
 
 @ApiTags('Budget Categories')
 @ApiBearerAuth()

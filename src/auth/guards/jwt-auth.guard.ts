@@ -1,7 +1,8 @@
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiException } from '../../common/exceptions/api.exception.js';
+
 import { ErrorCode } from '../../common/enums/error-codes.enum.js';
+import { ApiException } from '../../common/exceptions/api.exception.js';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {

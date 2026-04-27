@@ -1,23 +1,22 @@
 import {
   Controller,
-  Get,
-  Post,
-  Param,
   Delete,
-  UploadedFile,
-  ParseFilePipe,
-  MaxFileSizeValidator,
   FileTypeValidator,
-  UseInterceptors,
-  StreamableFile,
-  Res,
+  Get,
   HttpStatus,
-  UseGuards,
+  MaxFileSizeValidator,
+  Param,
+  ParseFilePipe,
   ParseIntPipe,
+  Post,
+  Res,
+  StreamableFile,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import type { Response } from 'express';
-import { contentType } from 'mime-types';
-import { DocumentService } from './document.service.js';
+import { Query } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -27,23 +26,25 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiException } from '../common/exceptions/api.exception.js';
-import { Document } from './entities/document.entity.js';
-import { ErrorCode } from '../common/enums/error-codes.enum.js';
-import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
-import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import type { Response } from 'express';
+import { contentType } from 'mime-types';
+
+import { UserRole } from '../../prisma/generated/enums.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { ApiErrorResponses } from '../common/decorators/api-error.decorator.js';
+import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
+import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
+import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import {
   matchDriverAdapter,
   matchForeignConstraint,
   matchRecordsNotFound,
 } from '../prisma/prisma.matchers.js';
-import { ApiPaginatedResponse } from '../common/decorators/pagination.decorator.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
-import { Query } from '@nestjs/common';
-import { UserRole } from '../../prisma/generated/enums.js';
+import { DocumentService } from './document.service.js';
+import { Document } from './entities/document.entity.js';
 
 @ApiTags('Documents')
 @ApiBearerAuth()

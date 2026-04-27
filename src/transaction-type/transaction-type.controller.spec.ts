@@ -1,11 +1,12 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
+import { UserRole } from '../../prisma/generated/enums.js';
+import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
+import { TransactionType } from './entities/transaction-type.entity.js';
 import { TransactionTypeController } from './transaction-type.controller.js';
 import { TransactionTypeService } from './transaction-type.service.js';
-import { CreateTransactionTypeDto } from './dto/create-transaction-type.dto.js';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { TransactionType } from './entities/transaction-type.entity.js';
-import { UserRole } from '../../prisma/generated/enums.js';
 
 describe('TransactionTypeController', () => {
   let controller: TransactionTypeController;

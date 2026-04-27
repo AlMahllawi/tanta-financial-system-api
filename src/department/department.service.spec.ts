@@ -1,12 +1,13 @@
 import { jest } from '@jest/globals';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DepartmentService } from './department.service.js';
-import { PrismaService } from '../prisma/prisma.service.js';
-import { CreateDepartmentDto } from './dto/create-department.dto.js';
-import { UpdateDepartmentDto } from './dto/update-department.dto.js';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
 import { ApiException } from '../common/exceptions/api.exception.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { DepartmentService } from './department.service.js';
+import { CreateDepartmentDto } from './dto/create-department.dto.js';
 import { DepartmentQueryDto } from './dto/department-query.dto.js';
+import { UpdateDepartmentDto } from './dto/update-department.dto.js';
 
 describe('DepartmentService', () => {
   let service: DepartmentService;

@@ -1,14 +1,15 @@
 import {
   applyDecorators,
+  ExecutionContext,
   HttpStatus,
   SetMetadata,
-  ExecutionContext,
 } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { Request } from 'express';
+
 import { UserRole } from '../../../prisma/generated/enums.js';
 import { ApiErrorResponses } from '../../common/decorators/api-error.decorator.js';
 import { ErrorCode } from '../../common/enums/error-codes.enum.js';
-import { ModuleRef } from '@nestjs/core';
-import { Request } from 'express';
 import { User } from '../../user/entities/user.entity.js';
 
 export const ROLES_KEY = 'roles';

@@ -1,7 +1,8 @@
-import { UserModel } from '../../../prisma/generated/models.js';
-import { UserRole } from '../../../prisma/generated/enums.js';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+
+import { UserRole } from '../../../prisma/generated/enums.js';
+import { UserModel } from '../../../prisma/generated/models.js';
 
 export class User implements UserModel {
   @ApiProperty()

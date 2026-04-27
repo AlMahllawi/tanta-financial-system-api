@@ -1,10 +1,11 @@
 import { jest } from '@jest/globals';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DocumentService } from './document.service.js';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
 import { UserRole } from '../../prisma/generated/enums.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { DocumentService } from './document.service.js';
 
 describe('DocumentService', () => {
   let service: DocumentService;

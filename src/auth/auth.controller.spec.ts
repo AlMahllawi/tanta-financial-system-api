@@ -1,13 +1,14 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
+import { plainToInstance } from 'class-transformer';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
+import { UserRole } from '../../prisma/generated/enums.js';
+import { ApiException } from '../common/exceptions/api.exception.js';
+import { User } from '../user/entities/user.entity.js';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { ApiException } from '../common/exceptions/api.exception.js';
 import { LoginDto } from './dto/login.dto.js';
-import { UserRole } from '../../prisma/generated/enums.js';
-import { User } from '../user/entities/user.entity.js';
-import { plainToInstance } from 'class-transformer';
 
 describe('AuthController', () => {
   let controller: AuthController;

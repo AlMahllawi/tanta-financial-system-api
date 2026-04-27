@@ -1,14 +1,15 @@
 import { jest } from '@jest/globals';
-import { Test, TestingModule } from '@nestjs/testing';
-import { JwtStrategy } from './jwt.strategy.js';
-import { UserService } from '../user/user.service.js';
 import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { plainToInstance } from 'class-transformer';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { JwtPayload } from './interfaces/auth.interface.js';
+
+import { UserRole } from '../../prisma/generated/enums.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
 import { User } from '../user/entities/user.entity.js';
-import { plainToInstance } from 'class-transformer';
-import { UserRole } from '../../prisma/generated/enums.js';
+import { UserService } from '../user/user.service.js';
+import { JwtPayload } from './interfaces/auth.interface.js';
+import { JwtStrategy } from './jwt.strategy.js';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;

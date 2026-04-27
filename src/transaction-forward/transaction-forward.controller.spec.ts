@@ -1,10 +1,11 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
+import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
+import { TransactionForward } from './entities/transaction-forward.entity.js';
 import { TransactionForwardController } from './transaction-forward.controller.js';
 import { TransactionForwardService } from './transaction-forward.service.js';
-import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
-import { TransactionForward } from './entities/transaction-forward.entity.js';
 
 describe('TransactionForwardController', () => {
   let controller: TransactionForwardController;

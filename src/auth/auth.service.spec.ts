@@ -1,15 +1,16 @@
 import { jest } from '@jest/globals';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service.js';
-import { UserService } from '../user/user.service.js';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
 import { hash } from 'argon2';
+import { plainToInstance } from 'class-transformer';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
 import { UserRole } from '../../prisma/generated/enums.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
 import { User } from '../user/entities/user.entity.js';
-import { plainToInstance } from 'class-transformer';
+import { UserService } from '../user/user.service.js';
+import { AuthService } from './auth.service.js';
 
 describe('AuthService', () => {
   let service: AuthService;

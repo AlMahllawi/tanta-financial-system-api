@@ -1,13 +1,14 @@
-import { Controller, Get, VERSION_NEUTRAL, UseGuards } from '@nestjs/common';
-import { LookupService } from './lookup.service.js';
+import { Controller, Get, UseGuards, VERSION_NEUTRAL } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { LookupResponseDto } from './dto/response.dto.js';
+
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard.js';
+import { LookupResponseDto } from './dto/response.dto.js';
+import { LookupService } from './lookup.service.js';
 
 @ApiTags('Lookups')
 @ApiBearerAuth()

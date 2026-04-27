@@ -1,16 +1,17 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { Document } from './entities/document.entity.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
-import { getDownloadURI } from '../common/utils/document.util.js';
+
+import { UserRole } from '../../prisma/generated/enums.js';
+import { PaginationDto } from '../common/dto/pagination.dto.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
+import { getDownloadURI } from '../common/utils/document.util.js';
 import {
   createPaginatedResult,
   createPaginator,
 } from '../common/utils/pagination.util.js';
-import { PaginationDto } from '../common/dto/pagination.dto.js';
-import { UserRole } from '../../prisma/generated/enums.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { Document } from './entities/document.entity.js';
 
 @Injectable()
 export class DocumentService {

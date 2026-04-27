@@ -1,11 +1,12 @@
 import { PrismaError } from 'prisma-error-enum';
+
+import { Prisma } from '../../prisma/generated/client.js';
 import {
   DriverAdapterError,
   DriverAdapterErrorData,
   PrismaErrorConstraintMeta,
   PrismaMatcher,
 } from './decorators/exception.decorator.js';
-import { Prisma } from '../../prisma/generated/client.js';
 
 type GenericError = Prisma.PrismaClientKnownRequestError | DriverAdapterError;
 

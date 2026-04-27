@@ -1,16 +1,17 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
+
 import { BudgetCategoriesController } from './budget-categories.controller.js';
 import { BudgetCategoriesService } from './budget-categories.service.js';
+import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
+import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
 import { CreateBudgetEntryDto } from './dto/create-budget-entry.dto.js';
 import { UpdateBudgetCategoryDto } from './dto/update-budget-category.dto.js';
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import {
   BudgetCategory,
   BudgetEntry,
 } from './entities/budget-category.entity.js';
-import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
-import { BudgetEntryQueryDto } from './dto/budget-entry-query.dto.js';
 
 describe('BudgetCategoriesController', () => {
   let controller: BudgetCategoriesController;

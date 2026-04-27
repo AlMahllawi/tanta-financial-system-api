@@ -1,3 +1,5 @@
+import { STATUS_CODES } from 'node:http';
+
 import {
   CallHandler,
   ExecutionContext,
@@ -8,16 +10,16 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import type { Request } from 'express';
+import { catchError, Observable, throwError } from 'rxjs';
+
 import { Prisma } from '../../../prisma/generated/client.js';
 import { HttpExceptionResponse } from '../../common/responses/http-exception.response.js';
 import {
   DriverAdapterError,
-  PrismaErrorResponseDef,
   PRISMA_ERROR_METADATA_KEY,
+  PrismaErrorResponseDef,
 } from '../decorators/exception.decorator.js';
-import { STATUS_CODES } from 'node:http';
-import { catchError, Observable, throwError } from 'rxjs';
-import type { Request } from 'express';
 
 @Injectable()
 export class PrismaInterceptor implements NestInterceptor {

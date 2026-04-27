@@ -1,20 +1,21 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
   HttpStatus,
+  Injectable,
 } from '@nestjs/common';
-import { Reflector, ModuleRef } from '@nestjs/core';
-import { UserRole } from '../../../prisma/generated/enums.js';
-import {
-  ROLES_KEY,
-  ROLES_EXCEPTION_KEY,
-  RolesExceptionCondition,
-} from '../decorators/roles.decorator.js';
-import { User } from '../../user/entities/user.entity.js';
+import { ModuleRef, Reflector } from '@nestjs/core';
 import type { Request } from 'express';
+
+import { UserRole } from '../../../prisma/generated/enums.js';
 import { ErrorCode } from '../../common/enums/error-codes.enum.js';
 import { ApiException } from '../../common/exceptions/api.exception.js';
+import { User } from '../../user/entities/user.entity.js';
+import {
+  ROLES_EXCEPTION_KEY,
+  ROLES_KEY,
+  RolesExceptionCondition,
+} from '../decorators/roles.decorator.js';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

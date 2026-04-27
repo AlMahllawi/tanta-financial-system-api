@@ -1,17 +1,18 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateDepartmentDto } from './dto/create-department.dto.js';
-import { UpdateDepartmentDto } from './dto/update-department.dto.js';
-import { Department } from './entities/department.entity.js';
-import { PrismaService } from '../prisma/prisma.service.js';
 import { plainToInstance } from 'class-transformer';
+
+import { Prisma } from '../../prisma/generated/client.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
 import {
   createPaginatedResult,
   createPaginator,
 } from '../common/utils/pagination.util.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CreateDepartmentDto } from './dto/create-department.dto.js';
 import { DepartmentQueryDto } from './dto/department-query.dto.js';
-import { Prisma } from '../../prisma/generated/client.js';
+import { UpdateDepartmentDto } from './dto/update-department.dto.js';
+import { Department } from './entities/department.entity.js';
 
 @Injectable()
 export class DepartmentService {
