@@ -151,12 +151,18 @@ export class TransactionService {
       to,
     } = queryDto;
 
-    if (query && query !== TransactionQuery.ALL)
-      if (query === TransactionQuery.INBOX) where = this.getInboxWhere(userId);
-      else if (query === TransactionQuery.OUTGOING)
+    switch (query) {
+      case TransactionQuery.ALL:
+        break;
+      case TransactionQuery.INBOX:
+        where = this.getInboxWhere(userId);
+        break;
+      case TransactionQuery.OUTGOING:
         where = this.getOutgoingWhere(userId);
-      else where = this.getArchiveWhere(userId);
-    else where = this.getArchiveWhere(userId);
+        break;
+      default:
+        where = this.getArchiveWhere(userId);
+    }
 
     if (title) where.title = { contains: title, mode: 'insensitive' };
     if (description)

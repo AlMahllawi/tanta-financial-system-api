@@ -73,7 +73,7 @@ export class TransactionController {
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
       args: { id: '1, 2' },
       argExtractor: (_params, body) => ({
-        id: (body.documentIds as number[])?.join(', '),
+        id: (body.documentsIds as number[])?.join(', '),
       }),
       matchers: matchForeignConstraint('fk_document_transaction'),
     },
