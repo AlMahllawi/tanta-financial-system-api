@@ -1,13 +1,14 @@
-import { uniqueFactory } from './factory.utils.js';
 import { faker } from '@faker-js/faker';
+
+import { uniqueFactory } from './factory.utils.js';
 
 export const budgetCategoryFactory = (
   overrides: {
     name?: string;
   } = {},
 ) => {
-  let name = overrides.name ?? faker.commerce.department();
-  while (name.length < 5) name += ` ${faker.commerce.department()}`;
+  let name = `${(overrides.name ?? faker.commerce.department()).replace(/[^a-zA-Z0-9-_\s]/g, '')} ${faker.string.alphanumeric(5)}`;
+  while (name.length < 5) name += ` ${faker.string.alphanumeric(5)}`;
 
   return {
     name,

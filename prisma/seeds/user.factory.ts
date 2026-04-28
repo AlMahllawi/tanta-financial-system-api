@@ -1,8 +1,8 @@
-import { uniqueFactory } from './factory.utils.js';
 import { faker } from '@faker-js/faker';
+import { hash } from 'argon2';
 
 import { UserRole } from '../generated/enums.js';
-import { hash } from 'argon2';
+import { uniqueFactory } from './factory.utils.js';
 
 const DEFAULT_USER_PASSWORD =
   process.env.DEFAULT_USER_PASSWORD ?? '5ecuredP@ssw0rd';
@@ -12,8 +12,11 @@ const _userFactory = (
   hashedPassword: string,
   overrides: { name?: string; role?: UserRole } = {},
 ) => {
-  let name = overrides.name ?? faker.person.fullName();
-  while (name.length < 5) name += ` ${faker.person.firstName()}`;
+  let name = (
+    overrides.name ?? `${faker.person.firstName()} ${faker.person.lastName()}`
+  ).replace(/[^a-zA-Z0-9-_\s]/g, '');
+  while (name.length < 5)
+    name += ` ${faker.person.firstName().replace(/[^a-zA-Z0-9-_\s]/g, '')}`;
 
   return {
     name,

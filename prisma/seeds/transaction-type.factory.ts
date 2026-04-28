@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
+
 import { uniqueFactory } from './factory.utils.js';
 
-const _transactionTypeFactory = (creatorId: number) => {
-  let name = faker.commerce.productName();
-  while (name.length < 5) name += ` ${faker.commerce.productName()}`;
+export const transactionTypeFactory = (creatorId: number) => {
+  let name = `${faker.commerce.productName().replace(/[^a-zA-Z0-9-_\s]/g, '')} ${faker.string.alphanumeric(5)}`;
+  while (name.length < 5) name += ` ${faker.string.alphanumeric(5)}`;
 
   return {
     name,
@@ -12,4 +13,4 @@ const _transactionTypeFactory = (creatorId: number) => {
 };
 
 export const manyTransactionTypesFactory = (count: number, creatorId: number) =>
-  uniqueFactory(count, () => _transactionTypeFactory(creatorId), 'name');
+  uniqueFactory(count, () => transactionTypeFactory(creatorId), 'name');
