@@ -208,40 +208,39 @@ export class TransactionController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
-    const isAccountant = role === UserRole.ACCOUNTANT;
-    const updatingFields = Object.keys(updateTransactionDto).filter(
-      (key) =>
-        updateTransactionDto[key as keyof UpdateTransactionDto] !== undefined,
-    );
-    const isUpdatingOnlyAccountantFields =
-      updatingFields.length > 0 &&
-      updatingFields.every((field) =>
-        ['fulfilled', 'budgetName', 'budgetAllocation'].includes(field),
+    if (role !== UserRole.ADMIN) {
+      const updatingFields = Object.keys(updateTransactionDto).filter(
+        (key) =>
+          updateTransactionDto[key as keyof UpdateTransactionDto] !== undefined,
       );
-
-    if (
-      role !== UserRole.ADMIN &&
-      !(isAccountant && isUpdatingOnlyAccountantFields) &&
-      !(await this.transactionService.isCreator(id, userId))
-    )
-      throw new ApiException(
-        HttpStatus.FORBIDDEN,
-        ErrorCode.NOT_TRANSACTION_CREATOR,
-        { transactionId: id },
-      );
-
-    if (
-      (updateTransactionDto.fulfilled !== undefined ||
-        updateTransactionDto.budgetName !== undefined ||
-        updateTransactionDto.budgetAllocation !== undefined) &&
-      role !== UserRole.ADMIN &&
-      !isAccountant
-    )
-      throw new ApiException(
-        HttpStatus.FORBIDDEN,
-        ErrorCode.RESTRICTED_FIELD_UPDATE,
-        { fields: 'fulfilled, budgetName, budgetAllocation' },
-      );
+      if (role === UserRole.ACCOUNTANT) {
+        const isUpdatingNonAccountantFields = updatingFields.some(
+          (field) =>
+            !['fulfilled', 'budgetName', 'budgetAllocation'].includes(field),
+        );
+        if (isUpdatingNonAccountantFields)
+          throw new ApiException(
+            HttpStatus.FORBIDDEN,
+            ErrorCode.NOT_TRANSACTION_CREATOR,
+            { transactionId: id },
+          );
+      } else if (await this.transactionService.isCreator(id, userId)) {
+        const updatingAccountantFields = updatingFields.filter((field) =>
+          ['fulfilled', 'budgetName', 'budgetAllocation'].includes(field),
+        );
+        if (updatingAccountantFields.length > 0)
+          throw new ApiException(
+            HttpStatus.FORBIDDEN,
+            ErrorCode.RESTRICTED_FIELD_UPDATE,
+            { fields: updatingAccountantFields.join(', ') },
+          );
+      } else
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.NOT_TRANSACTION_CREATOR,
+          { transactionId: id },
+        );
+    }
 
     if (updateTransactionDto.fulfilled)
       if (

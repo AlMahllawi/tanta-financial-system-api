@@ -1,17 +1,24 @@
 import { ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsEnum,
   IsNumber,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
 
+import { TransactionPriority } from '../../../prisma/generated/enums.js';
 import { CreateTransactionDto } from './create-transaction.dto.js';
 
 export class UpdateTransactionDto extends PartialType(
   OmitType(CreateTransactionDto, ['documentsIds'] as const),
 ) {
+  @ApiPropertyOptional({ enum: TransactionPriority })
+  @IsOptional()
+  @IsEnum(TransactionPriority)
+  priority?: TransactionPriority;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
