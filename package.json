@@ -1,8 +1,9 @@
 {
-  "name": "Tanta Financial System API",
+  "name": "tanta-university-science-faculty-financial-system-api",
   "version": "0.0.0",
   "description": "Track financial and administrative transactions progress, submission and review.",
-  "private": true,
+  "license": "Apache-2.0",
+  "author": "Mohammad Almahllawi",
   "scripts": {
     "postinstall": "prisma generate",
     "build": "nest build",
