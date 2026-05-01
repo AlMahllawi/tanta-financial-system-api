@@ -318,11 +318,30 @@ export class TransactionService {
 
   async update(
     id: number,
+    userId: number,
     role: UserRole,
     updateTransactionDto: UpdateTransactionDto,
   ) {
     if (updateTransactionDto.fulfilled !== false)
       await this.checkIfFulfilled(id);
+
+    if (updateTransactionDto.fulfilled) {
+      const latestForward = await this.findLatestForward(id);
+
+      if (role === UserRole.ACCOUNTANT && latestForward?.receiverId !== userId)
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.NOT_LATEST_ACCOUNTANT,
+          { transactionId: id },
+        );
+
+      if (latestForward?.status !== TransactionForwardStatus.APPROVED)
+        throw new ApiException(
+          HttpStatus.FORBIDDEN,
+          ErrorCode.TRANSACTION_NOT_APPROVED,
+          { transactionId: id },
+        );
+    }
 
     const transaction = await this.prisma.transaction.update({
       where: { id },

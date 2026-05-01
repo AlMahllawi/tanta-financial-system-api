@@ -253,7 +253,12 @@ export class TransactionController {
           { required: 'budgetName, budgetAllocation' },
         );
 
-    return this.transactionService.update(id, role, updateTransactionDto);
+    return this.transactionService.update(
+      id,
+      userId,
+      role,
+      updateTransactionDto,
+    );
   }
 
   @Delete(':id')
