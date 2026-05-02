@@ -105,6 +105,23 @@ The API will be available at `http://localhost:3000` (or the port specified in t
 
 ## Testing
 
+### Environment Configuration
+
+Copy the example environment file and update the values to match the local setup:
+
+```bash
+cp .env.example .env.test
+```
+
+#### Edit the `.env.test` file
+
+- provide the database credentials:
+
+```env
+# Example DATABASE_URL
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/TantaFinancialTest?schema=public"
+```
+
 ```bash
 # Run unit tests
 pnpm run test
