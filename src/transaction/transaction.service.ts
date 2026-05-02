@@ -304,14 +304,15 @@ export class TransactionService {
   }
 
   async markAsSeen(transactionId: number, userId: number) {
+    const now = new Date();
     await Promise.all([
       this.prisma.transactionForward.updateMany({
         where: { transactionId, senderId: userId },
-        data: { senderSeen: true },
+        data: { senderSeen: true, senderSeenAt: now },
       }),
       this.prisma.transactionForward.updateMany({
         where: { transactionId, receiverId: userId },
-        data: { receiverSeen: true },
+        data: { receiverSeen: true, receiverSeenAt: now },
       }),
     ]);
   }

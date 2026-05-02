@@ -130,7 +130,9 @@ model TransactionForward {
   senderId        Int
   receiverId      Int
   senderSeen      Boolean                  @default(true)
+  senderSeenAt    DateTime?                @db.Timestamptz
   receiverSeen    Boolean                  @default(false)
+  receiverSeenAt  DateTime?                @db.Timestamptz
   forwardedAt     DateTime                 @default(now()) @db.Timestamptz
   updatedAt       DateTime                 @updatedAt @db.Timestamptz
   transactionId   Int

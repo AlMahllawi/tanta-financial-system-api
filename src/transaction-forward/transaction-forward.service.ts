@@ -34,6 +34,7 @@ export class TransactionForwardService {
         receiverId: createTransactionForwardDto.receiverId,
         senderComment: createTransactionForwardDto.comment ?? null,
         status: TransactionForwardStatus.WAITING,
+        senderSeenAt: new Date(),
       },
       include: {
         sender: true,
@@ -83,14 +84,15 @@ export class TransactionForwardService {
   }
 
   async markAsSeen(forwardId: number, userId: number) {
+    const now = new Date();
     await Promise.all([
       this.prisma.transactionForward.updateMany({
         where: { id: forwardId, senderId: userId },
-        data: { senderSeen: true },
+        data: { senderSeen: true, senderSeenAt: now },
       }),
       this.prisma.transactionForward.updateMany({
         where: { id: forwardId, receiverId: userId },
-        data: { receiverSeen: true },
+        data: { receiverSeen: true, receiverSeenAt: now },
       }),
     ]);
   }
@@ -154,7 +156,9 @@ export class TransactionForwardService {
         status: updateTransactionForwardDto.status,
         receiverComment: updateTransactionForwardDto.comment ?? null,
         receiverSeen: true,
+        receiverSeenAt: new Date(),
         senderSeen: false,
+        senderSeenAt: null,
       },
       include: {
         sender: true,

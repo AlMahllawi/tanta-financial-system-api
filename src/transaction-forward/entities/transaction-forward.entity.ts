@@ -37,8 +37,14 @@ export class TransactionForward implements TransactionForwardModel {
   @ApiProperty()
   senderSeen: boolean;
 
+  @ApiProperty({ type: Date, nullable: true })
+  senderSeenAt: Date | null;
+
   @ApiProperty()
   receiverSeen: boolean;
+
+  @ApiProperty({ type: Date, nullable: true })
+  receiverSeenAt: Date | null;
 
   @ApiProperty()
   forwardedAt: Date;
