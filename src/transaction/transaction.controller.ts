@@ -201,6 +201,24 @@ export class TransactionController {
       errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
       args: { transactionId: 1 },
     },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction was not forwarded to this accountant',
+      errorCode: ErrorCode.NOT_LATEST_ACCOUNTANT,
+      args: { transactionId: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction has not been approved yet',
+      errorCode: ErrorCode.TRANSACTION_NOT_APPROVED,
+      args: { transactionId: 1 },
+    },
+    {
+      status: HttpStatus.FORBIDDEN,
+      description: 'Transaction allocation exceeds available budget',
+      errorCode: ErrorCode.INSUFFICIENT_BUDGET,
+      args: { budgetName: 'General', available: 50, requested: 100 },
+    },
   )
   async update(
     @CurrentUser('id') userId: number,
