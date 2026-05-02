@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
+import { UserRole } from '../../../prisma/generated/enums.js';
 import {
   BudgetCategoryModel,
   BudgetEntryModel,
@@ -39,4 +41,8 @@ export class BudgetCategory implements BudgetCategoryModel {
 
   @ApiProperty({ description: 'budget - allocated' })
   available: number;
+
+  @ApiProperty()
+  @Expose({ groups: [UserRole.ADMIN] })
+  preallocation: number;
 }

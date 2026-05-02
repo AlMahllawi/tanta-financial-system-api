@@ -144,6 +144,7 @@ model TransactionForward {
 
 model BudgetCategory {
   name String @id
+  preallocation Float @default(0)
 
   entries      BudgetEntry[]
   transactions Transaction[]

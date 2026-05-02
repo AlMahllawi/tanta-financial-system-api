@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 
 import { Prisma } from '../../prisma/generated/client.js';
+import { UserRole } from '../../prisma/generated/enums.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
 import {
@@ -26,15 +27,19 @@ export class BudgetCategoriesService {
     const category = await this.prisma.budgetCategory.create({
       data: { name },
     });
-    return plainToInstance(BudgetCategory, {
-      ...category,
-      budget: 0,
-      allocated: 0,
-      available: 0,
-    });
+    return plainToInstance(
+      BudgetCategory,
+      {
+        ...category,
+        budget: 0,
+        allocated: 0,
+        available: 0,
+      },
+      { groups: [UserRole.ADMIN] },
+    );
   }
 
-  async findAll(queryDto: BudgetCategoryQueryDto) {
+  async findAll(queryDto: BudgetCategoryQueryDto, userRole?: UserRole) {
     const { skip, take, page, perPage } = createPaginator(queryDto);
 
     const where: Prisma.BudgetCategoryWhereInput = {};
@@ -57,40 +62,48 @@ export class BudgetCategoriesService {
         allocated: 0,
         available: 0,
       };
-      return plainToInstance(BudgetCategory, {
-        name: category.name,
-        budget,
-        allocated,
-        available,
-      });
+      return plainToInstance(
+        BudgetCategory,
+        {
+          name: category.name,
+          preallocation: category.preallocation,
+          budget,
+          allocated,
+          available,
+        },
+        { groups: userRole ? [userRole] : [] },
+      );
     });
 
     return createPaginatedResult(data, total, page, perPage);
   }
 
-  async findOne(name: string) {
+  async findOne(name: string, userRole?: UserRole) {
     const category = await this.prisma.budgetCategory.findUniqueOrThrow({
       where: { name },
       include: { details: true },
     });
-    return this.formatCategory(category);
+    return this.formatCategory(category, userRole);
   }
 
   async update(name: string, dto: UpdateBudgetCategoryDto) {
     const category = await this.prisma.budgetCategory.update({
       where: { name },
-      data: { name: dto.newName },
+      data: {
+        name: dto.newName,
+        preallocation: dto.preallocation,
+      },
       include: { details: true },
     });
-    return this.formatCategory(category);
+    return this.formatCategory(category, UserRole.ADMIN);
   }
 
-  async remove(name: string) {
+  async remove(name: string, userRole?: UserRole) {
     const category = await this.prisma.budgetCategory.delete({
       where: { name },
       include: { details: true },
     });
-    return this.formatCategory(category);
+    return this.formatCategory(category, userRole);
   }
 
   async addEntry(name: string, dto: CreateBudgetEntryDto, userId: number) {
@@ -127,22 +140,31 @@ export class BudgetCategoriesService {
     });
   }
 
-  private formatCategory(category: {
-    name: string;
-    details?: { budget: number; allocated: number; available: number } | null;
-  }) {
+  private formatCategory(
+    category: {
+      name: string;
+      preallocation: number;
+      details?: { budget: number; allocated: number; available: number } | null;
+    },
+    userRole?: UserRole,
+  ) {
     const { budget, allocated, available } = category.details || {
       budget: 0,
       allocated: 0,
       available: 0,
     };
 
-    return plainToInstance(BudgetCategory, {
-      name: category.name,
-      budget,
-      allocated,
-      available,
-    });
+    return plainToInstance(
+      BudgetCategory,
+      {
+        name: category.name,
+        preallocation: category.preallocation,
+        budget,
+        allocated,
+        available,
+      },
+      { groups: userRole ? [userRole] : [] },
+    );
   }
 
   async findAllEntries(budgetName: string, queryDto: BudgetEntryQueryDto) {

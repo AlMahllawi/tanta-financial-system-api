@@ -75,8 +75,11 @@ export class BudgetCategoriesController {
   @Get()
   @ApiOperation({ summary: 'Get all budget categories' })
   @ApiPaginatedResponse(BudgetCategory, 'Paged list of budget categories')
-  findAll(@Query() queryDto: BudgetCategoryQueryDto) {
-    return this.budgetCategoriesService.findAll(queryDto);
+  findAll(
+    @Query() queryDto: BudgetCategoryQueryDto,
+    @CurrentUser('role') role: UserRole,
+  ) {
+    return this.budgetCategoriesService.findAll(queryDto, role);
   }
 
   @Get(':name')
@@ -93,8 +96,8 @@ export class BudgetCategoriesController {
     argExtractor: (params) => ({ name: params.name }),
     matchers: matchRecordsNotFound('BudgetCategory'),
   })
-  findOne(@Param('name') name: string) {
-    return this.budgetCategoriesService.findOne(name);
+  findOne(@Param('name') name: string, @CurrentUser('role') role: UserRole) {
+    return this.budgetCategoriesService.findOne(name, role);
   }
 
   @Patch(':name')
@@ -142,8 +145,8 @@ export class BudgetCategoriesController {
     argExtractor: (params) => ({ name: params.name }),
     matchers: matchDriverAdapter('23001', 'fk_transaction_budget'),
   })
-  remove(@Param('name') name: string) {
-    return this.budgetCategoriesService.remove(name);
+  remove(@Param('name') name: string, @CurrentUser('role') role: UserRole) {
+    return this.budgetCategoriesService.remove(name, role);
   }
 
   @Get(':name/entry')

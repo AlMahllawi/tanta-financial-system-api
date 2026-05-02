@@ -96,6 +96,7 @@ CREATE TABLE "TransactionForward" (
 -- CreateTable
 CREATE TABLE "BudgetCategory" (
     "name" TEXT NOT NULL,
+    "preallocation" DOUBLE PRECISION NOT NULL DEFAULT 0,
 
     CONSTRAINT "BudgetCategory_pkey" PRIMARY KEY ("name")
 );
