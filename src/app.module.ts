@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TerminusModule } from '@nestjs/terminus';
 import Joi from 'joi';
 
@@ -14,6 +15,7 @@ import { DepartmentModule } from './department/department.module.js';
 import { DocumentModule } from './document/document.module.js';
 import { PrismaInterceptor } from './prisma/interceptors/prisma.interceptor.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { SseModule } from './sse/sse.module.js';
 import { TransactionModule } from './transaction/transaction.module.js';
 import { TransactionForwardModule } from './transaction-forward/transaction-forward.module.js';
 import { TransactionTypeModule } from './transaction-type/transaction-type.module.js';
@@ -48,6 +50,7 @@ import { UserModule } from './user/user.module.js';
         abortEarly: false,
       },
     }),
+    EventEmitterModule.forRoot(),
     PrismaModule,
     AuthModule,
     DepartmentModule,
@@ -58,6 +61,7 @@ import { UserModule } from './user/user.module.js';
     TransactionForwardModule,
     BudgetCategoriesModule,
     LookupModule,
+    SseModule,
   ],
   controllers: [AppController],
   providers: [

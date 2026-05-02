@@ -57,6 +57,7 @@ async function bootstrap() {
     .addTag('Transaction Forwards', 'Manage transaction forwards')
     .addTag('Budget Categories', 'Manage budget categories')
     .addTag('Lookups', 'System constants and dropdown values')
+    .addTag('SSE', 'Server-Sent Events for real-time updates')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

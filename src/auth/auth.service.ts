@@ -25,6 +25,23 @@ export class AuthService {
       return null;
     }
   }
+  async validateJwtPayload(payload: JwtPayload) {
+    try {
+      const user = await this.userService.findOne(payload.id);
+      if (!user || !user.active)
+        throw new ApiException(
+          HttpStatus.UNAUTHORIZED,
+          ErrorCode.INVALID_CREDENTIALS,
+        );
+
+      return user;
+    } catch {
+      throw new ApiException(
+        HttpStatus.UNAUTHORIZED,
+        ErrorCode.INVALID_CREDENTIALS,
+      );
+    }
+  }
 
   async login(userId: number) {
     const payload: JwtPayload = {
