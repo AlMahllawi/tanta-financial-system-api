@@ -342,6 +342,35 @@ export class TransactionService {
           ErrorCode.TRANSACTION_NOT_APPROVED,
           { transactionId: id },
         );
+
+      const preTransaction = await this.prisma.transaction.findUniqueOrThrow({
+        where: { id },
+        select: { budgetName: true, budgetAllocation: true },
+      });
+
+      const budgetName =
+        updateTransactionDto.budgetName ?? preTransaction.budgetName;
+      const budgetAllocation =
+        updateTransactionDto.budgetAllocation ??
+        preTransaction.budgetAllocation;
+
+      if (budgetName && budgetAllocation) {
+        const details = await this.prisma.budgetCategoryDetails.findUnique({
+          where: { budgetName },
+          select: { available: true },
+        });
+
+        if (details && budgetAllocation > details.available)
+          throw new ApiException(
+            HttpStatus.FORBIDDEN,
+            ErrorCode.INSUFFICIENT_BUDGET,
+            {
+              budgetName,
+              available: details.available,
+              requested: budgetAllocation,
+            },
+          );
+      }
     }
 
     const transaction = await this.prisma.transaction.update({
