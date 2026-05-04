@@ -47,6 +47,7 @@ model User {
   sentForwards        TransactionForward[]  @relation("SentForwards")
   receivedForwards    TransactionForward[]  @relation("ReceivedForwards")
   budgetEntries       BudgetEntry[]
+  notifications       Notification[]
 }
 
 model Document {
@@ -176,4 +177,21 @@ view BudgetCategoryDetails {
   available  Float
 
   category BudgetCategory @relation(fields: [budgetName], references: [name])
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+}
+
+model Notification {
+  id          Int              @id @default(autoincrement())
+  userId      Int
+  timestamp   DateTime         @default(now()) @db.Timestamptz
+  seen        Boolean          @default(false)
+  type        NotificationType @default(INFO)
+  title       String
+  description String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "fk_notification_user")
 }

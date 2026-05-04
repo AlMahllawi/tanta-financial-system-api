@@ -10,6 +10,9 @@ CREATE TYPE "TransactionPriority" AS ENUM ('HIGH', 'MEDIUM', 'LOW');
 -- CreateEnum
 CREATE TYPE "TransactionForwardStatus" AS ENUM ('WAITING', 'NEEDS_EDITING', 'REJECTED', 'APPROVED');
 
+-- CreateEnum
+CREATE TYPE "NotificationType" AS ENUM ('INFO', 'WARNING');
+
 -- CreateTable
 CREATE TABLE "Department" (
     "name" TEXT NOT NULL,
@@ -116,6 +119,19 @@ CREATE TABLE "BudgetEntry" (
     CONSTRAINT "BudgetEntry_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Notification" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "timestamp" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "seen" BOOLEAN NOT NULL DEFAULT false,
+    "type" "NotificationType" NOT NULL DEFAULT 'INFO',
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+
+    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "uq_department_manager" ON "Department"("managerId");
 
@@ -166,6 +182,9 @@ ALTER TABLE "BudgetEntry" ADD CONSTRAINT "fk_budget_entry_inputter" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "BudgetEntry" ADD CONSTRAINT "fk_budget_entry" FOREIGN KEY ("budgetName") REFERENCES "BudgetCategory"("name") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Notification" ADD CONSTRAINT "fk_notification_user" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddView
 CREATE OR REPLACE VIEW "TransactionLatestForward" AS

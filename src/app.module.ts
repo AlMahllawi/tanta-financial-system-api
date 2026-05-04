@@ -13,6 +13,7 @@ import { DURATION_REGEX } from './common/constants/regex.constants.js';
 import { LookupModule } from './common/lookup/lookup.module.js';
 import { DepartmentModule } from './department/department.module.js';
 import { DocumentModule } from './document/document.module.js';
+import { NotificationModule } from './notification/notification.module.js';
 import { PrismaInterceptor } from './prisma/interceptors/prisma.interceptor.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { SseModule } from './sse/sse.module.js';
@@ -61,6 +62,7 @@ import { UserModule } from './user/user.module.js';
     TransactionForwardModule,
     BudgetCategoriesModule,
     LookupModule,
+    NotificationModule,
     SseModule,
   ],
   controllers: [AppController],

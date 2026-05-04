@@ -44,6 +44,23 @@ export class SseController {
             type: { type: 'string', description: 'The event type' },
           },
         },
+        examples: {
+          notification: {
+            summary: 'New notification event',
+            value: {
+              type: 'notification',
+              data: {
+                id: 1,
+                userId: 1,
+                timestamp: '2026-05-04T15:00:00.000Z',
+                seen: false,
+                type: 'INFO',
+                title: 'New Transaction',
+                description: 'A new transaction has been forwarded to you.',
+              },
+            },
+          },
+        },
       },
     },
   })

@@ -56,6 +56,7 @@ async function bootstrap() {
     .addTag('Transactions', 'Manage transactions')
     .addTag('Transaction Forwards', 'Manage transaction forwards')
     .addTag('Budget Categories', 'Manage budget categories')
+    .addTag('Notifications', 'Manage notifications')
     .addTag('Lookups', 'System constants and dropdown values')
     .addTag('SSE', 'Server-Sent Events for real-time updates')
     .build();
