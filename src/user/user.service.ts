@@ -3,7 +3,7 @@ import { hash } from 'argon2';
 import { plainToInstance } from 'class-transformer';
 
 import { Prisma } from '../../prisma/generated/client.js';
-import { UserRole } from '../../prisma/generated/enums.js';
+import { UserPresence, UserRole } from '../../prisma/generated/enums.js';
 import {
   createPaginatedResult,
   createPaginator,
@@ -112,5 +112,20 @@ export class UserService {
     });
 
     return plainToInstance(User, user);
+  }
+
+  async updatePresence(id: number, presence: UserPresence) {
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: { presence },
+    });
+
+    return plainToInstance(User, user);
+  }
+
+  async resetAllPresence() {
+    await this.prisma.user.updateMany({
+      data: { presence: UserPresence.OFFLINE },
+    });
   }
 }

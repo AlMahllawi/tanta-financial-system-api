@@ -2,6 +2,9 @@
 CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER', 'ACCOUNTANT');
 
 -- CreateEnum
+CREATE TYPE "UserPresence" AS ENUM ('ONLINE', 'OFFLINE');
+
+-- CreateEnum
 CREATE TYPE "TransactionPriority" AS ENUM ('HIGH', 'MEDIUM', 'LOW');
 
 -- CreateEnum
@@ -23,6 +26,7 @@ CREATE TABLE "User" (
     "departmentName" TEXT NOT NULL,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "role" "UserRole" NOT NULL DEFAULT 'USER',
+    "presence" "UserPresence" NOT NULL DEFAULT 'OFFLINE',
     "createdAt" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "lastLogin" TIMESTAMPTZ,
 

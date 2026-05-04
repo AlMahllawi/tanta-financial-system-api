@@ -22,15 +22,21 @@ enum UserRole {
   ACCOUNTANT
 }
 
+enum UserPresence {
+  ONLINE
+  OFFLINE
+}
+
 model User {
-  id             Int       @id @default(autoincrement())
-  name           String    @unique(map: "uq_user_name")
+  id             Int          @id @default(autoincrement())
+  name           String       @unique(map: "uq_user_name")
   hashedPassword String
   departmentName String
-  active         Boolean   @default(true)
-  role           UserRole  @default(USER)
-  createdAt      DateTime  @default(now()) @db.Timestamptz
-  lastLogin      DateTime? @db.Timestamptz
+  active         Boolean      @default(true)
+  role           UserRole     @default(USER)
+  presence       UserPresence @default(OFFLINE)
+  createdAt      DateTime     @default(now()) @db.Timestamptz
+  lastLogin      DateTime?    @db.Timestamptz
 
   department          Department            @relation("BelongsTo", fields: [departmentName], references: [name], onDelete: Restrict, onUpdate: Cascade, map: "fk_user_department")
   managedDepartment   Department?           @relation("Manages")

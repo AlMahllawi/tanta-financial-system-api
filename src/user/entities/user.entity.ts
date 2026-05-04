@@ -1,7 +1,7 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 
-import { UserRole } from '../../../prisma/generated/enums.js';
+import { UserPresence, UserRole } from '../../../prisma/generated/enums.js';
 import { UserModel } from '../../../prisma/generated/models.js';
 
 export class User implements UserModel {
@@ -23,6 +23,9 @@ export class User implements UserModel {
 
   @ApiProperty({ enum: UserRole })
   role: UserRole;
+
+  @ApiProperty({ enum: UserPresence })
+  presence: UserPresence;
 
   @ApiProperty({ type: Date, nullable: true })
   lastLogin: Date | null;
