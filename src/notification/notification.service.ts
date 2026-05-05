@@ -3,7 +3,9 @@ import { plainToInstance } from 'class-transformer';
 
 import { Prisma } from '../../prisma/generated/client.js';
 import { NotificationType } from '../../prisma/generated/enums.js';
+import { NotificationArgsMap } from '../common/constants/notification-definitions.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { NotificationCode } from '../common/enums/notification-codes.enum.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
 import {
   createPaginatedResult,
@@ -21,11 +23,11 @@ export class NotificationService {
     private readonly sseService: SseService,
   ) {}
 
-  async create(
+  async create<K extends NotificationCode>(
     userId: number,
     type: NotificationType,
-    code: string,
-    args?: Record<string, unknown>,
+    code: K,
+    args?: NotificationArgsMap[K],
   ) {
     const notification = await this.prisma.notification.create({
       data: {
@@ -82,7 +84,7 @@ export class NotificationService {
       throw new ApiException(
         HttpStatus.NOT_FOUND,
         ErrorCode.NOTIFICATION_NOT_FOUND,
-        { id },
+        { notificationId: String(id) },
       );
 
     const updated = await this.prisma.notification.update({

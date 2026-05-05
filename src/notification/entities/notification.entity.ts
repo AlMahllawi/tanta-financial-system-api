@@ -2,7 +2,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { NotificationType } from '../../../prisma/generated/enums.js';
 
-export class Notification {
+export class Notification<
+  TCode extends string = string,
+  TArgs extends Record<string, string> = Record<string, string>,
+> {
   @ApiProperty()
   id: number;
 
@@ -19,8 +22,11 @@ export class Notification {
   type: NotificationType;
 
   @ApiProperty()
-  code: string;
+  code: TCode;
 
-  @ApiPropertyOptional({ type: 'object', additionalProperties: true })
-  args?: Record<string, unknown>;
+  @ApiPropertyOptional({
+    type: 'object',
+    additionalProperties: { type: 'string' },
+  })
+  args?: TArgs;
 }
