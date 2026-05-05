@@ -24,15 +24,15 @@ export class NotificationService {
   async create(
     userId: number,
     type: NotificationType,
-    title: string,
-    description: string,
+    code: string,
+    args?: Record<string, unknown>,
   ) {
     const notification = await this.prisma.notification.create({
       data: {
         userId,
         type,
-        title,
-        description,
+        code,
+        args: args as Prisma.InputJsonValue,
       },
     });
 
@@ -54,12 +54,6 @@ export class NotificationService {
       if (queryDto.endDate) timestamp.lte = new Date(queryDto.endDate);
       where.timestamp = timestamp;
     }
-
-    if (queryDto.search)
-      where.OR = [
-        { title: { contains: queryDto.search, mode: 'insensitive' } },
-        { description: { contains: queryDto.search, mode: 'insensitive' } },
-      ];
 
     const [notifications, total] = await this.prisma.$transaction([
       this.prisma.notification.findMany({

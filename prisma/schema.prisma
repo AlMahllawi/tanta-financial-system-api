@@ -190,8 +190,8 @@ model Notification {
   timestamp   DateTime         @default(now()) @db.Timestamptz
   seen        Boolean          @default(false)
   type        NotificationType @default(INFO)
-  title       String
-  description String
+  code        String
+  args        Json?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade, map: "fk_notification_user")
 }

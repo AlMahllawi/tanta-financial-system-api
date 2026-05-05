@@ -126,8 +126,8 @@ CREATE TABLE "Notification" (
     "timestamp" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "seen" BOOLEAN NOT NULL DEFAULT false,
     "type" "NotificationType" NOT NULL DEFAULT 'INFO',
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "code" TEXT NOT NULL,
+    "args" JSONB,
 
     CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
 );

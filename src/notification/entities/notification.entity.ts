@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { NotificationType } from '../../../prisma/generated/enums.js';
 
@@ -19,8 +19,8 @@ export class Notification {
   type: NotificationType;
 
   @ApiProperty()
-  title: string;
+  code: string;
 
-  @ApiProperty()
-  description: string;
+  @ApiPropertyOptional({ type: 'object', additionalProperties: true })
+  args?: Record<string, unknown>;
 }
