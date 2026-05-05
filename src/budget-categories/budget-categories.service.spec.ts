@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
 import { Prisma } from '../../prisma/generated/client.js';
+import { UserRole } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { BudgetCategoriesService } from './budget-categories.service.js';
 import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
@@ -55,6 +56,7 @@ describe('BudgetCategoriesService', () => {
 
   const categoryMock: Prisma.BudgetCategoryGetPayload<Record<string, never>> = {
     name: 'Engineering',
+    preallocation: 0,
   };
 
   const categoryDetailsMock: Prisma.BudgetCategoryGetPayload<{
@@ -96,7 +98,7 @@ describe('BudgetCategoriesService', () => {
       ]);
       prismaMock.budgetCategory.count.mockResolvedValue(1);
 
-      const result = await service.findAll(queryDto);
+      const result = await service.findAll(queryDto, UserRole.ADMIN);
 
       expect(prismaMock.$transaction).toHaveBeenCalled();
       expect(result.data).toHaveLength(1);
@@ -120,7 +122,7 @@ describe('BudgetCategoriesService', () => {
         categoryDetailsMock,
       );
 
-      const result = await service.findOne('Engineering');
+      const result = await service.findOne('Engineering', UserRole.ADMIN);
 
       expect(() => prismaMock.budgetCategory.findUniqueOrThrow).not.toThrow();
       expect(prismaMock.budgetCategory.findUniqueOrThrow).toHaveBeenCalledWith({
@@ -158,7 +160,7 @@ describe('BudgetCategoriesService', () => {
     it('should delete a category and return it', async () => {
       prismaMock.budgetCategory.delete.mockResolvedValue(categoryDetailsMock);
 
-      const result = await service.remove('Engineering');
+      const result = await service.remove('Engineering', UserRole.ADMIN);
 
       expect(() => prismaMock.budgetCategory.delete).not.toThrow();
       expect(prismaMock.budgetCategory.delete).toHaveBeenCalledWith({

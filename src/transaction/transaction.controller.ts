@@ -61,20 +61,14 @@ export class TransactionController {
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Transaction type not found',
       errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
-      args: { typeName: 'Unknown Type' },
-      argExtractor: (_params, body) => ({ typeName: body.typeName }),
+      argExtractor: (_params, body) => ({ typeName: String(body.typeName) }),
       matchers: matchForeignConstraint('fk_transaction_type'),
     },
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'One or more documents not found',
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
-      args: { id: '1, 2' },
       argExtractor: (_params, body) => ({
-        id: (body.documentsIds as number[])?.join(', '),
+        documentId: (body.documentsIds as number[])?.join(', '),
       }),
       matchers: matchForeignConstraint('fk_document_transaction'),
     },
@@ -106,7 +100,10 @@ export class TransactionController {
       '* `all`: Every transaction in the system (Admin only).\n\n' +
       "If absent, returns 'archive' transactions (history of involvement).",
   })
-  @ApiOkResponse({ type: PaginatedTransactionSummaryResponseDto })
+  @ApiOkResponse({
+    type: PaginatedTransactionSummaryResponseDto,
+    description: 'Transactions retrieved successfully',
+  })
   findAll(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
@@ -122,19 +119,11 @@ export class TransactionController {
     description: 'Transaction retrieved successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No transaction was found with such id',
     errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
-    args: { id: 1 },
-    argExtractor: (params) => ({ id: params.id }),
+    argExtractor: (params) => ({ transactionId: String(params.id) }),
     matchers: matchRecordsNotFound('Transaction'),
   })
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description: 'User is not a participant in the transaction',
-    errorCode: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
-    args: { transactionId: 1 },
-  })
+  @ApiErrorResponses(ErrorCode.NOT_TRANSACTION_PARTICIPANT)
   async findOne(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
@@ -147,7 +136,7 @@ export class TransactionController {
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_TRANSACTION_PARTICIPANT,
-        { transactionId: id },
+        { transactionId: String(id) },
       );
 
     void this.transactionService.markAsSeen(id, userId);
@@ -156,69 +145,36 @@ export class TransactionController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a transaction by ID' })
+  @ApiOperation({ summary: 'Update a transaction' })
   @ApiOkResponse({
     type: Transaction,
     description: 'Transaction updated successfully',
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
-      args: { id: 1 },
-      argExtractor: (params) => ({ id: params.id }),
+      argExtractor: (params) => ({ transactionId: String(params.id) }),
       matchers: matchRecordsNotFound('Transaction'),
     },
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Transaction type not found',
       errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
-      args: { typeName: 'Unknown Type' },
-      argExtractor: (_params, body) => ({ typeName: body.typeName }),
+      argExtractor: (_params, body) => ({ typeName: String(body.typeName) }),
       matchers: matchForeignConstraint('fk_transaction_type'),
     },
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Budget category not found',
       errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
-      args: { budgetName: 'Unknown Budget' },
-      argExtractor: (_params, body) => ({ budgetName: body.budgetName }),
+      argExtractor: (_params, body) => ({
+        categoryName: String(body.budgetName),
+      }),
       matchers: matchForeignConstraint('fk_transaction_budget'),
     },
   )
   @ApiErrorResponses(
-    {
-      status: HttpStatus.FORBIDDEN,
-      description:
-        'Only admin and accountant can update the fulfilled and budget status',
-      errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
-      args: { fields: 'fulfilled, budgetName, budgetAllocation' },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction is already fulfilled and cannot be mutated',
-      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction was not forwarded to this accountant',
-      errorCode: ErrorCode.NOT_LATEST_ACCOUNTANT,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction has not been approved yet',
-      errorCode: ErrorCode.TRANSACTION_NOT_APPROVED,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction allocation exceeds available budget',
-      errorCode: ErrorCode.INSUFFICIENT_BUDGET,
-      args: { budgetName: 'General', available: 50, requested: 100 },
-    },
+    ErrorCode.RESTRICTED_FIELD_UPDATE,
+    ErrorCode.TRANSACTION_ALREADY_FULFILLED,
+    ErrorCode.NOT_LATEST_ACCOUNTANT,
+    ErrorCode.TRANSACTION_NOT_APPROVED,
+    ErrorCode.INSUFFICIENT_BUDGET,
   )
   async update(
     @CurrentUser('id') userId: number,
@@ -240,7 +196,7 @@ export class TransactionController {
           throw new ApiException(
             HttpStatus.FORBIDDEN,
             ErrorCode.NOT_TRANSACTION_CREATOR,
-            { transactionId: id },
+            { transactionId: String(id) },
           );
       } else if (await this.transactionService.isCreator(id, userId)) {
         const updatingAccountantFields = updatingFields.filter((field) =>
@@ -256,7 +212,7 @@ export class TransactionController {
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.NOT_TRANSACTION_CREATOR,
-          { transactionId: id },
+          { transactionId: String(id) },
         );
     }
 
@@ -280,35 +236,23 @@ export class TransactionController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a transaction by ID' })
+  @ApiOperation({ summary: 'Delete a transaction' })
   @ApiOkResponse({
-    type: Transaction,
     description: 'Transaction deleted successfully',
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
-      args: { id: 1 },
-      argExtractor: (params) => ({ id: params.id }),
+      argExtractor: (params) => ({ transactionId: String(params.id) }),
       matchers: matchRecordsNotFound('Transaction'),
     },
     {
-      status: HttpStatus.CONFLICT,
-      description: 'Cannot delete a transaction that has forwards',
       errorCode: ErrorCode.TRANSACTION_HAS_FORWARDS,
-      args: { id: 1 },
-      argExtractor: (params) => ({ id: params.id }),
+      argExtractor: (params) => ({ transactionId: String(params.id) }),
       matchers: matchDriverAdapter('23001', 'fk_transaction_forward'),
     },
   )
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Transaction is already fulfilled and cannot be mutated',
-    errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-    args: { transactionId: 1 },
-  })
+  @ApiErrorResponses(ErrorCode.TRANSACTION_ALREADY_FULFILLED)
   async remove(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
@@ -321,7 +265,7 @@ export class TransactionController {
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_TRANSACTION_CREATOR,
-        { transactionId: id },
+        { transactionId: String(id) },
       );
 
     return this.transactionService.remove(id, role);
@@ -332,53 +276,25 @@ export class TransactionController {
   @ApiOperation({ summary: 'Attach a document to a transaction' })
   @ApiOkResponse({
     type: Transaction,
-    description: 'Document attached to transaction successfully',
+    description: 'Document attached successfully',
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No transaction was found with such id',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
-      args: { id: 1 },
-      argExtractor: (params) => ({ id: params.id }),
+      argExtractor: (params) => ({ transactionId: String(params.id) }),
       matchers: matchForeignConstraint('fk_transaction_document'),
     },
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No document was found with such id',
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
-      args: { id: 1 },
-      argExtractor: (params) => ({ id: params.documentId }),
+      argExtractor: (params) => ({ documentId: String(params.documentId) }),
       matchers: matchForeignConstraint('fk_document_transaction'),
     },
   )
   @ApiErrorResponses(
-    {
-      status: HttpStatus.FORBIDDEN,
-      description:
-        'Cannot edit documents if receiver has already seen the forward',
-      errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description:
-        'Cannot edit documents if you have already responded to the forward',
-      errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'User is not a participant in the transaction',
-      errorCode: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction is already fulfilled and cannot be mutated',
-      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-      args: { transactionId: 1 },
-    },
+    ErrorCode.FORWARD_ALREADY_SEEN,
+    ErrorCode.FORWARD_ALREADY_RESPONDED,
+    ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+    ErrorCode.TRANSACTION_ALREADY_FULFILLED,
   )
   async attachDocument(
     @CurrentUser('id') userId: number,
@@ -395,49 +311,19 @@ export class TransactionController {
   @ApiOperation({ summary: 'Detach a document from a transaction' })
   @ApiOkResponse({
     type: Transaction,
-    description: 'Document detached from transaction successfully',
+    description: 'Document detached successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No transaction was found with such id',
     errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
-    args: { id: 1 },
-    argExtractor: (params) => ({ id: params.id }),
+    argExtractor: (params) => ({ transactionId: String(params.id) }),
     matchers: matchRecordsNotFound('Transaction'),
   })
   @ApiErrorResponses(
-    {
-      status: HttpStatus.FORBIDDEN,
-      description:
-        'Cannot edit documents if receiver has already seen the forward',
-      errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description:
-        'Cannot edit documents if you have already responded to the forward',
-      errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'User is not a participant in the transaction',
-      errorCode: ErrorCode.NOT_TRANSACTION_PARTICIPANT,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Only the user who attached the document can detach it',
-      errorCode: ErrorCode.NOT_DOCUMENT_ATTACHER,
-      args: { transactionId: 1, documentId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction is already fulfilled and cannot be mutated',
-      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-      args: { transactionId: 1 },
-    },
+    ErrorCode.FORWARD_ALREADY_SEEN,
+    ErrorCode.FORWARD_ALREADY_RESPONDED,
+    ErrorCode.NOT_TRANSACTION_PARTICIPANT,
+    ErrorCode.NOT_DOCUMENT_ATTACHER,
+    ErrorCode.TRANSACTION_ALREADY_FULFILLED,
   )
   async detachDocument(
     @CurrentUser('id') userId: number,
@@ -452,7 +338,7 @@ export class TransactionController {
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.NOT_DOCUMENT_ATTACHER,
-          { transactionId: id, documentId },
+          { transactionId: String(id), documentId: String(documentId) },
         );
     }
 
@@ -470,20 +356,24 @@ export class TransactionController {
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.FORWARD_ALREADY_SEEN,
-          { transactionId },
+          {
+            forwardId: String(latestForward.id),
+          },
         );
     } else if (latestForward.receiverId === userId) {
       if (latestForward.status !== TransactionForwardStatus.WAITING)
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.FORWARD_ALREADY_RESPONDED,
-          { transactionId },
+          {
+            forwardId: String(latestForward.id),
+          },
         );
     } else
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_TRANSACTION_PARTICIPANT,
-        { transactionId },
+        { transactionId: String(transactionId) },
       );
   }
 }

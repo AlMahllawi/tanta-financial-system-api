@@ -132,6 +132,7 @@ describe('TransactionController', () => {
       await controller.update(1, UserRole.USER, id, updateTransactionDto);
       expect(transactionService['update']).toHaveBeenCalledWith(
         id,
+        1,
         UserRole.USER,
         updateTransactionDto,
       );
@@ -158,6 +159,8 @@ describe('TransactionController', () => {
       const documentId = 2;
       const userId = 3;
       transactionService.attachDocument.mockResolvedValue(new Transaction());
+      transactionService.isCreator.mockResolvedValue(true);
+      transactionService.isParticipant.mockResolvedValue(true);
       transactionService.findLatestForward.mockResolvedValue(undefined);
       await controller.attachDocument(
         userId,
@@ -181,6 +184,7 @@ describe('TransactionController', () => {
       const userId = 3;
       transactionService.detachDocument.mockResolvedValue(new Transaction());
       transactionService.findLatestForward.mockResolvedValue(undefined);
+      transactionService.isCreator.mockResolvedValue(true);
       transactionService.isAttacher.mockResolvedValue(true);
       await controller.detachDocument(
         userId,

@@ -40,7 +40,6 @@ import { ApiException } from '../common/exceptions/api.exception.js';
 import { ApiPrismaErrorResponses } from '../prisma/decorators/exception.decorator.js';
 import {
   matchDriverAdapter,
-  matchForeignConstraint,
   matchRecordsNotFound,
 } from '../prisma/prisma.matchers.js';
 import { DocumentService } from './document.service.js';
@@ -68,14 +67,6 @@ export class DocumentController {
   @ApiCreatedResponse({
     type: Document,
     description: 'Document uploaded successfully',
-  })
-  @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Uploader not found',
-    errorCode: ErrorCode.DOCUMENT_UPLOADER_NOT_FOUND,
-    args: { uploaderId: 1 },
-    argExtractor: () => ({ uploaderId: 1 }),
-    matchers: matchForeignConstraint('fk_document_uploader'),
   })
   @UseInterceptors(FileInterceptor('file'))
   create(
@@ -111,19 +102,11 @@ export class DocumentController {
     description: 'Document retrieved successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
-    args: { id: 1 },
-    argExtractor: (params) => ({ id: params.id }),
+    argExtractor: (params) => ({ documentId: String(params.id) }),
     matchers: matchRecordsNotFound('Document'),
   })
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description: 'User is not a viewer of the document',
-    errorCode: ErrorCode.NOT_DOCUMENT_VIEWER,
-    args: { documentId: 1 },
-  })
+  @ApiErrorResponses(ErrorCode.NOT_DOCUMENT_VIEWER)
   async findOne(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
@@ -136,7 +119,7 @@ export class DocumentController {
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_DOCUMENT_VIEWER,
-        { documentId: id },
+        { documentId: String(id) },
       );
 
     return this.documentService.findOne(id);
@@ -148,19 +131,11 @@ export class DocumentController {
     description: 'Document downloaded successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No document was found with such id',
     errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
-    args: { id: 1 },
-    argExtractor: (params) => ({ id: params.id }),
+    argExtractor: (params) => ({ documentId: String(params.id) }),
     matchers: matchRecordsNotFound('Document'),
   })
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description: 'User is not a viewer of the document',
-    errorCode: ErrorCode.NOT_DOCUMENT_VIEWER,
-    args: { documentId: 1 },
-  })
+  @ApiErrorResponses(ErrorCode.NOT_DOCUMENT_VIEWER)
   async download(
     @CurrentUser('id') userId: number,
     @CurrentUser('role') role: UserRole,
@@ -174,7 +149,7 @@ export class DocumentController {
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_DOCUMENT_VIEWER,
-        { documentId: id },
+        { documentId: String(id) },
       );
 
     const document = await this.documentService.findOneWithContent(id);
@@ -195,28 +170,17 @@ export class DocumentController {
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No document was found with such id',
       errorCode: ErrorCode.DOCUMENT_NOT_FOUND,
-      args: { id: 1 },
-      argExtractor: (params) => ({ id: params.id }),
+      argExtractor: (params) => ({ documentId: String(params.id) }),
       matchers: matchRecordsNotFound('Document'),
     },
     {
-      status: HttpStatus.FORBIDDEN,
-      description: 'This document is already used in a transaction',
       errorCode: ErrorCode.DOCUMENT_ALREADY_USED,
-      args: { id: 1 },
-      argExtractor: (params) => ({ id: params.id }),
+      argExtractor: (params) => ({ documentId: String(params.id) }),
       matchers: matchDriverAdapter('23001', 'fk_document_transaction'),
     },
   )
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description: 'You do not have permission to delete this document',
-    errorCode: ErrorCode.NOT_DOCUMENT_UPLOADER,
-    args: { documentId: 1 },
-  })
+  @ApiErrorResponses(ErrorCode.NOT_DOCUMENT_UPLOADER)
   remove(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser('id') userId: number,

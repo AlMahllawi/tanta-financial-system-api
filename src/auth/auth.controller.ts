@@ -21,11 +21,7 @@ export class AuthController {
     type: TokenResponseDto,
     description: 'Return JWT access token',
   })
-  @ApiErrorResponses({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Invalid credentials',
-    errorCode: ErrorCode.INVALID_CREDENTIALS,
-  })
+  @ApiErrorResponses(ErrorCode.INVALID_CREDENTIALS)
   async login(@Body() loginDto: LoginDto) {
     const userId = await this.authService.validateUser(
       loginDto.name,
@@ -46,11 +42,7 @@ export class AuthController {
     type: TokenResponseDto,
     description: 'Return new JWT access and refresh tokens',
   })
-  @ApiErrorResponses({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Invalid or expired refresh token',
-    errorCode: ErrorCode.INVALID_REFRESH_TOKEN,
-  })
+  @ApiErrorResponses(ErrorCode.INVALID_REFRESH_TOKEN)
   refresh(@Body() refreshTokenDto: RefreshTokenDto) {
     return this.authService.refresh(refreshTokenDto.refreshToken);
   }

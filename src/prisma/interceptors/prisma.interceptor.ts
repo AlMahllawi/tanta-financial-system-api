@@ -14,11 +14,12 @@ import type { Request } from 'express';
 import { catchError, Observable, throwError } from 'rxjs';
 
 import { Prisma } from '../../../prisma/generated/client.js';
+import { ErrorRegistry } from '../../common/constants/error-definitions.js';
 import { HttpExceptionResponse } from '../../common/responses/http-exception.response.js';
 import {
   DriverAdapterError,
   PRISMA_ERROR_METADATA_KEY,
-  PrismaErrorResponseDef,
+  PrismaErrorMapping,
 } from '../decorators/exception.decorator.js';
 
 @Injectable()
@@ -45,7 +46,7 @@ export class PrismaInterceptor implements NestInterceptor {
 
         // Get metadata from either the handler or the class prototype (where method decorators often store it)
         const metadata =
-          this.reflector.get<PrismaErrorResponseDef[]>(
+          this.reflector.get<PrismaErrorMapping[]>(
             PRISMA_ERROR_METADATA_KEY,
             handler,
           ) ??
@@ -73,6 +74,9 @@ export class PrismaInterceptor implements NestInterceptor {
         });
 
         if (errorDef) {
+          const registryDef = ErrorRegistry[errorDef.errorCode];
+          const status = registryDef.status;
+
           const args = errorDef.argExtractor
             ? errorDef.argExtractor(
                 request.params as Record<string, unknown>,
@@ -82,17 +86,17 @@ export class PrismaInterceptor implements NestInterceptor {
                   | Prisma.PrismaClientKnownRequestError
                   | DriverAdapterError,
               )
-            : (errorDef.args ?? {});
+            : (registryDef.args ?? {});
 
           return throwError(
             () =>
               new HttpException(
                 HttpExceptionResponse.body(
-                  errorDef.status,
+                  status,
                   errorDef.errorCode,
-                  args,
+                  args as Record<string, string>,
                 ),
-                errorDef.status,
+                status,
               ),
           );
         }

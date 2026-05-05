@@ -75,7 +75,7 @@ export class DepartmentService {
         throw new ApiException(
           HttpStatus.NOT_FOUND,
           ErrorCode.MANAGER_NOT_FOUND,
-          { managerId: updateDepartmentDto.managerId },
+          { managerId: String(updateDepartmentDto.managerId) },
         );
 
       if (user.departmentName !== name)
@@ -83,7 +83,7 @@ export class DepartmentService {
           HttpStatus.CONFLICT,
           ErrorCode.MANAGER_NOT_MEMBER_OF_DEPARTMENT,
           {
-            managerId: updateDepartmentDto.managerId,
+            managerId: String(updateDepartmentDto.managerId),
             departmentName: name,
           },
         );

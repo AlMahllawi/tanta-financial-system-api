@@ -2,30 +2,37 @@ import { STATUS_CODES } from 'node:http';
 
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ErrorCode } from '../enums/error-codes.enum.js';
-
-export class I18nMessage {
+export class I18nMessage<
+  TErrorCode extends string = string,
+  TArgs extends Record<string, string> = Record<string, string>,
+> {
   @ApiProperty()
-  key: ErrorCode;
+  key: TErrorCode;
   @ApiProperty({ required: false })
-  args?: Record<string, unknown>;
+  args?: TArgs;
 }
 
-export class HttpExceptionResponse {
+export class HttpExceptionResponse<
+  TErrorCode extends string = string,
+  TArgs extends Record<string, string> = Record<string, string>,
+> {
   @ApiProperty()
   statusCode: number;
 
   @ApiProperty()
-  message: I18nMessage;
+  message: I18nMessage<TErrorCode, TArgs>;
 
   @ApiProperty()
   error: string;
 
-  static body(
+  static body<
+    TErrorCode extends string = string,
+    TArgs extends Record<string, string> = Record<string, string>,
+  >(
     status: number,
-    errorCode: ErrorCode,
-    args?: Record<string, unknown>,
-  ): HttpExceptionResponse {
+    errorCode: TErrorCode,
+    args?: TArgs,
+  ): HttpExceptionResponse<TErrorCode, TArgs> {
     return {
       statusCode: status,
       message: {

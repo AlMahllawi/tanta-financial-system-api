@@ -129,7 +129,7 @@ export class BudgetCategoriesService {
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.NOT_LATEST_BUDGET_ENTRY,
-          { id },
+          { entryId: String(id) },
         );
 
       const deletedEntry = await tx.budgetEntry.delete({

@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -53,61 +52,26 @@ export class TransactionForwardController {
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Transaction not found',
       errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
-      args: { transactionId: 1 },
-      argExtractor: (params) => ({ transactionId: params.transactionId }),
+      argExtractor: (params) => ({
+        transactionId: String(params.transactionId),
+      }),
       matchers: matchForeignConstraint('fk_transaction_forward'),
     },
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Sender not found',
-      errorCode: ErrorCode.TRANSACTION_FORWARD_SENDER_NOT_FOUND,
-      args: { senderId: 1 },
-      argExtractor: (_params, body) => ({ senderId: body.senderId }),
-      matchers: matchForeignConstraint('fk_transaction_forward_sender'),
-    },
-    {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Receiver not found',
       errorCode: ErrorCode.TRANSACTION_FORWARD_RECEIVER_NOT_FOUND,
-      args: { receiverId: 1 },
-      argExtractor: (_params, body) => ({ receiverId: body.receiverId }),
+      argExtractor: (_params, body) => ({
+        receiverId: String(body.receiverId),
+      }),
       matchers: matchForeignConstraint('fk_transaction_forward_receiver'),
     },
   )
   @ApiErrorResponses(
-    {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Transaction not found',
-      errorCode: ErrorCode.TRANSACTION_NOT_FOUND,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Only the transaction creator can create the first forward',
-      errorCode: ErrorCode.NOT_TRANSACTION_CREATOR,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Only the latest forward receiver can forward it',
-      errorCode: ErrorCode.NOT_LATEST_RECEIVER,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Must respond to the forward before forwarding it again',
-      errorCode: ErrorCode.FORWARD_NOT_RESPONDED,
-      args: { transactionId: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction is already fulfilled and cannot be mutated',
-      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-      args: { transactionId: 1 },
-    },
+    ErrorCode.TRANSACTION_NOT_FOUND,
+    ErrorCode.NOT_TRANSACTION_CREATOR,
+    ErrorCode.NOT_LATEST_RECEIVER,
+    ErrorCode.FORWARD_NOT_RESPONDED,
+    ErrorCode.TRANSACTION_ALREADY_FULFILLED,
   )
   create(
     @CurrentUser('id') senderId: number,
@@ -138,13 +102,10 @@ export class TransactionForwardController {
     description: 'Transaction forward retrieved successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-    args: { id: 1, transactionId: 1 },
     argExtractor: (params) => ({
-      id: params.id,
-      transactionId: params.transactionId,
+      forwardId: String(params.id),
+      transactionId: String(params.transactionId),
     }),
     matchers: matchRecordsNotFound('TransactionForward'),
   })
@@ -165,35 +126,17 @@ export class TransactionForwardController {
     description: 'Transaction forward updated successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-    args: { id: 1, transactionId: 1 },
     argExtractor: (params) => ({
-      id: params.id,
-      transactionId: params.transactionId,
+      forwardId: String(params.id),
+      transactionId: String(params.transactionId),
     }),
     matchers: matchRecordsNotFound('TransactionForward'),
   })
   @ApiErrorResponses(
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Only the sender can update this forward',
-      errorCode: ErrorCode.NOT_FORWARD_SENDER,
-      args: { id: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Cannot update if the receiver has already responded',
-      errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
-      args: { id: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction is already fulfilled and cannot be mutated',
-      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-      args: { transactionId: 1 },
-    },
+    ErrorCode.NOT_FORWARD_SENDER,
+    ErrorCode.FORWARD_ALREADY_RESPONDED,
+    ErrorCode.TRANSACTION_ALREADY_FULFILLED,
   )
   updateSender(
     @CurrentUser('id') userId: number,
@@ -217,41 +160,18 @@ export class TransactionForwardController {
     description: 'Transaction forward response created successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-    args: { id: 1, transactionId: 1 },
     argExtractor: (params) => ({
-      id: params.id,
-      transactionId: params.transactionId,
+      forwardId: String(params.id),
+      transactionId: String(params.transactionId),
     }),
     matchers: matchRecordsNotFound('TransactionForward'),
   })
   @ApiErrorResponses(
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Only the receiver can respond to this forward',
-      errorCode: ErrorCode.NOT_FORWARD_RECEIVER,
-      args: { id: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Cannot respond if the sender has already seen the forward',
-      errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
-      args: { id: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Cannot respond if the transaction has been forwarded again',
-      errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
-      args: { id: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction is already fulfilled and cannot be mutated',
-      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-      args: { transactionId: 1 },
-    },
+    ErrorCode.NOT_FORWARD_RECEIVER,
+    ErrorCode.FORWARD_ALREADY_SEEN,
+    ErrorCode.FORWARD_ALREADY_RESPONDED,
+    ErrorCode.TRANSACTION_ALREADY_FULFILLED,
   )
   respond(
     @CurrentUser('id') userId: number,
@@ -274,41 +194,18 @@ export class TransactionForwardController {
     description: 'Transaction forward response updated successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-    args: { id: 1, transactionId: 1 },
     argExtractor: (params) => ({
-      id: params.id,
-      transactionId: params.transactionId,
+      forwardId: String(params.id),
+      transactionId: String(params.transactionId),
     }),
     matchers: matchRecordsNotFound('TransactionForward'),
   })
   @ApiErrorResponses(
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Only the receiver can respond to this forward',
-      errorCode: ErrorCode.NOT_FORWARD_RECEIVER,
-      args: { id: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Cannot respond if the sender has already seen the forward',
-      errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
-      args: { id: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Cannot respond if the transaction has been forwarded again',
-      errorCode: ErrorCode.FORWARD_ALREADY_RESPONDED,
-      args: { id: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction is already fulfilled and cannot be mutated',
-      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-      args: { transactionId: 1 },
-    },
+    ErrorCode.NOT_FORWARD_RECEIVER,
+    ErrorCode.FORWARD_ALREADY_SEEN,
+    ErrorCode.FORWARD_ALREADY_RESPONDED,
+    ErrorCode.TRANSACTION_ALREADY_FULFILLED,
   )
   updateResponse(
     @CurrentUser('id') userId: number,
@@ -331,36 +228,17 @@ export class TransactionForwardController {
     description: 'Transaction forward removed successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Transaction forward not found',
     errorCode: ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-    args: { id: 1, transactionId: 1 },
     argExtractor: (params) => ({
-      id: params.id,
-      transactionId: params.transactionId,
+      forwardId: String(params.id),
+      transactionId: String(params.transactionId),
     }),
     matchers: matchRecordsNotFound('TransactionForward'),
   })
   @ApiErrorResponses(
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Only the sender can undo this forward',
-      errorCode: ErrorCode.NOT_FORWARD_SENDER,
-      args: { id: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description:
-        'Cannot undo a forward that has already been seen by the receiver',
-      errorCode: ErrorCode.FORWARD_ALREADY_SEEN,
-      args: { id: 1 },
-    },
-    {
-      status: HttpStatus.FORBIDDEN,
-      description: 'Transaction is already fulfilled and cannot be mutated',
-      errorCode: ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-      args: { transactionId: 1 },
-    },
+    ErrorCode.NOT_FORWARD_SENDER,
+    ErrorCode.FORWARD_ALREADY_SEEN,
+    ErrorCode.TRANSACTION_ALREADY_FULFILLED,
   )
   remove(
     @CurrentUser('id') userId: number,

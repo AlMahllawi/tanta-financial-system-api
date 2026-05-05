@@ -5,19 +5,18 @@ import { plainToInstance } from 'class-transformer';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
 import { UserRole } from '../../prisma/generated/enums.js';
-import { ApiException } from '../common/exceptions/api.exception.js';
 import { User } from '../user/entities/user.entity.js';
-import { UserService } from '../user/user.service.js';
+import { AuthService } from './auth.service.js';
 import { JwtPayload } from './interfaces/auth.interface.js';
 import { JwtStrategy } from './jwt.strategy.js';
 
 describe('JwtStrategy', () => {
   let strategy: JwtStrategy;
-  let userServiceMock: DeepMockProxy<UserService>;
+  let authServiceMock: DeepMockProxy<AuthService>;
   let configServiceMock: DeepMockProxy<ConfigService>;
 
   beforeEach(async () => {
-    userServiceMock = mockDeep<UserService>();
+    authServiceMock = mockDeep<AuthService>();
     configServiceMock = mockDeep<ConfigService>();
 
     configServiceMock.getOrThrow.mockReturnValue('test-secret');
@@ -26,8 +25,8 @@ describe('JwtStrategy', () => {
       providers: [
         JwtStrategy,
         {
-          provide: UserService,
-          useValue: userServiceMock,
+          provide: AuthService,
+          useValue: authServiceMock,
         },
         {
           provide: ConfigService,
@@ -58,25 +57,17 @@ describe('JwtStrategy', () => {
     });
 
     it('should return user if active and found', async () => {
-      userServiceMock.findOne.mockResolvedValue(user);
-
+      authServiceMock.validateJwtPayload.mockResolvedValue(user);
       const result = await strategy.validate(payload);
-
-      expect(userServiceMock['findOne']).toHaveBeenCalledWith(payload.id);
+      expect(authServiceMock['validateJwtPayload']).toHaveBeenCalledWith(
+        payload,
+      );
       expect(result).toEqual(user);
     });
 
-    it('should throw ApiException if user is inactive', async () => {
-      const inactiveUser = plainToInstance(User, { ...user, active: false });
-      userServiceMock.findOne.mockResolvedValue(inactiveUser);
-
-      await expect(strategy.validate(payload)).rejects.toThrow(ApiException);
-    });
-
-    it('should throw ApiException if user not found', async () => {
-      userServiceMock.findOne.mockRejectedValue(new Error('User not found'));
-
-      await expect(strategy.validate(payload)).rejects.toThrow(ApiException);
+    it('should throw if validation fails', async () => {
+      authServiceMock.validateJwtPayload.mockRejectedValue(new Error('error'));
+      await expect(strategy.validate(payload)).rejects.toThrow();
     });
   });
 });

@@ -1,10 +1,4 @@
-import {
-  Controller,
-  HttpStatus,
-  MessageEvent,
-  Sse,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, MessageEvent, Sse, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -70,11 +64,7 @@ export class SseController {
       },
     },
   })
-  @ApiErrorResponses({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Invalid or missing JWT token',
-    errorCode: ErrorCode.INVALID_CREDENTIALS,
-  })
+  @ApiErrorResponses(ErrorCode.INVALID_CREDENTIALS)
   subscribeToUserEvents(@CurrentUser() user: User): Observable<MessageEvent> {
     return this.sseService.subscribeToUser(user.id);
   }

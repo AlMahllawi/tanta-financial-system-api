@@ -76,6 +76,7 @@ export class TransactionTypeService {
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.NOT_TRANSACTION_TYPE_CREATOR,
+          { typeName: name },
         );
     }
 

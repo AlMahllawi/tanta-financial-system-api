@@ -311,8 +311,9 @@ describe('TransactionService', () => {
   describe('update', () => {
     const id = 1;
     const updateTransactionDto: UpdateTransactionDto = {
-      title: 'Updated Title',
       fulfilled: true,
+      budgetName: 'Engineering',
+      budgetAllocation: 100,
     };
 
     it('should successfully update a transaction', async () => {
@@ -334,7 +335,7 @@ describe('TransactionService', () => {
         budgetAllocation: null,
       } as never);
 
-      await service.update(id, 1, UserRole.USER, updateTransactionDto);
+      await service.update(id, 1, UserRole.ACCOUNTANT, updateTransactionDto);
 
       expect(prismaMock.transaction['update']).toHaveBeenCalledWith({
         where: { id },

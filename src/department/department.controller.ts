@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -52,12 +51,9 @@ export class DepartmentController {
     description: 'Department created successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.CONFLICT,
-    description: 'A department already exists with the same name',
     errorCode: ErrorCode.DEPARTMENT_ALREADY_EXISTS,
-    args: { name: 'Computer Science' },
     argExtractor: (_params, body) => ({
-      name: body.name,
+      departmentName: String(body.name),
     }),
     matchers: matchUniqueConstraint('name'),
   })
@@ -79,11 +75,8 @@ export class DepartmentController {
     description: 'Department retrieved successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No department was found with such name',
     errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
-    args: { name: 'Unknown Department' },
-    argExtractor: (params) => ({ name: params.name }),
+    argExtractor: (params) => ({ departmentName: String(params.name) }),
     matchers: matchRecordsNotFound('Department'),
   })
   findOne(@Param('name') name: string) {
@@ -99,51 +92,33 @@ export class DepartmentController {
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.CONFLICT,
-      description: 'A department already exists with the same name',
       errorCode: ErrorCode.DEPARTMENT_ALREADY_EXISTS,
-      args: { name: 'Computer Science' },
       argExtractor: (_params, body) => ({
-        name: body.name,
+        departmentName: String(body.name),
       }),
       matchers: matchUniqueConstraint('name'),
     },
     {
-      status: HttpStatus.CONFLICT,
-      description:
-        'The specified manager is already managing another department',
       errorCode: ErrorCode.MANAGER_ALREADY_MANAGES_DEPARTMENT,
-      args: { managerId: 1 },
       argExtractor: (_params, body) => ({
-        managerId: body.managerId,
+        managerId: String(body.managerId),
       }),
       matchers: [matchUniqueConstraint('"managerId"')],
     },
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No department was found with such name',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
-      args: { name: 'Unknown Department' },
-      argExtractor: (params) => ({ name: params.name }),
+      argExtractor: (params) => ({ departmentName: String(params.name) }),
       matchers: matchRecordsNotFound('Department'),
     },
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'The specified manager user was not found',
       errorCode: ErrorCode.MANAGER_NOT_FOUND,
-      args: { managerId: 1 },
       argExtractor: (_params, body) => ({
-        managerId: body.managerId,
+        managerId: String(body.managerId),
       }),
       matchers: [matchDriverAdapter('23503', 'fk_department_manager')],
     },
   )
-  @ApiErrorResponses({
-    status: HttpStatus.CONFLICT,
-    description: 'The specified manager does not belong to this department',
-    errorCode: ErrorCode.MANAGER_NOT_MEMBER_OF_DEPARTMENT,
-    args: { managerId: 1, departmentName: 'Engineering' },
-  })
+  @ApiErrorResponses(ErrorCode.MANAGER_NOT_MEMBER_OF_DEPARTMENT)
   update(
     @Param('name') name: string,
     @Body() updateDepartmentDto: UpdateDepartmentDto,
@@ -160,19 +135,13 @@ export class DepartmentController {
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No department was found with such name',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
-      args: { name: 'Unknown Department' },
-      argExtractor: (params) => ({ name: params.name }),
+      argExtractor: (params) => ({ departmentName: String(params.name) }),
       matchers: matchRecordsNotFound('Department'),
     },
     {
-      status: HttpStatus.CONFLICT,
-      description: 'Cannot delete department with existing members',
       errorCode: ErrorCode.DEPARTMENT_HAS_MEMBERS,
-      args: { name: 'Computer Science' },
-      argExtractor: (params) => ({ name: params.name }),
+      argExtractor: (params) => ({ departmentName: String(params.name) }),
       matchers: [matchDriverAdapter('23001', 'fk_user_department')],
     },
   )

@@ -9,6 +9,7 @@ import {
   UserRole,
 } from '../../prisma/generated/enums.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { NotificationCode } from '../common/enums/notification-codes.enum.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
 import { getDownloadURI } from '../common/utils/document.util.js';
 import {
@@ -16,7 +17,6 @@ import {
   createPaginator,
 } from '../common/utils/pagination.util.js';
 import { Document } from '../document/entities/document.entity.js';
-import { NotificationCode } from '../notification/enums/notification-codes.enum.js';
 import { NotificationService } from '../notification/notification.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
@@ -339,14 +339,14 @@ export class TransactionService {
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.NOT_LATEST_ACCOUNTANT,
-          { transactionId: id },
+          { transactionId: String(id) },
         );
 
       if (latestForward?.status !== TransactionForwardStatus.APPROVED)
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.TRANSACTION_NOT_APPROVED,
-          { transactionId: id },
+          { transactionId: String(id) },
         );
 
       const preTransaction = await this.prisma.transaction.findUniqueOrThrow({
@@ -379,11 +379,11 @@ export class TransactionService {
                 NotificationType.WARNING,
                 NotificationCode.BUDGET_ALLOCATION_OVERFLOW_ATTEMPT,
                 {
-                  transactionId: id,
-                  budgetName,
-                  available: details.available,
-                  requested: budgetAllocation,
-                  attemptedBy: userId,
+                  transactionId: String(id),
+                  categoryName: budgetName,
+                  availableAmount: String(details.available),
+                  requestedAmount: String(budgetAllocation),
+                  attemptedBy: String(userId),
                 },
               ),
             ),
@@ -393,9 +393,9 @@ export class TransactionService {
             HttpStatus.FORBIDDEN,
             ErrorCode.INSUFFICIENT_BUDGET,
             {
-              budgetName,
-              available: details.available,
-              requested: budgetAllocation,
+              categoryName: budgetName,
+              availableAmount: String(details.available),
+              requestedAmount: String(budgetAllocation),
             },
           );
         }
@@ -498,7 +498,7 @@ export class TransactionService {
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-        { transactionId: id },
+        { transactionId: String(id) },
       );
   }
 }

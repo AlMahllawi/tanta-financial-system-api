@@ -119,35 +119,35 @@ export class TransactionForwardService {
       throw new ApiException(
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-        { id, transactionId },
+        { forwardId: String(id), transactionId: String(transactionId) },
       );
 
     if (forward.transaction.fulfilled)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-        { transactionId },
+        { transactionId: String(transactionId) },
       );
 
     if (forward.receiverId !== userId)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_FORWARD_RECEIVER,
-        { id },
+        { forwardId: String(id) },
       );
 
     if (forward.senderSeen && forward.receiverComment !== null)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORWARD_ALREADY_SEEN,
-        { id },
+        { forwardId: String(id) },
       );
 
     if (forward.transaction.latestForward?.id !== id)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORWARD_ALREADY_RESPONDED,
-        { id },
+        { forwardId: String(id) },
       );
 
     const updatedForward = await this.prisma.transactionForward.update({
@@ -188,28 +188,28 @@ export class TransactionForwardService {
       throw new ApiException(
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-        { id, transactionId },
+        { forwardId: String(id), transactionId: String(transactionId) },
       );
 
     if (forward.transaction.fulfilled)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-        { transactionId },
+        { transactionId: String(transactionId) },
       );
 
     if (forward.senderId !== userId)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_FORWARD_SENDER,
-        { id },
+        { forwardId: String(id) },
       );
 
     if (forward.status !== TransactionForwardStatus.WAITING)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORWARD_ALREADY_RESPONDED,
-        { id },
+        { forwardId: String(id) },
       );
 
     const updatedForward = await this.prisma.transactionForward.update({
@@ -240,28 +240,28 @@ export class TransactionForwardService {
       throw new ApiException(
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_FORWARD_NOT_FOUND,
-        { id, transactionId },
+        { forwardId: String(id), transactionId: String(transactionId) },
       );
 
     if (forward.transaction.fulfilled)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-        { transactionId },
+        { transactionId: String(transactionId) },
       );
 
     if (forward.senderId !== userId)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_FORWARD_SENDER,
-        { id },
+        { forwardId: String(id) },
       );
 
     if (forward.receiverSeen)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.FORWARD_ALREADY_SEEN,
-        { id },
+        { forwardId: String(id) },
       );
 
     const removedForward = await this.prisma.transactionForward.delete({
@@ -289,14 +289,14 @@ export class TransactionForwardService {
       throw new ApiException(
         HttpStatus.NOT_FOUND,
         ErrorCode.TRANSACTION_NOT_FOUND,
-        { transactionId },
+        { transactionId: String(transactionId) },
       );
 
     if (transaction.fulfilled)
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.TRANSACTION_ALREADY_FULFILLED,
-        { transactionId },
+        { transactionId: String(transactionId) },
       );
 
     const { latestForward } = transaction;
@@ -306,21 +306,21 @@ export class TransactionForwardService {
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.NOT_TRANSACTION_CREATOR,
-          { transactionId },
+          { transactionId: String(transactionId) },
         );
     } else {
       if (userId !== latestForward.receiverId)
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.NOT_LATEST_RECEIVER,
-          { transactionId },
+          { transactionId: String(transactionId) },
         );
 
       if (latestForward.status === TransactionForwardStatus.WAITING)
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.FORWARD_NOT_RESPONDED,
-          { transactionId },
+          { transactionId: String(transactionId) },
         );
     }
   }

@@ -66,7 +66,8 @@ describe('DocumentController', () => {
 
     it('should return a document if found', async () => {
       documentService.findOne.mockResolvedValue(new Document());
-      await controller.findOne(id);
+      documentService.isVisibleToUser.mockResolvedValue(true);
+      await controller.findOne(1, UserRole.USER, id);
       expect(documentService['findOne']).toHaveBeenCalledWith(id);
     });
   });

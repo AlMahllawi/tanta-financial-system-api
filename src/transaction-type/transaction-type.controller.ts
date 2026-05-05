@@ -51,11 +51,8 @@ export class TransactionTypeController {
     description: 'Transaction type created successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.CONFLICT,
-    description: 'A transaction type already exists with the same name',
     errorCode: ErrorCode.TRANSACTION_TYPE_ALREADY_EXISTS,
-    args: { name: 'Financial' },
-    argExtractor: (_params, body) => ({ name: body.name }),
+    argExtractor: (_params, body) => ({ typeName: String(body.name) }),
     matchers: matchUniqueConstraint('name'),
   })
   create(
@@ -92,11 +89,8 @@ export class TransactionTypeController {
     description: 'Transaction type retrieved successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No transaction type was found with such name',
     errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
-    args: { name: 'Unknown Type' },
-    argExtractor: (params) => ({ name: params.name }),
+    argExtractor: (params) => ({ typeName: String(params.name) }),
     matchers: matchRecordsNotFound('TransactionType'),
   })
   findOne(@Param('name') name: string) {
@@ -109,27 +103,19 @@ export class TransactionTypeController {
     type: TransactionType,
     description: 'Transaction type deleted successfully',
   })
-  @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No transaction type was found with such name',
-    errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
-    args: { name: 'Unknown Type' },
-    argExtractor: (params) => ({ name: params.name }),
-    matchers: matchRecordsNotFound('TransactionType'),
-  })
-  @ApiPrismaErrorResponses({
-    status: HttpStatus.CONFLICT,
-    description: 'Transaction type is in use',
-    errorCode: ErrorCode.TRANSACTION_TYPE_IN_USE,
-    args: { name: 'Financial' },
-    argExtractor: (params) => ({ name: params.name }),
-    matchers: matchDriverAdapter('23001', 'fk_transaction_type'),
-  })
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description: 'You are not the creator of this transaction type',
-    errorCode: ErrorCode.NOT_TRANSACTION_TYPE_CREATOR,
-  })
+  @ApiPrismaErrorResponses(
+    {
+      errorCode: ErrorCode.TRANSACTION_TYPE_NOT_FOUND,
+      argExtractor: (params) => ({ typeName: String(params.name) }),
+      matchers: matchRecordsNotFound('TransactionType'),
+    },
+    {
+      errorCode: ErrorCode.TRANSACTION_TYPE_IN_USE,
+      argExtractor: (params) => ({ typeName: String(params.name) }),
+      matchers: matchDriverAdapter('23001', 'fk_transaction_type'),
+    },
+  )
+  @ApiErrorResponses(ErrorCode.NOT_TRANSACTION_TYPE_CREATOR)
   remove(
     @Param('name') name: string,
     @CurrentUser('id') userId: number,

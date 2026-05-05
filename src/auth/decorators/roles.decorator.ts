@@ -1,9 +1,4 @@
-import {
-  applyDecorators,
-  ExecutionContext,
-  HttpStatus,
-  SetMetadata,
-} from '@nestjs/common';
+import { applyDecorators, ExecutionContext, SetMetadata } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { Request } from 'express';
 
@@ -16,12 +11,7 @@ export const ROLES_KEY = 'roles';
 export const Roles = (...roles: UserRole[]) =>
   applyDecorators(
     SetMetadata(ROLES_KEY, roles),
-    ApiErrorResponses({
-      status: HttpStatus.FORBIDDEN,
-      description: 'Roles restricted resource.',
-      errorCode: ErrorCode.MISSING_ROLE,
-      args: { roles: roles.join(' | ') },
-    }),
+    ApiErrorResponses(ErrorCode.MISSING_ROLE),
   );
 
 export const ROLES_EXCEPTION_KEY = 'rolesException';

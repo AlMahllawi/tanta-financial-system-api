@@ -6,6 +6,7 @@ import { PaginatedDto } from '../dto/pagination.dto.js';
 export const ApiPaginatedResponse = <TModel extends Type<unknown>>(
   model: TModel,
   description?: string,
+  example?: PaginatedDto<InstanceType<TModel>>,
 ) =>
   applyDecorators(
     ApiExtraModels(PaginatedDto, model),
@@ -23,6 +24,7 @@ export const ApiPaginatedResponse = <TModel extends Type<unknown>>(
             },
           },
         ],
+        example,
       },
     }),
   );

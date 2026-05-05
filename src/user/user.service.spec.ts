@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
-import { UserRole } from '../../prisma/generated/enums.js';
+import { UserPresence, UserRole } from '../../prisma/generated/enums.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
@@ -50,6 +50,7 @@ describe('UserService', () => {
         ...createUserDto,
         hashedPassword: 'hashedPassword',
         active: true,
+        presence: UserPresence.OFFLINE,
         lastLogin: null,
         createdAt: new Date(),
       };
@@ -76,6 +77,7 @@ describe('UserService', () => {
         departmentName: 'Test Department',
         hashedPassword: 'hashedPassword',
         active: true,
+        presence: UserPresence.OFFLINE,
         lastLogin: null,
         role: UserRole.USER,
         createdAt: new Date(),
@@ -129,6 +131,7 @@ describe('UserService', () => {
         departmentName: 'Test Department',
         hashedPassword: 'hashedPassword',
         active: true,
+        presence: UserPresence.OFFLINE,
         lastLogin: null,
         role: UserRole.USER,
         createdAt: new Date(),
@@ -159,6 +162,7 @@ describe('UserService', () => {
         departmentName: updateUserDto.departmentName as string,
         hashedPassword: 'newHashedPassword',
         active: true,
+        presence: UserPresence.OFFLINE,
         lastLogin: null,
         role: UserRole.USER,
         createdAt: new Date(),
@@ -187,6 +191,7 @@ describe('UserService', () => {
         departmentName: 'Test Department',
         hashedPassword: 'hashedPassword',
         active: true,
+        presence: UserPresence.OFFLINE,
         lastLogin: null,
         role: UserRole.USER,
         createdAt: new Date(),

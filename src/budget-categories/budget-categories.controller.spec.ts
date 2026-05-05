@@ -2,6 +2,7 @@ import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 
+import { UserRole } from '../../prisma/generated/enums.js';
 import { BudgetCategoriesController } from './budget-categories.controller.js';
 import { BudgetCategoriesService } from './budget-categories.service.js';
 import { BudgetCategoryQueryDto } from './dto/budget-category-query.dto.js';
@@ -72,7 +73,7 @@ describe('BudgetCategoriesController', () => {
       };
       service.findAll.mockResolvedValue(expectedResult);
 
-      const result = await controller.findAll(queryDto);
+      const result = await controller.findAll(queryDto, UserRole.ADMIN);
 
       expect(() => service.findAll(queryDto)).not.toThrow();
       expect(result).toBe(expectedResult);
@@ -85,7 +86,7 @@ describe('BudgetCategoriesController', () => {
       const expectedResult = new BudgetCategory();
       service.findOne.mockResolvedValue(expectedResult);
 
-      const result = await controller.findOne(name);
+      const result = await controller.findOne(name, UserRole.ADMIN);
 
       expect(() => service.findOne(name)).not.toThrow();
       expect(result).toBe(expectedResult);
@@ -112,7 +113,7 @@ describe('BudgetCategoriesController', () => {
       const expectedResult = new BudgetCategory();
       service.remove.mockResolvedValue(expectedResult);
 
-      const result = await controller.remove(name);
+      const result = await controller.remove(name, UserRole.ADMIN);
 
       expect(() => service.remove(name)).not.toThrow();
       expect(result).toBe(expectedResult);

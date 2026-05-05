@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -61,11 +60,8 @@ export class BudgetCategoriesController {
     description: 'Budget category created successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.CONFLICT,
-    description: 'A budget category already exists with the same name',
     errorCode: ErrorCode.BUDGET_CATEGORY_ALREADY_EXISTS,
-    args: { name: 'Engineering' },
-    argExtractor: (params) => ({ name: params.name }),
+    argExtractor: (params) => ({ categoryName: String(params.name) }),
     matchers: matchUniqueConstraint('name'),
   })
   create(@Param('name') name: string) {
@@ -89,11 +85,8 @@ export class BudgetCategoriesController {
     description: 'Budget category retrieved successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
-    args: { name: 'Unknown' },
-    argExtractor: (params) => ({ name: params.name }),
+    argExtractor: (params) => ({ categoryName: String(params.name) }),
     matchers: matchRecordsNotFound('BudgetCategory'),
   })
   findOne(@Param('name') name: string, @CurrentUser('role') role: UserRole) {
@@ -108,11 +101,8 @@ export class BudgetCategoriesController {
     description: 'Budget category updated successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
-    args: { name: 'Unknown' },
-    argExtractor: (params) => ({ name: params.name }),
+    argExtractor: (params) => ({ categoryName: String(params.name) }),
     matchers: matchRecordsNotFound('BudgetCategory'),
   })
   update(
@@ -130,19 +120,13 @@ export class BudgetCategoriesController {
     description: 'Budget category deleted successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
-    args: { name: 'Unknown' },
-    argExtractor: (params) => ({ name: params.name }),
+    argExtractor: (params) => ({ categoryName: String(params.name) }),
     matchers: matchRecordsNotFound('BudgetCategory'),
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.CONFLICT,
-    description: 'Budget category is in use',
     errorCode: ErrorCode.BUDGET_CATEGORY_IN_USE,
-    args: { name: 'Engineering' },
-    argExtractor: (params) => ({ name: params.name }),
+    argExtractor: (params) => ({ categoryName: String(params.name) }),
     matchers: matchDriverAdapter('23001', 'fk_transaction_budget'),
   })
   remove(@Param('name') name: string, @CurrentUser('role') role: UserRole) {
@@ -153,11 +137,8 @@ export class BudgetCategoriesController {
   @ApiOperation({ summary: 'List budget entries for a category' })
   @ApiPaginatedResponse(BudgetEntry, 'Paged list of budget entries')
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
-    args: { name: 'Unknown' },
-    argExtractor: (params) => ({ name: params.name }),
+    argExtractor: (params) => ({ categoryName: String(params.name) }),
     matchers: matchRecordsNotFound('BudgetCategory'),
   })
   findAllEntries(
@@ -175,11 +156,8 @@ export class BudgetCategoriesController {
     description: 'Budget entry added successfully to the category',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Budget category not found',
     errorCode: ErrorCode.BUDGET_CATEGORY_NOT_FOUND,
-    args: { budgetName: 'Unknown' },
-    argExtractor: (params) => ({ budgetName: params.name }),
+    argExtractor: (params) => ({ categoryName: String(params.name) }),
     matchers: matchForeignConstraint('fk_budget_entry'),
   })
   addEntry(
@@ -198,19 +176,11 @@ export class BudgetCategoriesController {
     description: 'Budget entry removed successfully from the category',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Budget entry not found',
     errorCode: ErrorCode.BUDGET_ENTRY_NOT_FOUND,
-    args: { id: 1 },
-    argExtractor: (params) => ({ id: params.id }),
+    argExtractor: (params) => ({ entryId: String(params.id) }),
     matchers: matchRecordsNotFound('BudgetEntry'),
   })
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Only the last entry can be removed',
-    errorCode: ErrorCode.NOT_LATEST_BUDGET_ENTRY,
-    args: { id: 1 },
-  })
+  @ApiErrorResponses(ErrorCode.NOT_LATEST_BUDGET_ENTRY)
   removeEntry(
     @Param('name') name: string,
     @Param('id', ParseIntPipe) id: number,

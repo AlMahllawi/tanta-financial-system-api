@@ -118,7 +118,7 @@ export class DocumentService {
       throw new ApiException(
         HttpStatus.FORBIDDEN,
         ErrorCode.NOT_DOCUMENT_UPLOADER,
-        { documentId: id },
+        { documentId: String(id) },
       );
 
     await this.prisma.document.delete({

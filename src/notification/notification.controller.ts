@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -47,12 +46,7 @@ export class NotificationController {
     type: Notification,
     description: 'Notification seen status updated successfully',
   })
-  @ApiErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'Notification not found or does not belong to the user',
-    errorCode: ErrorCode.NOTIFICATION_NOT_FOUND,
-    args: { id: 1 },
-  })
+  @ApiErrorResponses(ErrorCode.NOTIFICATION_NOT_FOUND)
   updateSeen(
     @Param('id', ParseIntPipe) id: number,
     @CurrentUser() user: User,

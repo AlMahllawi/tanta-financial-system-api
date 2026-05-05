@@ -59,20 +59,14 @@ export class UserController {
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.CONFLICT,
-      description: 'A user already exists with the same name',
       errorCode: ErrorCode.USER_ALREADY_EXISTS,
-      args: { name: 'John Doe' },
-      argExtractor: (_params, body) => ({ name: body.name }),
+      argExtractor: (_params, body) => ({ userName: String(body.name) }),
       matchers: matchUniqueConstraint('name'),
     },
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Department not found',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
-      args: { departmentName: 'Finance' },
       argExtractor: (_params, body) => ({
-        departmentName: body.departmentName,
+        departmentName: String(body.departmentName),
       }),
       matchers: matchForeignConstraint('fk_user_department'),
     },
@@ -84,12 +78,7 @@ export class UserController {
   @Get()
   @ApiOperation({ summary: 'Retrieve all users' })
   @ApiPaginatedResponse(User)
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Filtering by active status is restricted for non-admin users',
-    errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
-    args: { fields: 'active' },
-  })
+  @ApiErrorResponses(ErrorCode.RESTRICTED_FIELD_UPDATE)
   findAll(
     @Query() queryDto: UserQueryDto,
     @CurrentUser('role') role: UserRole,
@@ -121,11 +110,8 @@ export class UserController {
     description: 'User retrieved successfully',
   })
   @ApiPrismaErrorResponses({
-    status: HttpStatus.NOT_FOUND,
-    description: 'No user was found with such id',
     errorCode: ErrorCode.USER_NOT_FOUND,
-    args: { id: 1 },
-    argExtractor: (params) => ({ id: params.id }),
+    argExtractor: (params) => ({ userId: String(params.id) }),
     matchers: matchRecordsNotFound('User'),
   })
   findOne(@Param('id', ParseIntPipe) id: number) {
@@ -142,38 +128,24 @@ export class UserController {
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.CONFLICT,
-      description: 'A user already exists with the same name',
       errorCode: ErrorCode.USER_ALREADY_EXISTS,
-      args: { name: 'John Doe' },
-      argExtractor: (_params, body) => ({ name: body.name }),
+      argExtractor: (_params, body) => ({ userName: String(body.name) }),
       matchers: matchUniqueConstraint('name'),
     },
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
-      args: { id: 1 },
-      argExtractor: (params) => ({ id: params.id }),
+      argExtractor: (params) => ({ userId: String(params.id) }),
       matchers: matchRecordsNotFound('User'),
     },
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'Department not found',
       errorCode: ErrorCode.DEPARTMENT_NOT_FOUND,
-      args: { departmentName: 'Finance' },
       argExtractor: (_params, body) => ({
-        departmentName: body.departmentName,
+        departmentName: String(body.departmentName),
       }),
       matchers: matchForeignConstraint('fk_user_department'),
     },
   )
-  @ApiErrorResponses({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Some fields are restricted for non-admin users',
-    errorCode: ErrorCode.RESTRICTED_FIELD_UPDATE,
-    args: { fields: 'role, active' },
-  })
+  @ApiErrorResponses(ErrorCode.RESTRICTED_FIELD_UPDATE)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -206,19 +178,13 @@ export class UserController {
   })
   @ApiPrismaErrorResponses(
     {
-      status: HttpStatus.NOT_FOUND,
-      description: 'No user was found with such id',
       errorCode: ErrorCode.USER_NOT_FOUND,
-      args: { id: 1 },
-      argExtractor: (params) => ({ id: params.id }),
+      argExtractor: (params) => ({ userId: String(params.id) }),
       matchers: matchRecordsNotFound('User'),
     },
     {
-      status: HttpStatus.CONFLICT,
-      description: 'Cannot delete a user who is engaged in the system',
       errorCode: ErrorCode.USER_ENGAGED_IN_SYSTEM,
-      args: { id: 1 },
-      argExtractor: (params) => ({ id: params.id }),
+      argExtractor: (params) => ({ userId: String(params.id) }),
       matchers: [
         matchForeignConstraint('fk_department_manager'),
         matchForeignConstraint('fk_document_uploader'),

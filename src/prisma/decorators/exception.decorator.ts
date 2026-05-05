@@ -1,6 +1,7 @@
 import { Prisma } from '../../../prisma/generated/client.js';
+import { ErrorArgsMap } from '../../common/constants/error-definitions.js';
 import { ApiErrorResponses } from '../../common/decorators/api-error.decorator.js';
-import { ErrorResponseDef } from '../../common/interfaces/error-response.interface.js';
+import { ErrorCode } from '../../common/enums/error-codes.enum.js';
 
 export const PRISMA_ERROR_METADATA_KEY = 'prisma_error_metadata';
 
@@ -29,7 +30,8 @@ export type PrismaMatcher = (
   error: Prisma.PrismaClientKnownRequestError | DriverAdapterError,
 ) => boolean;
 
-export interface PrismaErrorResponseDef extends ErrorResponseDef {
+export interface PrismaErrorMapping<T extends ErrorCode = ErrorCode> {
+  errorCode: T;
   matchers: PrismaMatcher | PrismaMatcher[];
   /**
    * Optional callback to extract arguments for the error message from the request
@@ -46,22 +48,28 @@ export interface PrismaErrorResponseDef extends ErrorResponseDef {
     body: Record<string, unknown>,
     query: Record<string, unknown>,
     exception: Prisma.PrismaClientKnownRequestError | DriverAdapterError,
-  ) => Record<string, unknown>;
+  ) => ErrorArgsMap[T];
 }
 
-export function ApiPrismaErrorResponses(...errors: PrismaErrorResponseDef[]) {
+export function ApiPrismaErrorResponses(
+  ...errors: PrismaErrorMapping<ErrorCode>[]
+) {
   return (
     target: object,
     key: string | symbol,
     descriptor: TypedPropertyDescriptor<unknown>,
   ) => {
-    ApiErrorResponses(...errors)(target, key, descriptor);
+    ApiErrorResponses(...errors.map((e) => e.errorCode))(
+      target,
+      key,
+      descriptor,
+    );
 
     const existing = (Reflect.getOwnMetadata(
       PRISMA_ERROR_METADATA_KEY,
       target,
       key,
-    ) || []) as PrismaErrorResponseDef[];
+    ) || []) as PrismaErrorMapping<ErrorCode>[];
 
     Reflect.defineMetadata(
       PRISMA_ERROR_METADATA_KEY,
