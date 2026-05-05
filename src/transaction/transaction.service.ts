@@ -3,6 +3,7 @@ import { plainToInstance } from 'class-transformer';
 
 import { Prisma } from '../../prisma/generated/client.js';
 import {
+  NotificationType,
   TransactionForwardStatus,
   TransactionPriority,
   UserRole,
@@ -15,6 +16,8 @@ import {
   createPaginator,
 } from '../common/utils/pagination.util.js';
 import { Document } from '../document/entities/document.entity.js';
+import { NotificationCode } from '../notification/enums/notification-codes.enum.js';
+import { NotificationService } from '../notification/notification.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { TransactionQueryDto } from './dto/transaction-query.dto.js';
@@ -40,7 +43,10 @@ type TransactionWithDocuments = Prisma.TransactionGetPayload<{
 
 @Injectable()
 export class TransactionService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   private getParticipantWhere(userId: number): Prisma.TransactionWhereInput {
     return {
@@ -360,7 +366,29 @@ export class TransactionService {
           select: { available: true },
         });
 
-        if (details && budgetAllocation > details.available)
+        if (details && budgetAllocation > details.available) {
+          const admins = await this.prisma.user.findMany({
+            where: { role: UserRole.ADMIN },
+            select: { id: true },
+          });
+
+          await Promise.all(
+            admins.map((admin) =>
+              this.notificationService.create(
+                admin.id,
+                NotificationType.WARNING,
+                NotificationCode.BUDGET_ALLOCATION_OVERFLOW_ATTEMPT,
+                {
+                  transactionId: id,
+                  budgetName,
+                  available: details.available,
+                  requested: budgetAllocation,
+                  attemptedBy: userId,
+                },
+              ),
+            ),
+          );
+
           throw new ApiException(
             HttpStatus.FORBIDDEN,
             ErrorCode.INSUFFICIENT_BUDGET,
@@ -370,6 +398,7 @@ export class TransactionService {
               requested: budgetAllocation,
             },
           );
+        }
       }
     }
 

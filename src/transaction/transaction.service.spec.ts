@@ -7,6 +7,7 @@ import {
   TransactionPriority,
   UserRole,
 } from '../../prisma/generated/enums.js';
+import { NotificationService } from '../notification/notification.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateTransactionDto } from './dto/create-transaction.dto.js';
 import { UpdateTransactionDto } from './dto/update-transaction.dto.js';
@@ -16,9 +17,11 @@ import { TransactionService } from './transaction.service.js';
 describe('TransactionService', () => {
   let service: TransactionService;
   let prismaMock: DeepMockProxy<PrismaService>;
+  let notificationMock: DeepMockProxy<NotificationService>;
 
   beforeEach(async () => {
     prismaMock = mockDeep<PrismaService>();
+    notificationMock = mockDeep<NotificationService>();
     prismaMock.$transaction.mockImplementation(async (arg: unknown) => {
       if (Array.isArray(arg)) return Promise.all(arg) as Promise<never>;
 
@@ -35,6 +38,10 @@ describe('TransactionService', () => {
         {
           provide: PrismaService,
           useValue: prismaMock,
+        },
+        {
+          provide: NotificationService,
+          useValue: notificationMock,
         },
       ],
     }).compile();
@@ -316,8 +323,18 @@ describe('TransactionService', () => {
       prismaMock.transaction.update.mockResolvedValue(
         updatedTransaction as never,
       );
+      prismaMock.transaction.findUnique.mockResolvedValue({
+        fulfilled: false,
+        forwards: [
+          { status: TransactionForwardStatus.APPROVED, receiverId: 1 },
+        ],
+      } as never);
+      prismaMock.transaction.findUniqueOrThrow.mockResolvedValue({
+        budgetName: null,
+        budgetAllocation: null,
+      } as never);
 
-      await service.update(id, UserRole.USER, updateTransactionDto);
+      await service.update(id, 1, UserRole.USER, updateTransactionDto);
 
       expect(prismaMock.transaction['update']).toHaveBeenCalledWith({
         where: { id },
