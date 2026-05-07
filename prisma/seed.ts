@@ -1,20 +1,22 @@
 import 'dotenv/config';
-import Joi from 'joi';
-import { PrismaClient } from './generated/client.js';
+
+import { faker } from '@faker-js/faker';
 import { PrismaPg } from '@prisma/adapter-pg';
+import Joi from 'joi';
+
+import { PrismaClient } from './generated/client.js';
 import { UserRole } from './generated/enums.js';
+import { manyBudgetCategoriesFactory } from './seeds/budget-category.factory.js';
+import { manyBudgetEntriesFactory } from './seeds/budget-entry.factory.js';
 import {
   departmentFactory,
   manyDepartmentsFactory,
 } from './seeds/department.factory.js';
-import { manyUsersFactory, userFactory } from './seeds/user.factory.js';
-import { faker } from '@faker-js/faker';
 import { manyDocumentsFactory } from './seeds/document.factory.js';
-import { manyTransactionTypesFactory } from './seeds/transaction-type.factory.js';
 import { manyTransactionsFactory } from './seeds/transaction.factory.js';
 import { transactionForwardFactory } from './seeds/transaction-forward.factory.js';
-import { manyBudgetCategoriesFactory } from './seeds/budget-category.factory.js';
-import { manyBudgetEntriesFactory } from './seeds/budget-entry.factory.js';
+import { manyTransactionTypesFactory } from './seeds/transaction-type.factory.js';
+import { manyUsersFactory, userFactory } from './seeds/user.factory.js';
 
 interface EnvVars {
   DEFAULT_ADMIN_NAME: string;
@@ -57,6 +59,23 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  console.log('Cleaning up database...');
+  const tables = [
+    'Notification',
+    'BudgetEntry',
+    'TransactionForward',
+    'TransactionDocument',
+    'Transaction',
+    'TransactionType',
+    'Document',
+    'User',
+    'Department',
+    'BudgetCategory',
+  ];
+
+  for (const table of tables)
+    await prisma.$executeRawUnsafe(`TRUNCATE TABLE "${table}" CASCADE;`);
+
   console.log('Creating essential administrations...');
   const adminDeptData = departmentFactory({
     name: ENV.DEFAULT_ADMIN_DEPARTMENT,

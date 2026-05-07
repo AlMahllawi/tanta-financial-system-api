@@ -7,8 +7,9 @@ export const departmentFactory = (
     name?: string;
   } = {},
 ) => {
-  let name = `${(overrides.name ?? faker.commerce.department()).replace(/[^a-zA-Z0-9-_\s]/g, '')} ${faker.string.alphanumeric(5)}`;
-  while (name.length < 5) name += ` ${faker.string.alphanumeric(5)}`;
+  const name = overrides.name
+    ? overrides.name.replace(/[^a-zA-Z0-9-_\s]/g, '')
+    : `${faker.commerce.department().replace(/[^a-zA-Z0-9-_\s]/g, '')} ${faker.string.alphanumeric(5)}`;
 
   return {
     name,
