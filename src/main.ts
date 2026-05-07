@@ -1,9 +1,4 @@
-import {
-  ClassSerializerInterceptor,
-  Logger,
-  ValidationPipe,
-  VersioningType,
-} from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -11,6 +6,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import packageJson from '../package.json' with { type: 'json' };
 import { AppModule } from './app.module.js';
 import { SWAGGER_PATH } from './common/constants/app.constants.js';
+import { RoleSerializerInterceptor } from './common/interceptors/role-serializer.interceptor.js';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -40,7 +36,7 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  app.useGlobalInterceptors(new RoleSerializerInterceptor(app.get(Reflector)));
 
   const config = new DocumentBuilder()
     .setTitle('Tanta Financial System API')

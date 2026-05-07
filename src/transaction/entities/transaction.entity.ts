@@ -1,8 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 import {
   TransactionForwardStatus,
   TransactionPriority,
+  UserRole,
 } from '../../../prisma/generated/enums.js';
 import { TransactionModel } from '../../../prisma/generated/models.js';
 import { Document } from '../../document/entities/document.entity.js';
@@ -28,6 +30,7 @@ export class Transaction implements TransactionModel {
     nullable: true,
     description: 'Only visible to admin and accountant.',
   })
+  @Expose({ groups: [UserRole.ADMIN, UserRole.ACCOUNTANT] })
   budgetName: string | null;
 
   @ApiPropertyOptional({
@@ -35,6 +38,7 @@ export class Transaction implements TransactionModel {
     nullable: true,
     description: 'Only visible to admin and accountant.',
   })
+  @Expose({ groups: [UserRole.ADMIN, UserRole.ACCOUNTANT] })
   budgetAllocation: number | null;
 
   @ApiProperty({ enum: TransactionPriority })

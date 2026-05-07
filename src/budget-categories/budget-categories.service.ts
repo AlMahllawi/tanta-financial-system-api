@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 
 import { Prisma } from '../../prisma/generated/client.js';
 import { UserRole } from '../../prisma/generated/enums.js';
@@ -27,14 +27,17 @@ export class BudgetCategoriesService {
     const category = await this.prisma.budgetCategory.create({
       data: { name },
     });
-    return plainToInstance(
-      BudgetCategory,
-      {
-        ...category,
-        budget: 0,
-        allocated: 0,
-        available: 0,
-      },
+    return instanceToPlain(
+      plainToInstance(
+        BudgetCategory,
+        {
+          ...category,
+          budget: 0,
+          allocated: 0,
+          available: 0,
+        },
+        { groups: [UserRole.ADMIN] },
+      ),
       { groups: [UserRole.ADMIN] },
     );
   }
@@ -62,15 +65,18 @@ export class BudgetCategoriesService {
         allocated: 0,
         available: 0,
       };
-      return plainToInstance(
-        BudgetCategory,
-        {
-          name: category.name,
-          preallocation: category.preallocation,
-          budget,
-          allocated,
-          available,
-        },
+      return instanceToPlain(
+        plainToInstance(
+          BudgetCategory,
+          {
+            name: category.name,
+            preallocation: category.preallocation,
+            budget,
+            allocated,
+            available,
+          },
+          { groups: userRole ? [userRole] : [] },
+        ),
         { groups: userRole ? [userRole] : [] },
       );
     });
@@ -154,15 +160,18 @@ export class BudgetCategoriesService {
       available: 0,
     };
 
-    return plainToInstance(
-      BudgetCategory,
-      {
-        name: category.name,
-        preallocation: category.preallocation,
-        budget,
-        allocated,
-        available,
-      },
+    return instanceToPlain(
+      plainToInstance(
+        BudgetCategory,
+        {
+          name: category.name,
+          preallocation: category.preallocation,
+          budget,
+          allocated,
+          available,
+        },
+        { groups: userRole ? [userRole] : [] },
+      ),
       { groups: userRole ? [userRole] : [] },
     );
   }

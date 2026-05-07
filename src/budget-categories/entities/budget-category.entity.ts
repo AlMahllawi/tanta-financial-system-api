@@ -26,20 +26,24 @@ export class BudgetEntry implements BudgetEntryModel {
 
 export class BudgetCategory implements BudgetCategoryModel {
   @ApiProperty()
+  @Expose()
   name: string;
 
   @ApiProperty({
     description: 'The absolute total amount assigned to this budget',
   })
+  @Expose()
   budget: number;
 
   @ApiProperty({
     description:
       'The sum of all fulfilled transactions that are tied to this budget',
   })
+  @Expose()
   allocated: number;
 
   @ApiProperty({ description: 'budget - allocated' })
+  @Expose()
   available: number;
 
   @ApiProperty()

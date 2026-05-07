@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 
 import { Prisma } from '../../prisma/generated/client.js';
 import {
@@ -229,15 +229,18 @@ export class TransactionService {
 
     const transactionsPaginated = createPaginatedResult(
       transactions.map((t) =>
-        plainToInstance(
-          TransactionSummary,
-          {
-            ...t,
-            documentsCount: t._count.documents,
-            lastForwardStatus: t.latestForward?.status,
-            latestForward: undefined,
-            _count: undefined,
-          },
+        instanceToPlain(
+          plainToInstance(
+            TransactionSummary,
+            {
+              ...t,
+              documentsCount: t._count.documents,
+              lastForwardStatus: t.latestForward?.status,
+              latestForward: undefined,
+              _count: undefined,
+            },
+            { groups: [role] },
+          ),
           { groups: [role] },
         ),
       ),
@@ -466,26 +469,29 @@ export class TransactionService {
     transaction: TransactionWithDocuments,
     role: UserRole,
   ) {
-    const isRestricted =
-      role !== UserRole.ADMIN && role !== UserRole.ACCOUNTANT;
-
     const result = {
       ...transaction,
-      ...(isRestricted && {
-        budgetName: undefined,
-        budgetAllocation: undefined,
-      }),
       documents: transaction.documents.map((td) =>
-        plainToInstance(Document, {
-          ...td.document,
-          downloadURI: getDownloadURI(td.document.id),
-        }),
+        instanceToPlain(
+          plainToInstance(
+            Document,
+            {
+              ...td.document,
+              downloadURI: getDownloadURI(td.document.id),
+            },
+            { groups: [role] },
+          ),
+          { groups: [role] },
+        ),
       ),
       lastForwardStatus: transaction.latestForward?.status,
       latestForward: undefined,
     };
 
-    return plainToInstance(Transaction, result, { groups: [role] });
+    return instanceToPlain(
+      plainToInstance(Transaction, result, { groups: [role] }),
+      { groups: [role] },
+    );
   }
 
   private async checkIfFulfilled(id: number) {
