@@ -122,6 +122,15 @@ cp .env.example .env.test
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/TantaFinancialTest?schema=public"
 ```
 
+#### End-to-End API URL (`E2E_API_URL`)
+
+By default, E2E tests boot a fresh NestJS application instance internally. You can optionally run tests against an external, already running API instance by setting the `E2E_API_URL` variable in `.env.test`.
+
+- **Internal Mode (Default)**: Tests boot and manage the application lifecycle.
+- **External Mode**: Tests target the provided URL.
+  - > [!IMPORTANT]
+    > The external API **must** connect to the same database as defined in `DATABASE_URL` in `.env.test` for seeding and cleanup to function correctly.
+
 ```bash
 # Run unit tests
 pnpm run test
