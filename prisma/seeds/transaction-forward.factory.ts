@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+
 import { TransactionForwardStatus } from '../generated/enums.js';
 
 export const transactionForwardFactory = (
@@ -52,6 +53,8 @@ export const transactionForwardFactory = (
     senderComment: faker.lorem.sentence(),
     receiverComment: isPending ? null : faker.lorem.sentence(),
     senderSeen,
+    senderSeenAt: senderSeen ? faker.date.past() : null,
     receiverSeen,
+    receiverSeenAt: receiverSeen ? faker.date.past() : null,
   };
 };
