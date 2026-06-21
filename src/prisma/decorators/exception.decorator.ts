@@ -57,7 +57,7 @@ export function ApiPrismaErrorResponses(
   return (
     target: object,
     key: string | symbol,
-    descriptor: TypedPropertyDescriptor<unknown>,
+    descriptor: PropertyDescriptor,
   ) => {
     ApiErrorResponses(...errors.map((e) => e.errorCode))(
       target,

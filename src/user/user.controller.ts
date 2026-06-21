@@ -153,7 +153,7 @@ export class UserController {
   ) {
     if (role !== UserRole.ADMIN) {
       const updatingFields = Object.keys(updateUserDto).filter(
-        (key: keyof UpdateUserDto) => updateUserDto[key] !== undefined,
+        (key) => updateUserDto[key as keyof UpdateUserDto] !== undefined,
       );
       const forbiddenFields = updatingFields.filter(
         (field) => !ALLOWED_USER_UPDATE_FIELDS.includes(field),

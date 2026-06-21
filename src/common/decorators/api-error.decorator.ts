@@ -17,7 +17,7 @@ export function ApiErrorResponses(...errorCodes: ErrorCode[]) {
   return (
     target: object,
     key: string | symbol,
-    descriptor: TypedPropertyDescriptor<unknown>,
+    descriptor: PropertyDescriptor,
   ) => {
     const fullErrors = errorCodes.map((errorCode) => {
       const def = ErrorRegistry[errorCode];
