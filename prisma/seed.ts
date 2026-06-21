@@ -367,7 +367,7 @@ async function main() {
         ),
       });
 
-      if (forward.status !== 'WAITING') {
+      if (forward.status !== 'WAITING')
         await prisma.notification.create({
           data: transactionForwardRespondedFactory(
             sender.id,
@@ -377,7 +377,6 @@ async function main() {
             forward.status,
           ),
         });
-      }
     }
   }
 
