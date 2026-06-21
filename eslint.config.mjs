@@ -39,6 +39,15 @@ export default tseslint.config(
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "args": "all",
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_",
+          "caughtErrorsIgnorePattern": "^_"
+        }
+      ],
     },
   },
 );
