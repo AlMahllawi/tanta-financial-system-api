@@ -65,6 +65,7 @@ export class TransactionService {
 
   private getInboxWhere(userId: number): Prisma.TransactionWhereInput {
     return {
+      fulfilled: false,
       OR: [
         {
           latestForward: {
@@ -85,6 +86,7 @@ export class TransactionService {
 
   private getOutgoingWhere(userId: number): Prisma.TransactionWhereInput {
     return {
+      fulfilled: false,
       OR: [
         {
           forwards: {
