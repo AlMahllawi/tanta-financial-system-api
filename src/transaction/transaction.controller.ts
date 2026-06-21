@@ -302,7 +302,8 @@ export class TransactionController {
     @Param('id', ParseIntPipe) id: number,
     @Param('documentId', ParseIntPipe) documentId: number,
   ) {
-    if (role !== UserRole.ADMIN) await this.checkRestriction(userId, id);
+    if (role !== UserRole.ADMIN)
+      await this.checkRestriction(userId, id, { allowResponded: true });
 
     return this.transactionService.attachDocument(id, documentId, userId, role);
   }
@@ -345,7 +346,11 @@ export class TransactionController {
     return this.transactionService.detachDocument(id, documentId, role);
   }
 
-  private async checkRestriction(userId: number, transactionId: number) {
+  private async checkRestriction(
+    userId: number,
+    transactionId: number,
+    { allowResponded = false } = {},
+  ) {
     const latestForward =
       await this.transactionService.findLatestForward(transactionId);
 
@@ -361,7 +366,10 @@ export class TransactionController {
           },
         );
     } else if (latestForward.receiverId === userId) {
-      if (latestForward.status !== TransactionForwardStatus.WAITING)
+      if (
+        !allowResponded &&
+        latestForward.status !== TransactionForwardStatus.WAITING
+      )
         throw new ApiException(
           HttpStatus.FORBIDDEN,
           ErrorCode.FORWARD_ALREADY_RESPONDED,
