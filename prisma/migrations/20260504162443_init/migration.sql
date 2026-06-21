@@ -199,11 +199,12 @@ ORDER BY "transactionId", "id" DESC;
 
 -- AddView
 CREATE OR REPLACE VIEW "BudgetCategoryDetails" AS
-SELECT 
+SELECT
   c."name" AS "budgetName",
   COALESCE(e."budget", 0) AS "budget",
   COALESCE(t."allocated", 0) AS "allocated",
-  COALESCE(e."budget", 0) - COALESCE(t."allocated", 0) AS "available"
+  COALESCE(e."budget", 0) - COALESCE(t."allocated", 0) AS "available",
+  c."preallocation" AS "preallocation"
 FROM "BudgetCategory" c
 LEFT JOIN (
   SELECT "budgetName", SUM("amount") AS "budget"

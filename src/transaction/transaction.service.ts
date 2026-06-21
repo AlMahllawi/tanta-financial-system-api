@@ -368,10 +368,13 @@ export class TransactionService {
       if (budgetName && budgetAllocation) {
         const details = await this.prisma.budgetCategoryDetails.findUnique({
           where: { budgetName },
-          select: { available: true },
+          select: { available: true, preallocation: true },
         });
 
-        if (details && budgetAllocation > details.available) {
+        if (
+          details &&
+          details.available - budgetAllocation < details.preallocation
+        ) {
           const admins = await this.prisma.user.findMany({
             where: { role: UserRole.ADMIN },
             select: { id: true },
@@ -386,7 +389,9 @@ export class TransactionService {
                 {
                   transactionId: String(id),
                   categoryName: budgetName,
-                  availableAmount: String(details.available),
+                  availableAmount: String(
+                    details.available - details.preallocation,
+                  ),
                   requestedAmount: String(budgetAllocation),
                   attemptedBy: String(userId),
                 },

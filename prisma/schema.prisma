@@ -171,10 +171,11 @@ model BudgetEntry {
 
 // FIXME: This view is manually created in the migration since `view` is a prisma preview feature atm
 view BudgetCategoryDetails {
-  budgetName String @unique
-  budget     Float
-  allocated  Float
-  available  Float
+  budgetName    String @unique
+  budget        Float
+  allocated     Float
+  available     Float
+  preallocation Float
 
   category BudgetCategory @relation(fields: [budgetName], references: [name])
 }
