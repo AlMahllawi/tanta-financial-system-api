@@ -33,6 +33,9 @@ interface EnvVars {
 
   DATABASE_URL: string;
   NODE_ENV: string;
+
+  SEED_IGNORE_ESSENTIAL: boolean;
+  SEED_ONLY_ESSENTIAL: boolean;
 }
 
 const envSchema = Joi.object({
@@ -48,6 +51,15 @@ const envSchema = Joi.object({
   NODE_ENV: Joi.string()
     .valid('development', 'production', 'test')
     .default('development'),
+
+  SEED_IGNORE_ESSENTIAL: Joi.boolean()
+    .truthy('true')
+    .falsy('false')
+    .default(false),
+  SEED_ONLY_ESSENTIAL: Joi.boolean()
+    .truthy('true')
+    .falsy('false')
+    .default(false),
 }).unknown(true);
 
 const validationResult = envSchema.validate(process.env);
@@ -80,76 +92,96 @@ async function main() {
   for (const table of tables)
     await prisma.$executeRawUnsafe(`TRUNCATE TABLE "${table}" CASCADE;`);
 
-  console.log('Creating essential administrations...');
-  const adminDeptData = departmentFactory({
-    name: ENV.DEFAULT_ADMIN_DEPARTMENT,
-  });
+  let admin: Awaited<ReturnType<typeof prisma.user.upsert>>;
+  let accountant: Awaited<ReturnType<typeof prisma.user.upsert>>;
 
-  const administrationDepartment = await prisma.department.upsert({
-    where: { name: adminDeptData.name },
-    update: {},
-    create: adminDeptData,
-  });
+  if (ENV.SEED_IGNORE_ESSENTIAL) {
+    console.log('Skipping essential seed (SEED_IGNORE_ESSENTIAL=true).');
+    admin = await prisma.user.findFirstOrThrow({
+      where: { role: UserRole.ADMIN },
+    });
+    accountant = await prisma.user.findFirstOrThrow({
+      where: { role: UserRole.ACCOUNTANT },
+    });
+  } else {
+    console.log('Creating essential administrations...');
+    const adminDeptData = departmentFactory({
+      name: ENV.DEFAULT_ADMIN_DEPARTMENT,
+    });
 
-  console.log(
-    `Created administration "${administrationDepartment.name}" department.`,
-  );
+    const administrationDepartment = await prisma.department.upsert({
+      where: { name: adminDeptData.name },
+      update: {},
+      create: adminDeptData,
+    });
 
-  const adminUserData = await userFactory(administrationDepartment.name, {
-    name: ENV.DEFAULT_ADMIN_NAME,
-    password: ENV.DEFAULT_ADMIN_PASSWORD,
-    role: UserRole.ADMIN,
-  });
+    console.log(
+      `Created administration "${administrationDepartment.name}" department.`,
+    );
 
-  const admin = await prisma.user.upsert({
-    where: { name: adminUserData.name },
-    update: {},
-    create: adminUserData,
-  });
+    const adminUserData = await userFactory(administrationDepartment.name, {
+      name: ENV.DEFAULT_ADMIN_NAME,
+      password: ENV.DEFAULT_ADMIN_PASSWORD,
+      role: UserRole.ADMIN,
+    });
 
-  console.log(`Created admin "${admin.name}" user.`);
+    admin = await prisma.user.upsert({
+      where: { name: adminUserData.name },
+      update: {},
+      create: adminUserData,
+    });
 
-  await prisma.department.update({
-    where: { name: administrationDepartment.name },
-    data: { managerId: admin.id },
-  });
+    console.log(`Created admin "${admin.name}" user.`);
 
-  const accountantDeptData = departmentFactory({
-    name: ENV.DEFAULT_ACCOUNTANT_DEPARTMENT,
-  });
+    await prisma.department.update({
+      where: { name: administrationDepartment.name },
+      data: { managerId: admin.id },
+    });
 
-  const accountancyDepartment = await prisma.department.upsert({
-    where: { name: accountantDeptData.name },
-    update: {},
-    create: accountantDeptData,
-  });
+    const accountantDeptData = departmentFactory({
+      name: ENV.DEFAULT_ACCOUNTANT_DEPARTMENT,
+    });
 
-  console.log(
-    `Created accountancy "${accountancyDepartment.name}" department.`,
-  );
+    const accountancyDepartment = await prisma.department.upsert({
+      where: { name: accountantDeptData.name },
+      update: {},
+      create: accountantDeptData,
+    });
 
-  const accountantUserData = await userFactory(accountancyDepartment.name, {
-    name: ENV.DEFAULT_ACCOUNTANT_NAME,
-    password: ENV.DEFAULT_ACCOUNTANT_PASSWORD,
-    role: UserRole.ACCOUNTANT,
-  });
+    console.log(
+      `Created accountancy "${accountancyDepartment.name}" department.`,
+    );
 
-  const accountant = await prisma.user.upsert({
-    where: { name: accountantUserData.name },
-    update: {},
-    create: accountantUserData,
-  });
+    const accountantUserData = await userFactory(accountancyDepartment.name, {
+      name: ENV.DEFAULT_ACCOUNTANT_NAME,
+      password: ENV.DEFAULT_ACCOUNTANT_PASSWORD,
+      role: UserRole.ACCOUNTANT,
+    });
 
-  console.log(`Created accountant "${accountant.name}" user.`);
+    accountant = await prisma.user.upsert({
+      where: { name: accountantUserData.name },
+      update: {},
+      create: accountantUserData,
+    });
 
-  await prisma.department.update({
-    where: { name: accountancyDepartment.name },
-    data: { managerId: accountant.id },
-  });
+    console.log(`Created accountant "${accountant.name}" user.`);
 
-  console.log('Essential seed completed.');
+    await prisma.department.update({
+      where: { name: accountancyDepartment.name },
+      data: { managerId: accountant.id },
+    });
 
-  if (ENV.NODE_ENV === 'production')
+    console.log('Essential seed completed.');
+  }
+
+  if (ENV.SEED_ONLY_ESSENTIAL)
+    return console.log('Skipping test seeds (SEED_ONLY_ESSENTIAL=true).');
+
+  if (
+    ENV.NODE_ENV === 'production' &&
+    !ENV.SEED_IGNORE_ESSENTIAL &&
+    !ENV.SEED_ONLY_ESSENTIAL
+  )
     return console.log('Skipping test seeds (in production environment).');
 
   console.log('Running test seeds for development...');
