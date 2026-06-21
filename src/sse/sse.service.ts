@@ -49,8 +49,11 @@ export class SseService implements OnModuleInit {
           );
       this.activeConnections.set(userId, count + 1);
 
-      return fromEvent(this.eventEmitter, `sse.user.${userId}`).pipe(
-        map((payload: { type: string; data: string | object }) => ({
+      return fromEvent<{ type: string; data: string | object }>(
+        this.eventEmitter,
+        `sse.user.${userId}`,
+      ).pipe(
+        map((payload) => ({
           data: payload.data,
           type: payload.type,
         })),
