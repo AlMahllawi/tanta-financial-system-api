@@ -294,3 +294,16 @@ export const budgetAllocationOverflowArgsSchema = z.object({
   requestedAmount: z.string(),
   attemptedBy: z.string(),
 });
+
+export const transactionForwardReceivedArgsSchema = z.object({
+  transactionId: z.string(),
+  forwardId: z.string(),
+  senderName: z.string(),
+});
+
+export const transactionForwardRespondedArgsSchema = z.object({
+  transactionId: z.string(),
+  forwardId: z.string(),
+  receiverName: z.string(),
+  status: z.string(),
+});

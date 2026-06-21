@@ -14,6 +14,8 @@ import { PrismaService } from '../src/prisma/prisma.service.js';
 import {
   createTransactionForwardDtoSchema,
   dataWrapperSchema,
+  transactionForwardReceivedArgsSchema,
+  transactionForwardRespondedArgsSchema,
   transactionForwardSchema,
   updateTransactionForwardDtoSchema,
   updateTransactionForwardSenderDtoSchema,
@@ -118,7 +120,21 @@ describe('Transaction Forwarding (e2e)', () => {
         );
 
       expect(response.status).toBe(HttpStatus.CREATED);
-      transactionForwardSchema.parse(response.body);
+      const forward = transactionForwardSchema.parse(response.body);
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: receiverId,
+          code: 'TRANSACTION_FORWARD_RECEIVED',
+        },
+        orderBy: { timestamp: 'desc' },
+      });
+      expect(notification).not.toBeNull();
+      const args = transactionForwardReceivedArgsSchema.parse(
+        notification!.args,
+      );
+      expect(args.transactionId).toBe(String(txId));
+      expect(args.forwardId).toBe(String(forward.id));
     });
 
     it('should return 404 TRANSACTION_NOT_FOUND (transactionId fallback match)', async () => {
@@ -383,6 +399,21 @@ describe('Transaction Forwarding (e2e)', () => {
         );
 
       expect(response.status).toBe(HttpStatus.CREATED);
+
+      const notification = await prisma.notification.findFirst({
+        where: {
+          userId: senderId,
+          code: 'TRANSACTION_FORWARD_RESPONDED',
+        },
+        orderBy: { timestamp: 'desc' },
+      });
+      expect(notification).not.toBeNull();
+      const args = transactionForwardRespondedArgsSchema.parse(
+        notification!.args,
+      );
+      expect(args.transactionId).toBe(String(txId));
+      expect(args.forwardId).toBe(String(fwd.id));
+      expect(args.status).toBe(TransactionForwardStatus.APPROVED);
     });
 
     it('should return 404 TRANSACTION_FORWARD_NOT_FOUND', async () => {

@@ -12,4 +12,23 @@ export const NotificationMetadata = {
       attemptedBy: '1',
     },
   },
+  TRANSACTION_FORWARD_RECEIVED: {
+    type: NotificationType.INFO,
+    description: 'A transaction has been forwarded to the user for review',
+    args: {
+      transactionId: '123',
+      forwardId: '1',
+      senderName: 'John Doe',
+    },
+  },
+  TRANSACTION_FORWARD_RESPONDED: {
+    type: NotificationType.INFO,
+    description: 'The receiver has responded to a forwarded transaction',
+    args: {
+      transactionId: '123',
+      forwardId: '1',
+      receiverName: 'Jane Smith',
+      status: 'APPROVED',
+    },
+  },
 } as const;

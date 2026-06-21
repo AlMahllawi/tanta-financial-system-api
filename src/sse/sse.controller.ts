@@ -39,8 +39,8 @@ export class SseController {
           },
         },
         examples: {
-          notification: {
-            summary: 'New notification event',
+          budgetOverflow: {
+            summary: 'Budget allocation overflow attempt',
             value: {
               type: 'notification',
               data: {
@@ -51,11 +51,50 @@ export class SseController {
                 type: 'WARNING',
                 code: 'BUDGET_ALLOCATION_OVERFLOW_ATTEMPT',
                 args: {
-                  transactionId: 1,
-                  budgetName: 'General',
-                  available: 500,
-                  requested: 1000,
-                  attemptedBy: 2,
+                  transactionId: '123',
+                  categoryName: 'General',
+                  availableAmount: '1000',
+                  requestedAmount: '1500',
+                  attemptedBy: '1',
+                },
+              },
+            },
+          },
+          forwardReceived: {
+            summary: 'Transaction forwarded to user',
+            value: {
+              type: 'notification',
+              data: {
+                id: 2,
+                userId: 5,
+                timestamp: '2026-05-04T15:00:00.000Z',
+                seen: false,
+                type: 'INFO',
+                code: 'TRANSACTION_FORWARD_RECEIVED',
+                args: {
+                  transactionId: '123',
+                  forwardId: '1',
+                  senderName: 'John Doe',
+                },
+              },
+            },
+          },
+          forwardResponded: {
+            summary: 'Receiver responded to forwarded transaction',
+            value: {
+              type: 'notification',
+              data: {
+                id: 3,
+                userId: 2,
+                timestamp: '2026-05-04T15:00:00.000Z',
+                seen: false,
+                type: 'INFO',
+                code: 'TRANSACTION_FORWARD_RESPONDED',
+                args: {
+                  transactionId: '123',
+                  forwardId: '1',
+                  receiverName: 'Jane Smith',
+                  status: 'APPROVED',
                 },
               },
             },

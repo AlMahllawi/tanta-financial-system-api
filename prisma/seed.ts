@@ -13,6 +13,10 @@ import {
   manyDepartmentsFactory,
 } from './seeds/department.factory.js';
 import { manyDocumentsFactory } from './seeds/document.factory.js';
+import {
+  transactionForwardReceivedFactory,
+  transactionForwardRespondedFactory,
+} from './seeds/notification.factory.js';
 import { manyTransactionsFactory } from './seeds/transaction.factory.js';
 import { transactionForwardFactory } from './seeds/transaction-forward.factory.js';
 import { manyTransactionTypesFactory } from './seeds/transaction-type.factory.js';
@@ -350,7 +354,30 @@ async function main() {
         { isLast, isFulfilled: tx.fulfilled },
       );
 
-      await prisma.transactionForward.create({ data: forwardData });
+      const forward = await prisma.transactionForward.create({
+        data: forwardData,
+      });
+
+      await prisma.notification.create({
+        data: transactionForwardReceivedFactory(
+          receiver.id,
+          tx.id,
+          forward.id,
+          sender.name,
+        ),
+      });
+
+      if (forward.status !== 'WAITING') {
+        await prisma.notification.create({
+          data: transactionForwardRespondedFactory(
+            sender.id,
+            tx.id,
+            forward.id,
+            receiver.name,
+            forward.status,
+          ),
+        });
+      }
     }
   }
 

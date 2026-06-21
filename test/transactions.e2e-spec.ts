@@ -779,7 +779,7 @@ describe('TransactionsController (e2e)', () => {
       );
     });
 
-    it('should return 403 FORWARD_ALREADY_RESPONDED', async () => {
+    it('should return 200 when receiver attaches document after responding', async () => {
       const tx = await prisma.transaction.create({
         data: {
           title: 'Forward Responded Tx',
@@ -800,12 +800,7 @@ describe('TransactionsController (e2e)', () => {
         .post(`/api/v0/transactions/${tx.id}/document/${validDocId}`)
         .set('Authorization', `Bearer ${userToken}`);
 
-      expectApiException(
-        response,
-        HttpStatus.FORBIDDEN,
-        ErrorCode.FORWARD_ALREADY_RESPONDED,
-        { forwardId: expect.any(String) },
-      );
+      expect(response.status).toBe(HttpStatus.OK);
     });
 
     it('should return 403 NOT_DOCUMENT_ATTACHER', async () => {

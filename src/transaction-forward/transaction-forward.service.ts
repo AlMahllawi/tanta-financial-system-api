@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 
-import { TransactionForwardStatus } from '../../prisma/generated/enums.js';
+import {
+  NotificationType,
+  TransactionForwardStatus,
+} from '../../prisma/generated/enums.js';
 import { PaginationDto } from '../common/dto/pagination.dto.js';
 import { ErrorCode } from '../common/enums/error-codes.enum.js';
+import { NotificationCode } from '../common/enums/notification-codes.enum.js';
 import { ApiException } from '../common/exceptions/api.exception.js';
 import {
   createPaginatedResult,
   createPaginator,
 } from '../common/utils/pagination.util.js';
+import { NotificationService } from '../notification/notification.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateTransactionForwardDto } from './dto/create-transaction-forward.dto.js';
 import { UpdateTransactionForwardDto } from './dto/update-transaction-forward.dto.js';
@@ -18,7 +22,10 @@ import { TransactionForward } from './entities/transaction-forward.entity.js';
 
 @Injectable()
 export class TransactionForwardService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async create(
     senderId: number,
@@ -41,6 +48,17 @@ export class TransactionForwardService {
         receiver: true,
       },
     });
+
+    await this.notificationService.create(
+      forward.receiverId,
+      NotificationType.INFO,
+      NotificationCode.TRANSACTION_FORWARD_RECEIVED,
+      {
+        transactionId: String(transactionId),
+        forwardId: String(forward.id),
+        senderName: forward.sender.name,
+      },
+    );
 
     return plainToInstance(TransactionForward, forward);
   }
@@ -106,6 +124,7 @@ export class TransactionForwardService {
     const forward = await this.prisma.transactionForward.findUnique({
       where: { id, transactionId },
       include: {
+        receiver: true,
         transaction: {
           select: {
             latestForward: true,
@@ -165,6 +184,18 @@ export class TransactionForwardService {
         receiver: true,
       },
     });
+
+    await this.notificationService.create(
+      updatedForward.senderId,
+      NotificationType.INFO,
+      NotificationCode.TRANSACTION_FORWARD_RESPONDED,
+      {
+        transactionId: String(transactionId),
+        forwardId: String(id),
+        receiverName: forward.receiver.name,
+        status: String(updateTransactionForwardDto.status),
+      },
+    );
 
     return plainToInstance(TransactionForward, updatedForward);
   }
