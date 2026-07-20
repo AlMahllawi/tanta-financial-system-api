@@ -3,7 +3,6 @@
 [![NestJS](https://img.shields.io/badge/framework-NestJS-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)
 [![Prisma](https://img.shields.io/badge/orm-Prisma-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/database-PostgreSQL-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![pnpm](https://img.shields.io/badge/package--manager-pnpm-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
 
 Backend API for tracking financial and administrative transactions progress, submission and review.
 
@@ -23,7 +22,6 @@ Backend API for tracking financial and administrative transactions progress, sub
 - **Framework**: [NestJS](https://nestjs.com/) (TypeScript)
 - **ORM**: [Prisma](https://www.prisma.io/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
-- **Package Manager**: [pnpm](https://pnpm.io/)
 - **Validation**: [Joi](https://joi.dev/) & [Class-Validator](https://github.com/typestack/class-validator)
 - **Documentation**: [Swagger (OpenAPI)](https://swagger.io/)
 
@@ -37,8 +35,7 @@ Follow these steps to get a local development environment up and running.
 
 Ensure the following are installed:
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [pnpm](https://pnpm.io/installation)
+- [Bun](https://bun.com/)
 - [PostgreSQL](https://www.postgresql.org/download/)
 
 ### Installation
@@ -48,7 +45,7 @@ Clone the repository and install dependencies:
 ```bash
 git clone https://github.com/AlMahllawi/tanta-financial-system-api.git
 cd tanta-financial-system-api
-pnpm install
+bun install
 ```
 
 ### Environment Configuration
@@ -73,17 +70,17 @@ DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/TantaFinancial?schema=pu
 These steps are often forgotten but are essential for the app to function.
 
 > [!TIP]
-> **Prisma Client Generation**: The `postinstall` script runs `prisma generate` automatically after `pnpm install`, but it should be run manually if changes are made to `schema.prisma`.
+> **Prisma Client Generation**: The `postinstall` script runs `prisma generate` automatically after `bun install`, but it should be run manually if changes are made to `schema.prisma`.
 
 ```bash
 # Generate the Prisma Client (outputting to prisma/generated)
-npx prisma generate
+bun prisma generate
 
 # Apply migrations to the database
-npx prisma migrate dev
+bun prisma migrate dev
 
 # Seed the database
-pnpm run seed
+bun run seed
 ```
 
 ---
@@ -92,11 +89,11 @@ pnpm run seed
 
 ```bash
 # Development mode (with watch mode)
-pnpm run start:dev
+bun run start:dev
 
 # Production mode
-pnpm run build
-pnpm run start:prod
+bun run build
+bun run start:prod
 ```
 
 The API will be available at `http://localhost:3000` (or the port specified in the `.env` file).
@@ -133,13 +130,13 @@ By default, E2E tests boot a fresh NestJS application instance internally. You c
 
 ```bash
 # Run unit tests
-pnpm run test
+bun run test
 
 # Run end-to-end tests
-pnpm run test:e2e
+bun run test:e2e
 
 # Get test coverage
-pnpm run test:cov
+bun run test:cov
 ```
 
 ---
