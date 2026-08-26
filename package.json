@@ -1,6 +1,6 @@
 {
   "name": "tanta-university-science-faculty-financial-system-api",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Track financial and administrative transactions progress, submission and review.",
   "license": "Apache-2.0",
   "author": "Mohammad Almahllawi",

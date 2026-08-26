@@ -24,10 +24,6 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.setGlobalPrefix('api', {
-    exclude: ['/', SWAGGER_PATH],
-  });
-
   const majorVersion = packageJson.version.split('.')[0];
 
   app.enableVersioning({
@@ -42,6 +38,7 @@ async function bootstrap() {
     .setTitle('Tanta Financial System API')
     .setDescription('The API documentation for the graduation project')
     .setVersion(packageJson.version)
+    .addServer('/api')
     .addBearerAuth()
     .addTag('Entry')
     .addTag('Authentication', 'Operations related to authentication')
