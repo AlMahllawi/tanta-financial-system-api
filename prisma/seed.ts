@@ -204,6 +204,7 @@ async function main() {
   console.log(`Generating ${totalUsersCount} unique users...`);
 
   const allUsers = await manyUsersFactory(totalUsersCount, departments[0].name);
+  if (allUsers.length > 0) allUsers[0].name = 'Regular User';
 
   let currentOffset = 0;
   const departmentConfigs = departments.map((department, i) => {
